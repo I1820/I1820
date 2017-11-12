@@ -11,7 +11,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"gopkg.in/mgo.v2"
@@ -50,7 +52,7 @@ func main() {
 	// Connect to the MQTT Server.
 	err = cli.Connect(&client.ConnectOptions{
 		Network:  "tcp",
-		Address:  "172.23.132.37:1883",
+		Address:  "127.0.0.1:1883",
 		ClientID: []byte("isrc-push"),
 	})
 	if err != nil {
@@ -69,7 +71,10 @@ func main() {
 					cr.Insert(raw{
 						[]byte("hello"),
 					})
-					http.Post("http://example.com/upload", "application/json", []byte("hello"))
+					fmt.Println("Decoding")
+					r, _ := http.Post("http://127.0.0.1:8080/api/decode/me", "application/json", bytes.NewBuffer([]byte("hello")))
+					b, _ := ioutil.ReadAll(r.Body)
+					fmt.Println(string(b))
 				},
 			},
 		},
@@ -89,5 +94,8 @@ func main() {
 
 	if err != nil {
 		panic(err)
+	}
+
+	for {
 	}
 }
