@@ -11,14 +11,12 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/aiotrc/push.go/decoder"
 	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
 )
@@ -59,6 +57,9 @@ func main() {
 		panic(err)
 	}
 
+	// Create decoder
+	decoder := decoder.New("http://127.0.0.1:8080", "me")
+
 	// Subscribe to topics
 	err = cli.Subscribe(&client.SubscribeOptions{
 		SubReqs: []*client.SubReq{
@@ -69,12 +70,14 @@ func main() {
 				Handler: func(topicName, message []byte) {
 					fmt.Println(string(topicName), string(message))
 					cr.Insert(raw{
-						[]byte("hello"),
+						message,
 					})
 					fmt.Println("Decoding")
-					r, _ := http.Post("http://127.0.0.1:8080/api/decode/me", "application/json", bytes.NewBuffer([]byte("hello")))
-					b, _ := ioutil.ReadAll(r.Body)
-					fmt.Println(string(b))
+					parsed, err := decoder.Decode(message)
+					if err != nil {
+						fmt.Println(err)
+					}
+					fmt.Println(string(parsed))
 				},
 			},
 		},
