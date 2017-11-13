@@ -17,6 +17,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/aiotrc/push.go/decoder"
+	"github.com/jinzhu/configor"
 	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
 )
@@ -25,7 +26,17 @@ type raw struct {
 	data []byte
 }
 
+// Config represents main configuration
+var Config = struct {
+	DB struct {
+		URL string `default:"127.0.0.1" env:"db_url"`
+	}
+}{}
+
 func main() {
+	// Load configuration
+	configor.Load(&Config, "config.yml")
+
 	// Create a Mongo Session
 	session, err := mgo.Dial("127.0.0.1")
 	if err != nil {
