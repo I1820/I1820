@@ -11,7 +11,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"math/rand"
+	"os"
+	"os/signal"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -22,14 +27,22 @@ import (
 	"github.com/yosssi/gmq/mqtt/client"
 )
 
-type raw struct {
-	data []byte
+// Message represents message from connectivity layer
+type Message struct {
+	ID   string
+	Data []byte
 }
 
 // Config represents main configuration
 var Config = struct {
 	DB struct {
 		URL string `default:"127.0.0.1" env:"db_url"`
+	}
+	Broker struct {
+		URL string `default:"127.0.0.1:1883" env:"broker_url"`
+	}
+	Decoder struct {
+		URL string `default:"http://127.0.0.1:8080" env:"decoder_url"`
 	}
 }{}
 
@@ -38,9 +51,9 @@ func main() {
 	configor.Load(&Config, "config.yml")
 
 	// Create a Mongo Session
-	session, err := mgo.Dial("127.0.0.1")
+	session, err := mgo.Dial(Config.DB.URL)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
 	}
 	defer session.Close()
 
@@ -53,7 +66,7 @@ func main() {
 	// Create an MQTT client
 	cli := client.New(&client.Options{
 		ErrorHandler: func(err error) {
-			fmt.Println(err)
+			log.Printf("MQTT client: %v", err)
 		},
 	})
 	defer cli.Terminate()
@@ -61,34 +74,57 @@ func main() {
 	// Connect to the MQTT Server.
 	err = cli.Connect(&client.ConnectOptions{
 		Network:  "tcp",
-		Address:  "127.0.0.1:1883",
-		ClientID: []byte("isrc-push"),
+		Address:  Config.Broker.URL,
+		ClientID: []byte(fmt.Sprintf("isrc-push-%d", rand.Int63())),
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	// Create decoder
-	decoder := decoder.New("http://127.0.0.1:8080", "me")
+	decoder := decoder.New(Config.Decoder.URL)
+
+	// Parsed collection
+	cp := session.DB("isrc").C("parsed")
 
 	// Subscribe to topics
 	err = cli.Subscribe(&client.SubscribeOptions{
 		SubReqs: []*client.SubReq{
 			&client.SubReq{
 				// https://vernemq.com/docs/configuration/shared_subscriptions.html
-				TopicFilter: []byte("$share/isrc/push"),
+				TopicFilter: []byte("push"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
-					fmt.Println(string(topicName), string(message))
-					cr.Insert(raw{
-						message,
-					})
-					fmt.Println("Decoding")
-					parsed, err := decoder.Decode(message)
+					var m Message
+					err := json.Unmarshal(message, &m)
 					if err != nil {
-						fmt.Println(err)
+						log.Printf("Message: %v", err)
+						return
 					}
-					fmt.Println(string(parsed))
+
+					err = cr.Insert(m)
+					if err != nil {
+						log.Printf("Mongo insert [raw]: %v", err)
+						return
+					}
+
+					parsed, err := decoder.Decode(m.Data, m.ID)
+					if err != nil {
+						log.Printf("Decoder: %v", err)
+						return
+					}
+
+					var bdoc interface{}
+					err = bson.UnmarshalJSON([]byte(parsed), &bdoc)
+					if err != nil {
+						log.Printf("Unmarshal JSON: %v", err)
+						return
+					}
+					err = cp.Insert(&bdoc)
+					if err != nil {
+						log.Printf("Mongo insert [parsed]: %v", err)
+						return
+					}
 				},
 			},
 		},
@@ -97,19 +133,12 @@ func main() {
 		panic(err)
 	}
 
-	// Parsed collection
-	cp := session.DB("isrc").C("parsed")
-	var bdoc interface{}
-	err = bson.UnmarshalJSON([]byte(`{"id": 1,"name": "A green door","price": 12.50,"tags": ["home", "green"]}`), &bdoc)
-	if err != nil {
-		panic(err)
-	}
-	err = cp.Insert(&bdoc)
+	// Set up channel on which to send signal notifications.
+	sigc := make(chan os.Signal, 1)
+	signal.Notify(sigc, os.Interrupt, os.Kill)
 
-	if err != nil {
-		panic(err)
-	}
+	// Wait for receiving a signal.
+	<-sigc
 
-	for {
-	}
+	fmt.Println("18.20 As always ... left me alone")
 }
