@@ -20,19 +20,18 @@ import (
 // Decoder is a way to communicate with user provided decoder
 type Decoder struct {
 	addr string
-	id   string
 }
 
 // New creates new decoder based on given remove address
-func New(addr string, id string) *Decoder {
+func New(addr string) *Decoder {
 	return &Decoder{
 		addr: addr,
 	}
 }
 
 // Decode decodes given data with user provided decoder
-func (d *Decoder) Decode(payload []byte) (string, error) {
-	r, err := http.Post(fmt.Sprintf("%s/api/decode/%s", d.addr, d.id), "application/json", bytes.NewBuffer(payload))
+func (d *Decoder) Decode(payload []byte, id string) (string, error) {
+	r, err := http.Post(fmt.Sprintf("%s/api/decode/%s", d.addr, id), "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		return "", err
 	}
