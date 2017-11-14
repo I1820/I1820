@@ -91,7 +91,7 @@ func main() {
 	err = cli.Subscribe(&client.SubscribeOptions{
 		SubReqs: []*client.SubReq{
 			&client.SubReq{
-				// https://vernemq.com/docs/configuration/shared_subscriptions.html
+				// https://docs.loraserver.io/use/getting-started/
 				TopicFilter: []byte("application/+/node/+/+"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
