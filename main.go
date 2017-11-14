@@ -28,6 +28,7 @@ import (
 )
 
 // Message represents message from connectivity layer
+// https://docs.loraserver.io/lora-app-server/integrate/data/
 type Message struct {
 	DeviceName string
 	Data       []byte
