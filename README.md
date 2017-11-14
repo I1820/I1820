@@ -1,6 +1,6 @@
 # ISRC Push.Go
 ## Introduction
-Push service of ISRC platform
+Push service of ISRC platform.
 
 ## Running
 MongoDB
