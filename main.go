@@ -93,7 +93,7 @@ func main() {
 		SubReqs: []*client.SubReq{
 			&client.SubReq{
 				// https://docs.loraserver.io/use/getting-started/
-				TopicFilter: []byte("application/+/node/+/+"),
+				TopicFilter: []byte("application/+/node/+/rx"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
 					var m Message
