@@ -29,8 +29,8 @@ import (
 
 // Message represents message from connectivity layer
 type Message struct {
-	ID   string
-	Data []byte
+	DeviceName string
+	Data       []byte
 }
 
 // Config represents main configuration
@@ -92,7 +92,7 @@ func main() {
 		SubReqs: []*client.SubReq{
 			&client.SubReq{
 				// https://vernemq.com/docs/configuration/shared_subscriptions.html
-				TopicFilter: []byte("push"),
+				TopicFilter: []byte("application/+/node/+/+"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
 					var m Message
@@ -101,6 +101,7 @@ func main() {
 						log.Printf("Message: %v", err)
 						return
 					}
+					fmt.Println(m)
 
 					err = cr.Insert(m)
 					if err != nil {
@@ -108,7 +109,7 @@ func main() {
 						return
 					}
 
-					parsed, err := decoder.Decode(m.Data, m.ID)
+					parsed, err := decoder.Decode(m.Data, m.DeviceName)
 					if err != nil {
 						log.Printf("Decoder: %v", err)
 						return
