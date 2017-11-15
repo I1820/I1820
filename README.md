@@ -1,4 +1,4 @@
-# ISRC Push.Go
+# ISRC Uplink
 ## Introduction
 Uplink service of ISRC platfrom. This service collects
 raw data from bottom layer, stores them into mongo database
