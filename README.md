@@ -1,6 +1,8 @@
 # ISRC Push.Go
 ## Introduction
-Push service of ISRC platform.
+Uplink service of ISRC platfrom. This service collects
+raw data from bottom layer, stores them into mongo database
+and decodes them using decoder on runner platform.
 
 ## Running
 MongoDB
