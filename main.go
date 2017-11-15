@@ -21,7 +21,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/aiotrc/push.go/decoder"
+	"github.com/aiotrc/uplink/decoder"
 	"github.com/jinzhu/configor"
 	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
