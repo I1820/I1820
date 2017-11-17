@@ -4,7 +4,7 @@ package lora
 type RxMessage struct {
 	ApplicationID   string
 	ApplicationName string
-	NodeName        string
+	DeviceName      string
 	DevEUI          string
 	FPort           int
 	FCnt            int
