@@ -11,6 +11,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -19,6 +21,9 @@ import (
 
 func main() {
 	ctx := context.Background()
+	// NewEnvClient initializes a new API client based on environment variables.
+	// Use DOCKER_HOST to set the url to the docker server.
+	// Use DOCKER_API_VERSION to set the version of the API to reach, leave empty for latest.
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
@@ -41,4 +46,6 @@ func main() {
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		panic(err)
 	}
+
+	fmt.Println(resp.ID)
 }
