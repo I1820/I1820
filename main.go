@@ -22,17 +22,11 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/aiotrc/uplink/decoder"
+	"github.com/aiotrc/uplink/lora"
 	"github.com/jinzhu/configor"
 	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
 )
-
-// Message represents message from connectivity layer
-// https://docs.loraserver.io/lora-app-server/integrate/data/
-type Message struct {
-	DeviceName string
-	Data       []byte
-}
 
 // Config represents main configuration
 var Config = struct {
@@ -96,7 +90,7 @@ func main() {
 				TopicFilter: []byte("application/+/node/+/rx"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
-					var m Message
+					var m lora.RxMessage
 					err := json.Unmarshal(message, &m)
 					if err != nil {
 						log.Printf("Message: %v", err)
