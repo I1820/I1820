@@ -19,6 +19,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/aiotrc/pm/project"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,6 +31,7 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.GET("/about", aboutHandler)
+		api.GET("/project/:name", projectNewHandler)
 	}
 
 	srv := &http.Server{
@@ -61,4 +63,10 @@ func main() {
 
 func aboutHandler(c *gin.Context) {
 	c.String(http.StatusOK, "18.20 is leaving us")
+}
+
+func projectNewHandler(c *gin.Context) {
+	name := c.Param("name")
+	p := project.New(name)
+	c.String(http.StatusOK, p.ID)
 }
