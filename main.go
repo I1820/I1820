@@ -11,41 +11,54 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
-	"golang.org/x/net/context"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	ctx := context.Background()
-	// NewEnvClient initializes a new API client based on environment variables.
-	// Use DOCKER_HOST to set the url to the docker server.
-	// Use DOCKER_API_VERSION to set the version of the API to reach, leave empty for latest.
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		panic(err)
+	fmt.Println("PM by Parham Alvani")
+
+	r := gin.Default()
+
+	api := r.Group("/api")
+	{
+		api.GET("/about", aboutHandler)
 	}
 
-	imageName := "aiotrc/gorunner"
-
-	_, err = cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
-	if err != nil {
-		panic(err)
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
 	}
 
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: imageName,
-	}, nil, nil, "")
-	if err != nil {
-		panic(err)
-	}
+	go func() {
+		fmt.Printf("GoRunner Listen: %s\n", srv.Addr)
+		// service connections
+		if err := srv.ListenAndServe(); err != nil {
+			log.Fatal("Listen Error:", err)
+		}
+	}()
 
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
-	}
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	fmt.Println("PM Shutdown")
 
-	fmt.Println(resp.ID)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Shutdown Error:", err)
+	}
+}
+
+func aboutHandler(c *gin.Context) {
+	c.String(http.StatusOK, "18.20 is leaving us")
 }
