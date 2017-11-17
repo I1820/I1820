@@ -44,6 +44,8 @@ func (d *Decoder) Decode(payload []byte, id string) (string, error) {
 		return string(b), nil
 	case 404:
 		return "", fmt.Errorf("%s", b)
+	case 500:
+		return "", fmt.Errorf("%s", b)
 	default:
 		return "", fmt.Errorf("unkown status code \"%s\"", b)
 	}
