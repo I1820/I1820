@@ -56,7 +56,7 @@ func main() {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Raw collection
-	cr := session.DB("isrc").C("parsed")
+	cr := session.DB("isrc").C("raw")
 
 	// Create an MQTT client
 	cli := client.New(&client.Options{
