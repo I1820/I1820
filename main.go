@@ -113,7 +113,7 @@ func main() {
 					var bdoc interface{}
 					err = bson.UnmarshalJSON([]byte(parsed), &bdoc)
 					if err != nil {
-						log.Printf("Unmarshal JSON: %v", err)
+						log.Printf("Unmarshal JSON: %v\n %s", err, parsed)
 						return
 					}
 					err = cp.Insert(&bdoc)
