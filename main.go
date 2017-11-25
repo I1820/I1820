@@ -17,6 +17,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
+	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -116,7 +117,13 @@ func main() {
 						log.Printf("Unmarshal JSON: %v\n %s", err, parsed)
 						return
 					}
-					err = cp.Insert(&bdoc)
+					err = cp.Insert(&struct {
+						Data      interface{}
+						Timestamp time.Time
+					}{
+						Data:      bdoc,
+						Timestamp: time.Now(),
+					})
 					if err != nil {
 						log.Printf("Mongo insert [parsed]: %v", err)
 						return
