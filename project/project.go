@@ -13,15 +13,23 @@ package project
 import "github.com/aiotrc/pm/runner"
 
 // Project represents structure of ISRC projects
+// each project has name and contains one or more things
 type Project struct {
-	Name string
-	ID   string
+	Name   string
+	ID     string
+	Things []string
 }
 
 // New creates new project with given name
 func New(name string) *Project {
 	return &Project{
-		Name: name,
-		ID:   runner.New(name),
+		Name:   name,
+		ID:     runner.New(name),
+		Things: make([]string, 0),
 	}
+}
+
+// AddThing adds new things into specific project
+func (p *Project) AddThing(thing string) {
+	p.Things = append(p.Things, thing)
 }
