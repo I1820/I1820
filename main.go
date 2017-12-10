@@ -58,6 +58,10 @@ func main() {
 
 	// Raw collection
 	cr := session.DB("isrc").C("raw")
+	cr.Create(&mgo.CollectionInfo{
+		Capped:  true,
+		MaxDocs: 100,
+	})
 
 	// Create an MQTT client
 	cli := client.New(&client.Options{
@@ -82,6 +86,9 @@ func main() {
 
 	// Parsed collection
 	cp := session.DB("isrc").C("parsed")
+	cp.EnsureIndex(mgo.Index{
+		Key: []string{"timestamp"},
+	})
 
 	// Subscribe to topics
 	err = cli.Subscribe(&client.SubscribeOptions{
