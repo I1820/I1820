@@ -127,9 +127,11 @@ func main() {
 					err = cp.Insert(&struct {
 						Data      interface{}
 						Timestamp time.Time
+						ThingID   string
 					}{
 						Data:      bdoc,
 						Timestamp: time.Now(),
+						ThingID:   m.DeviceName,
 					})
 					if err != nil {
 						log.Printf("Mongo insert [parsed]: %v", err)
