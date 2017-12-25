@@ -131,7 +131,7 @@ func main() {
 					}{
 						Data:      bdoc,
 						Timestamp: time.Now(),
-						ThingID:   m.DeviceName,
+						ThingID:   m.DevEUI,
 					})
 					if err != nil {
 						log.Printf("Mongo insert [parsed]: %v", err)
