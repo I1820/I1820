@@ -112,7 +112,7 @@ func main() {
 						return
 					}
 
-					parsed, err := decoder.Decode(m.Data, m.DeviceName)
+					parsed, err := decoder.Decode(m.Data, m.RxInfo[0].Name)
 					if err != nil {
 						log.Printf("Decoder: %v", err)
 						return
