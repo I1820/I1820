@@ -10,7 +10,7 @@ type RxMessage struct {
 	DevEUI          string
 	FPort           int
 	FCnt            int
-	RxInfo          RxInfo
+	RxInfo          []RxInfo
 	Data            []byte
 }
 
