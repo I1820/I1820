@@ -1,5 +1,7 @@
 package lora
 
+import "time"
+
 // RxMessage contains payloads received from your nodes
 type RxMessage struct {
 	ApplicationID   string
@@ -8,7 +10,16 @@ type RxMessage struct {
 	DevEUI          string
 	FPort           int
 	FCnt            int
+	RxInfo          RxInfo
 	Data            []byte
+}
+
+// RxInfo contains gateway infomation that payloads
+// received from it.
+type RxInfo struct {
+	Mac  string
+	Name string
+	Time time.Time
 }
 
 // TxMessage contains payload send to your nodes
