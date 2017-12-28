@@ -40,7 +40,7 @@ func main() {
 	}
 
 	go func() {
-		fmt.Printf("GoRunner Listen: %s\n", srv.Addr)
+		fmt.Printf("PM Listen: %s\n", srv.Addr)
 		// service connections
 		if err := srv.ListenAndServe(); err != nil {
 			log.Fatal("Listen Error:", err)
