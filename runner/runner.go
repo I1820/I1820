@@ -14,14 +14,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
+	client "docker.io/go-docker"
+	"docker.io/go-docker/api/types"
+	"docker.io/go-docker/api/types/container"
 )
 
-// New creates runner docker with given user name
-func New(name string) string {
-	ctx := context.Background()
+var dockerClient *client.Client
+
+func init() {
 	// NewEnvClient initializes a new API client based on environment variables.
 	// Use DOCKER_HOST to set the url to the docker server.
 	// Use DOCKER_API_VERSION to set the version of the API to reach, leave empty for latest.
@@ -30,21 +30,39 @@ func New(name string) string {
 		panic(err)
 	}
 
+	dockerClient = cli
+}
+
+// New creates runner docker with given user name
+func New(name string) string {
+	ctx := context.Background()
+
 	imageName := "aiotrc/gorunner"
 
-	_, err = cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
+	_, err := dockerClient.ImagePull(ctx, imageName, types.ImagePullOptions{})
 	if err != nil {
 		panic(err)
 	}
 
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: imageName,
-	}, nil, nil, fmt.Sprintf("el-%s", name))
+	resp, err := dockerClient.ContainerCreate(ctx,
+		&container.Config{
+			Image: imageName,
+		},
+		&container.HostConfig{
+			PortBindings: PortMap{
+				"8080": []PortBinding{
+					PortBinding{
+						HostIP:   "0.0.0.0",
+						HostPort: "random",
+					},
+				},
+			},
+		}, nil, fmt.Sprintf("el-%s", name))
 	if err != nil {
 		panic(err)
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		panic(err)
 	}
 
