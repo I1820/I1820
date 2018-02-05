@@ -13,6 +13,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/docker/go-connections/nat"
 
@@ -55,7 +56,7 @@ func New(name string) string {
 				"8080": []nat.PortBinding{
 					nat.PortBinding{
 						HostIP:   "0.0.0.0",
-						HostPort: "random",
+						HostPort: fmt.Sprintf("%d", 8080+rand.Intn(100)),
 					},
 				},
 			},
