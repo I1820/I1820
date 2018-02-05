@@ -14,6 +14,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/docker/go-connections/nat"
+
 	client "docker.io/go-docker"
 	"docker.io/go-docker/api/types"
 	"docker.io/go-docker/api/types/container"
@@ -49,9 +51,9 @@ func New(name string) string {
 			Image: imageName,
 		},
 		&container.HostConfig{
-			PortBindings: PortMap{
-				"8080": []PortBinding{
-					PortBinding{
+			PortBindings: nat.PortMap{
+				"8080": []nat.PortBinding{
+					nat.PortBinding{
 						HostIP:   "0.0.0.0",
 						HostPort: "random",
 					},
