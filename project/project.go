@@ -17,7 +17,6 @@ import "github.com/aiotrc/pm/runner"
 type Project struct {
 	Name   string
 	Runner runner.Runner
-	Things []string
 }
 
 // New creates new project with given name
@@ -31,11 +30,5 @@ func New(name string) (*Project, error) {
 	return &Project{
 		Name:   name,
 		Runner: r,
-		Things: make([]string, 0),
 	}, nil
-}
-
-// AddThing adds new things into specific project
-func (p *Project) AddThing(thing string) {
-	p.Things = append(p.Things, thing)
 }
