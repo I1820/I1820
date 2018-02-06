@@ -25,6 +25,7 @@ before_install:
 
 install:
   - dep ensure
+  - docker pull aiotrc/gorunner
 
 script:
   - test -z $(gofmt -s -l $GO_FILES)  # Fail if a .go file hasn't been formatted with gofmt
