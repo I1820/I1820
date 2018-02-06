@@ -23,6 +23,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var projects map[string]*project.Project
+
+func init() {
+	projects = make(map[string]*project.Project)
+}
+
 func main() {
 	fmt.Println("PM by Parham Alvani")
 
@@ -32,6 +38,7 @@ func main() {
 	{
 		api.GET("/about", aboutHandler)
 		api.GET("/project/:name", projectNewHandler)
+		api.DELETE("/project/:name", projectRemoveHandler)
 	}
 
 	srv := &http.Server{
@@ -68,5 +75,17 @@ func aboutHandler(c *gin.Context) {
 func projectNewHandler(c *gin.Context) {
 	name := c.Param("name")
 	p := project.New(name)
-	c.String(http.StatusOK, p.ID)
+	projects[name] = p
+	c.JSON(http.StatusOK, p)
+}
+
+func projectRemoveHandler(c *gin.Context) {
+	name := c.Param("name")
+	if p, ok := projects[name]; ok {
+		p.Runner.Remove()
+		delete(projects, name)
+		c.String(http.StatusOK, name)
+		return
+	}
+	c.String(http.StatusNotFound, name)
 }
