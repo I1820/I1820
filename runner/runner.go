@@ -24,6 +24,12 @@ import (
 
 var dockerClient *client.Client
 
+// Runner represents runner docker information
+type Runner struct {
+	ID   string
+	Port string
+}
+
 func init() {
 	// NewEnvClient initializes a new API client based on environment variables.
 	// Use DOCKER_HOST to set the url to the docker server.
@@ -37,7 +43,7 @@ func init() {
 }
 
 // New creates runner docker with given user name
-func New(name string) string {
+func New(name string) Runner {
 	ctx := context.Background()
 
 	imageName := "aiotrc/gorunner"
@@ -47,16 +53,22 @@ func New(name string) string {
 		panic(err)
 	}
 
+	lport, _ := nat.NewPort("tcp", "8080")
+	eport := fmt.Sprintf("%d", 8080+rand.Intn(100))
+
 	resp, err := dockerClient.ContainerCreate(ctx,
 		&container.Config{
 			Image: imageName,
+			ExposedPorts: nat.PortSet{
+				lport: struct{}{},
+			},
 		},
 		&container.HostConfig{
 			PortBindings: nat.PortMap{
-				"8080": []nat.PortBinding{
+				lport: []nat.PortBinding{
 					nat.PortBinding{
 						HostIP:   "0.0.0.0",
-						HostPort: fmt.Sprintf("%d", 8080+rand.Intn(100)),
+						HostPort: eport,
 					},
 				},
 			},
@@ -69,5 +81,8 @@ func New(name string) string {
 		panic(err)
 	}
 
-	return resp.ID
+	return Runner{
+		ID:   resp.ID,
+		Port: eport,
+	}
 }
