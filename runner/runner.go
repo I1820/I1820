@@ -86,3 +86,15 @@ func New(name string) Runner {
 		Port: eport,
 	}
 }
+
+// Remove removes runner docker
+func (r Runner) Remove() {
+	ctx := context.Background()
+
+	err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
+		Force: true,
+	})
+	if err != nil {
+		panic(err)
+	}
+}
