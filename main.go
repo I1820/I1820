@@ -20,14 +20,18 @@ import (
 	"time"
 
 	"github.com/aiotrc/pm/project"
+	"github.com/aiotrc/pm/thing"
 	"github.com/gin-gonic/gin"
 )
 
+// database or memory?
 var projects map[string]*project.Project
+var things map[string]thing.Thing
 
 // init initiates global variables
 func init() {
 	projects = make(map[string]*project.Project)
+	things = make(map[string]thing.Thing)
 }
 
 // handle registers apis and create http handler
@@ -114,7 +118,27 @@ func projectRemoveHandler(c *gin.Context) {
 }
 
 func thingAddHandler(c *gin.Context) {
+	project := c.Param("project")
+	name := c.Param("name")
+
+	if p, ok := projects[project]; ok {
+		things[name] = thing.Thing{
+			Project: p,
+			ID:      name,
+		}
+		c.JSON(http.StatusOK, things[name])
+		return
+	}
+	c.String(http.StatusNotFound, fmt.Sprintf("Project %s not found", name))
 }
 
 func thingGetHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	if t, ok := things[name]; ok {
+		c.JSON(http.StatusOK, t)
+		return
+	}
+
+	c.String(http.StatusNotFound, fmt.Sprintf("Thing %s not found", name))
 }
