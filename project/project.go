@@ -21,12 +21,18 @@ type Project struct {
 }
 
 // New creates new project with given name
-func New(name string) *Project {
+func New(name string) (*Project, error) {
+	r, err := runner.New(name)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &Project{
 		Name:   name,
-		Runner: runner.New(name),
+		Runner: r,
 		Things: make([]string, 0),
-	}
+	}, nil
 }
 
 // AddThing adds new things into specific project
