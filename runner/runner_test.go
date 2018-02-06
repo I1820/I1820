@@ -10,12 +10,12 @@
 
 package runner
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
-func TestCreate(t *testing.T) {
+func TestBasic(t *testing.T) {
 	r := New("Eli")
-	fmt.Println(r)
+
+	t.Log(r.ID)
+
+	r.Remove()
 }
