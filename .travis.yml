@@ -28,11 +28,11 @@ install:
   - docker pull aiotrc/gorunner
 
 script:
-  - test -z $(gofmt -s -l $GO_FILES)  # Fail if a .go file hasn't been formatted with gofmt
+  - test -z $(gofmt -v -s -l $GO_FILES)  # Fail if a .go file hasn't been formatted with gofmt
   - go vet -v $PKGS                      # go vet is the official Go static analyzer
-  - megacheck $PKGS                   # "go vet on steroids" + linter
-  - errcheck $PKGS                    # Check for unchecked errors
-  - golint -set_exit_status $PKGS     # One last linter
+  - megacheck -v $PKGS                   # "go vet on steroids" + linter
+  - errcheck -v $PKGS                    # Check for unchecked errors
+  - golint -set_exit_status $PKGS        # One last linter
 
   # Run all the tests
   - go test -v $PKGS
