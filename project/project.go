@@ -16,7 +16,7 @@ import "github.com/aiotrc/pm/runner"
 // each project has name and contains one or more things
 type Project struct {
 	Name   string
-	ID     string
+	Runner runner.Runner
 	Things []string
 }
 
@@ -24,7 +24,7 @@ type Project struct {
 func New(name string) *Project {
 	return &Project{
 		Name:   name,
-		ID:     runner.New(name),
+		Runner: runner.New(name),
 		Things: make([]string, 0),
 	}
 }
