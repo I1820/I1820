@@ -13,7 +13,6 @@ package project
 import "github.com/aiotrc/pm/runner"
 
 // Project represents structure of ISRC projects
-// each project has name and contains one or more things
 type Project struct {
 	Name   string
 	Runner runner.Runner
