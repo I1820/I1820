@@ -110,7 +110,7 @@ func projectRemoveHandler(c *gin.Context) {
 		c.String(http.StatusOK, name)
 		return
 	}
-	c.String(http.StatusNotFound, name)
+	c.String(http.StatusNotFound, fmt.Sprintf("Project %s not found", name))
 }
 
 func thingAddHandler(c *gin.Context) {
