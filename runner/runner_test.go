@@ -13,9 +13,17 @@ package runner
 import "testing"
 
 func TestBasic(t *testing.T) {
-	r := New("Eli")
+	r, err := New("Eli")
+
+	if err != nil {
+		t.Fatalf("Runner creation error: %s", err)
+	}
 
 	t.Log(r.ID)
 
-	r.Remove()
+	err = r.Remove()
+
+	if err != nil {
+		t.Fatalf("Runner remove error: %s", err)
+	}
 }
