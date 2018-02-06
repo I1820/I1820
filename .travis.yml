@@ -20,7 +20,6 @@ before_install:
 
   # Install linters
   - go get -u github.com/golang/lint/golint              # Linter
-  - go get -u honnef.co/go/tools/cmd/megacheck           # Badass static analyzer/linter
   - go get -u github.com/kisielk/errcheck                # errcheck checks that you checked errors.
 
 install:
@@ -28,11 +27,9 @@ install:
   - docker pull aiotrc/gorunner
 
 script:
-  - test -z $(gofmt -v -s -l $GO_FILES)  # Fail if a .go file hasn't been formatted with gofmt
-  - go vet -v $PKGS                      # go vet is the official Go static analyzer
-  - megacheck -v $PKGS                   # "go vet on steroids" + linter
-  - errcheck -v $PKGS                    # Check for unchecked errors
-  - golint -set_exit_status $PKGS        # One last linter
+  - go vet -v $PKGS                   # go vet is the official Go static analyzer
+  - errcheck -verbose $PKGS           # Check for unchecked errors
+  - golint -set_exit_status $PKGS     # One last linter
 
   # Run all the tests
   - go test -v $PKGS
