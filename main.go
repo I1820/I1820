@@ -25,21 +25,33 @@ import (
 
 var projects map[string]*project.Project
 
+// init initiates global variables
 func init() {
 	projects = make(map[string]*project.Project)
 }
 
-func main() {
-	fmt.Println("PM by Parham Alvani")
-
+// handle registers apis and create http handler
+func handle() http.Handler {
 	r := gin.Default()
 
 	api := r.Group("/api")
 	{
 		api.GET("/about", aboutHandler)
+
 		api.GET("/project/:name", projectNewHandler)
 		api.DELETE("/project/:name", projectRemoveHandler)
+
+		api.POST("/thing/:project/:name", thingAddHandler)
+		api.GET("/thing/:name", thingGetHandler)
 	}
+
+	return r
+}
+
+func main() {
+	fmt.Println("PM AIoTRC @ 2018")
+
+	r := handle()
 
 	srv := &http.Server{
 		Addr:    ":8080",
@@ -99,4 +111,10 @@ func projectRemoveHandler(c *gin.Context) {
 		return
 	}
 	c.String(http.StatusNotFound, name)
+}
+
+func thingAddHandler(c *gin.Context) {
+}
+
+func thingGetHandler(c *gin.Context) {
 }
