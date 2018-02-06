@@ -43,14 +43,14 @@ func init() {
 }
 
 // New creates runner docker with given user name
-func New(name string) Runner {
+func New(name string) (Runner, error) {
 	ctx := context.Background()
 
 	imageName := "aiotrc/gorunner"
 
 	_, err := dockerClient.ImagePull(ctx, imageName, types.ImagePullOptions{})
 	if err != nil {
-		panic(err)
+		return Runner{}, err
 	}
 
 	lport, _ := nat.NewPort("tcp", "8080")
@@ -74,27 +74,28 @@ func New(name string) Runner {
 			},
 		}, nil, fmt.Sprintf("el-%s", name))
 	if err != nil {
-		panic(err)
+		return Runner{}, err
 	}
 
 	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
+		return Runner{}, err
 	}
 
 	return Runner{
 		ID:   resp.ID,
 		Port: eport,
-	}
+	}, nil
 }
 
 // Remove removes runner docker
-func (r Runner) Remove() {
+func (r Runner) Remove() error {
 	ctx := context.Background()
 
 	err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
 		Force: true,
 	})
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
