@@ -35,7 +35,11 @@ func TestCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			return
+		}
+	}()
 	if _, err := ioutil.ReadAll(resp.Body); err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +58,11 @@ func TestRemove(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			return
+		}
+	}()
 	if _, err := ioutil.ReadAll(resp.Body); err != nil {
 		t.Fatal(err)
 	}
