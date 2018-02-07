@@ -26,8 +26,8 @@ var dockerClient *client.Client
 
 // Runner represents runner docker information
 type Runner struct {
-	ID   string `json: "id"`
-	Port string `json: "port"`
+	ID   string `json:"id"`
+	Port string `json:"port"`
 }
 
 func init() {
