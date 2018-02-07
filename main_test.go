@@ -40,8 +40,12 @@ func TestCreate(t *testing.T) {
 			return
 		}
 	}()
-	if _, err := ioutil.ReadAll(resp.Body); err != nil {
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
 		t.Fatal(err)
+	}
+	if resp.StatusCode != 200 {
+		t.Fatalf("Response: %s", data)
 	}
 }
 
@@ -63,7 +67,11 @@ func TestRemove(t *testing.T) {
 			return
 		}
 	}()
-	if _, err := ioutil.ReadAll(resp.Body); err != nil {
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
 		t.Fatal(err)
+	}
+	if resp.StatusCode != 200 {
+		t.Fatalf("Response: %s", data)
 	}
 }
