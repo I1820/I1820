@@ -24,6 +24,7 @@ import (
 
 	"github.com/aiotrc/uplink/decoder"
 	"github.com/aiotrc/uplink/lora"
+	"github.com/aiotrc/uplink/pm"
 	"github.com/jinzhu/configor"
 	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
@@ -38,7 +39,7 @@ var Config = struct {
 		URL string `default:"127.0.0.1:1883" env:"broker_url"`
 	}
 	Decoder struct {
-		URL string `default:"http://127.0.0.1:8080" env:"decoder_url"`
+		Host string `default:"127.0.0.1" env:"decoder_host"`
 	}
 	PM struct {
 		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
@@ -84,8 +85,8 @@ func main() {
 		panic(err)
 	}
 
-	// Create decoder
-	decoder := decoder.New(Config.Decoder.URL)
+	// PM
+	pm := pm.New(Config.PM.URL)
 
 	// Parsed collection
 	cp := session.DB("isrc").C("parsed")
@@ -102,20 +103,27 @@ func main() {
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
 					var m lora.RxMessage
-					err := json.Unmarshal(message, &m)
-					if err != nil {
+					if err := json.Unmarshal(message, &m); err != nil {
 						log.Printf("Message: %v", err)
 						return
 					}
 					fmt.Println(m)
 
-					err = cr.Insert(m)
-					if err != nil {
+					if err := cr.Insert(m); err != nil {
 						log.Printf("Mongo insert [raw]: %v", err)
 						return
 					}
 
-					parsed, err := decoder.Decode(m.Data, m.ApplicationName)
+					// Find thing
+					t, err := pm.GetThing(m.DevEUI)
+					if err != nil {
+						log.Printf("GetThing error: %s", err)
+						return
+					}
+					// Create decoder
+					decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, t.Project.Runner.Port))
+					// Decode
+					parsed, err := decoder.Decode(m.Data, m.DevEUI)
 					if err != nil {
 						log.Printf("Decoder: %v", err)
 						return
