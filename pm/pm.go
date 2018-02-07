@@ -65,5 +65,7 @@ func (p PM) GetThing(name string) (thing.Thing, error) {
 		return t, err
 	}
 
+	cache[name] = t
+
 	return t, nil
 }
