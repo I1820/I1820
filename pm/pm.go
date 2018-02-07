@@ -19,6 +19,12 @@ import (
 	"github.com/aiotrc/pm/thing"
 )
 
+var cache map[string]thing.Thing
+
+func init() {
+	cache = make(map[string]thing.Thing)
+}
+
 // PM is way for connecting to PM :joy:
 type PM struct {
 	URL string
@@ -34,6 +40,10 @@ func New(url string) PM {
 
 // GetThing gets thing information from pm using http request
 func (p PM) GetThing(name string) (thing.Thing, error) {
+	if t, ok := cache[name]; ok {
+		return t, nil
+	}
+
 	var t thing.Thing
 
 	resp, err := http.Get(fmt.Sprintf("%s/api/thing/%s", p.URL, name))
