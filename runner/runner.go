@@ -14,6 +14,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/docker/go-connections/nat"
 
@@ -44,6 +45,7 @@ func init() {
 
 // New creates runner docker with given user name
 func New(name string) (Runner, error) {
+	rand := rand.New(rand.NewSource(time.Now().Unix()))
 	ctx := context.Background()
 
 	imageName := "aiotrc/gorunner"
