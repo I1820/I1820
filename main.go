@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	"github.com/aiotrc/pm/project"
@@ -42,11 +43,11 @@ func handle() http.Handler {
 	{
 		api.GET("/about", aboutHandler)
 
-		api.GET("/project/:name", projectNewHandler)
+		api.POST("/project", projectNewHandler)
 		api.DELETE("/project/:name", projectRemoveHandler)
+		api.POST("/project/:project/things/", thingAddHandler)
 
-		api.POST("/thing/:project/:name", thingAddHandler)
-		api.GET("/thing/:name", thingGetHandler)
+		api.GET("/things/:name", thingGetHandler)
 	}
 
 	return r
@@ -89,9 +90,15 @@ func aboutHandler(c *gin.Context) {
 }
 
 func projectNewHandler(c *gin.Context) {
-	name := c.Param("name")
-	p, err := project.New(name)
+	var json projectReq
+	if err := c.BindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
 
+	name := strings.Replace(json.Name, " ", "_", -1)
+
+	p, err := project.New(name)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -102,7 +109,8 @@ func projectNewHandler(c *gin.Context) {
 }
 
 func projectRemoveHandler(c *gin.Context) {
-	name := c.Param("name")
+	name := strings.Replace(c.Param("name"), " ", "_", -1)
+
 	if p, ok := projects[name]; ok {
 		delete(projects, name)
 
@@ -118,8 +126,15 @@ func projectRemoveHandler(c *gin.Context) {
 }
 
 func thingAddHandler(c *gin.Context) {
-	project := c.Param("project")
-	name := c.Param("name")
+	project := strings.Replace(c.Param("project"), " ", "_", -1)
+
+	var json thingReq
+	if err := c.BindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	name := json.Name
 
 	if p, ok := projects[project]; ok {
 		things[name] = thing.Thing{
