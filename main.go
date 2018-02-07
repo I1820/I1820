@@ -40,6 +40,9 @@ var Config = struct {
 	Decoder struct {
 		URL string `default:"http://127.0.0.1:8080" env:"decoder_url"`
 	}
+	PM struct {
+		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
+	}
 }{}
 
 func main() {
