@@ -17,7 +17,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"time"
 
 	"github.com/aiotrc/pm/project"
@@ -96,7 +95,7 @@ func projectNewHandler(c *gin.Context) {
 		return
 	}
 
-	name := strings.Replace(json.Name, " ", "_", -1)
+	name := json.Name
 
 	p, err := project.New(name)
 	if err != nil {
@@ -109,7 +108,7 @@ func projectNewHandler(c *gin.Context) {
 }
 
 func projectRemoveHandler(c *gin.Context) {
-	name := strings.Replace(c.Param("name"), " ", "_", -1)
+	name := c.Param("name")
 
 	if p, ok := projects[name]; ok {
 		delete(projects, name)
@@ -126,7 +125,7 @@ func projectRemoveHandler(c *gin.Context) {
 }
 
 func thingAddHandler(c *gin.Context) {
-	project := strings.Replace(c.Param("project"), " ", "_", -1)
+	project := c.Param("project")
 
 	var json thingReq
 	if err := c.BindJSON(&json); err != nil {
