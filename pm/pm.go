@@ -46,7 +46,7 @@ func (p PM) GetThing(name string) (thing.Thing, error) {
 
 	var t thing.Thing
 
-	resp, err := http.Get(fmt.Sprintf("%s/api/thing/%s", p.URL, name))
+	resp, err := http.Get(fmt.Sprintf("%s/api/things/%s", p.URL, name))
 	if err != nil {
 		return t, err
 	}
