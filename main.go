@@ -50,6 +50,10 @@ func handle() http.Handler {
 		api.GET("/things/:name", thingGetHandler)
 	}
 
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "404 Not Found"})
+	})
+
 	return r
 }
 
