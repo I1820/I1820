@@ -92,7 +92,7 @@ func aboutHandler(c *gin.Context) {
 func projectNewHandler(c *gin.Context) {
 	var json projectReq
 	if err := c.BindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, errorRes{Error: err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -100,7 +100,7 @@ func projectNewHandler(c *gin.Context) {
 
 	p, err := project.New(name)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, errorRes{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -115,14 +115,14 @@ func projectRemoveHandler(c *gin.Context) {
 		delete(projects, name)
 
 		if err := p.Runner.Remove(); err != nil {
-			c.JSON(http.StatusInternalServerError, errorRes{Error: err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		c.String(http.StatusOK, name)
 		return
 	}
-	c.JSON(http.StatusNotFound, errorRes{Error: fmt.Sprintf("Project %s not found", name)})
+	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
 }
 
 func thingAddHandler(c *gin.Context) {
@@ -130,7 +130,7 @@ func thingAddHandler(c *gin.Context) {
 
 	var json thingReq
 	if err := c.BindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, errorRes{Error: err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -144,7 +144,7 @@ func thingAddHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, things[name])
 		return
 	}
-	c.JSON(http.StatusNotFound, errorRes{Error: fmt.Sprintf("Project %s not found", name)})
+	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
 }
 
 func thingGetHandler(c *gin.Context) {
@@ -155,5 +155,5 @@ func thingGetHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNotFound, errorRes{Error: fmt.Sprintf("Thing %s not found", name)})
+	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
 }
