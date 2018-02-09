@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"gopkg.in/mgo.v2"
@@ -45,6 +46,7 @@ func handle() http.Handler {
 		api.GET("/about", aboutHandler)
 
 		api.GET("/things", thingsHandler)
+		api.GET("/things/:thingid", thingDataHandler)
 	}
 
 	r.NoRoute(func(c *gin.Context) {
@@ -110,6 +112,32 @@ func thingsHandler(c *gin.Context) {
 	})
 	if err := pipe.All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, results)
+}
+
+func thingDataHandler(c *gin.Context) {
+	var results []bson.M
+
+	id := c.Query("thingid")
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	offset, err := strconv.ParseInt(c.Query("offset"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	isrcDB.C("parsed").Find(bson.M{
+		"thingid": id,
+		"timestamp": bson.M{
+			"$gt": time.Unix(offset, 0).Format("2013-10-01T00:00:00.000Z"),
+		},
+	}).Limit(limit).All(&results)
+
 	c.JSON(http.StatusOK, results)
 }
