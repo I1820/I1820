@@ -14,5 +14,8 @@
 .glide/
 vendor/
 
-# Push.go
+# configuration
 config.yml
+
+# binary
+uplink
