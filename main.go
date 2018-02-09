@@ -120,7 +120,7 @@ func thingsHandler(c *gin.Context) {
 func thingDataHandler(c *gin.Context) {
 	var results []bson.M
 
-	id := c.Query("thingid")
+	id := c.Param("thingid")
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -135,7 +135,7 @@ func thingDataHandler(c *gin.Context) {
 	isrcDB.C("parsed").Find(bson.M{
 		"thingid": id,
 		"timestamp": bson.M{
-			"$gt": time.Unix(offset, 0).Format("2013-10-01T00:00:00.000Z"),
+			"$gt": time.Unix(offset, 0),
 		},
 	}).Limit(limit).All(&results)
 
