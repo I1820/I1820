@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
@@ -32,6 +33,9 @@ var Config = struct {
 	}
 }{}
 
+// ISRC database
+var isrcDB *mgo.Database
+
 // handle registers apis and create http handler
 func handle() http.Handler {
 	r := gin.Default()
@@ -39,6 +43,8 @@ func handle() http.Handler {
 	api := r.Group("/api")
 	{
 		api.GET("/about", aboutHandler)
+
+		api.GET("/things", thingsHandler)
 	}
 
 	r.NoRoute(func(c *gin.Context) {
@@ -57,6 +63,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
 	}
+	isrcDB = session.DB("isrc")
 	defer session.Close()
 
 	// Optional. Switch the session to a monotonic behavior.
@@ -93,4 +100,16 @@ func main() {
 
 func aboutHandler(c *gin.Context) {
 	c.String(http.StatusOK, "18.20 is leaving us")
+}
+
+func thingsHandler(c *gin.Context) {
+	var results []bson.M
+
+	pipe := isrcDB.C("parsed").Pipe([]bson.M{
+		{"$group": bson.M{"_id": "$thingid", "total": bson.M{"$sum": 1}}},
+	})
+	if err := pipe.All(&results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	c.JSON(http.StatusOK, results)
 }
