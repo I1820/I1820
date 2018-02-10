@@ -58,7 +58,9 @@ func handle() http.Handler {
 
 func main() {
 	// Load configuration
-	configor.Load(&Config, "config.yml")
+	if err := configor.Load(&Config, "config.yml"); err != nil {
+		panic(err)
+	}
 
 	// Create a Mongo Session
 	session, err := mgo.Dial(Config.DB.URL)
@@ -132,12 +134,15 @@ func thingDataHandler(c *gin.Context) {
 		return
 	}
 
-	isrcDB.C("parsed").Find(bson.M{
+	if err := isrcDB.C("parsed").Find(bson.M{
 		"thingid": id,
 		"timestamp": bson.M{
 			"$gt": time.Unix(offset, 0),
 		},
-	}).Limit(limit).All(&results)
+	}).Limit(limit).All(&results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, results)
 }
