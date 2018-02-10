@@ -1,4 +1,6 @@
 # ISRC Uplink
+[![Travis branch](https://img.shields.io/travis/aiotrc/uplink/master.svg?style=flat-square)](https://travis-ci.org/aiotrc/uplink)
+
 ## Introduction
 Uplink service of ISRC platfrom. This service collects
 raw data from bottom layer, stores them into mongo database
