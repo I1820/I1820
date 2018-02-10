@@ -17,9 +17,11 @@ type RxMessage struct {
 // RxInfo contains gateway infomation that payloads
 // received from it.
 type RxInfo struct {
-	Mac  string
-	Name string
-	Time time.Time
+	Mac     string
+	Name    string
+	Time    time.Time
+	RSSI    int `json:"rssi"`
+	LoRaSNR int `json:"LoRaSNR"`
 }
 
 // TxMessage contains payload send to your nodes
