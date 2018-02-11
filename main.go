@@ -137,21 +137,21 @@ func main() {
 					}
 
 					var bdoc interface{}
-					err = bson.UnmarshalJSON([]byte(parsed), &bdoc)
-					if err != nil {
+					if err := bson.UnmarshalJSON([]byte(parsed), &bdoc); err != nil {
 						log.Printf("Unmarshal JSON: %v\n %s", err, parsed)
 						return
 					}
-					err = cp.Insert(&struct {
+					if err := cp.Insert(&struct {
 						Data      interface{}
 						Timestamp time.Time
 						ThingID   string
+						RxInfo    []lora.RxInfo
 					}{
 						Data:      bdoc,
 						Timestamp: time.Now(),
 						ThingID:   m.DevEUI,
-					})
-					if err != nil {
+						RxInfo:    m.RxInfo,
+					}); err != nil {
 						log.Printf("Mongo insert [parsed]: %v", err)
 						return
 					}
