@@ -48,7 +48,9 @@ var Config = struct {
 
 func main() {
 	// Load configuration
-	configor.Load(&Config, "config.yml")
+	if err := configor.Load(&Config, "config.yml"); err != nil {
+		panic(err)
+	}
 
 	// Create a Mongo Session
 	session, err := mgo.Dial(Config.DB.URL)
@@ -63,10 +65,12 @@ func main() {
 
 	// Raw collection
 	cr := session.DB("isrc").C("raw")
-	cr.Create(&mgo.CollectionInfo{
+	if err := cr.Create(&mgo.CollectionInfo{
 		Capped:  true,
 		MaxDocs: 100,
-	})
+	}); err != nil {
+		panic(err)
+	}
 
 	// Create an MQTT client
 	cli := client.New(&client.Options{
@@ -77,12 +81,11 @@ func main() {
 	defer cli.Terminate()
 
 	// Connect to the MQTT Server.
-	err = cli.Connect(&client.ConnectOptions{
+	if err := cli.Connect(&client.ConnectOptions{
 		Network:  "tcp",
 		Address:  Config.Broker.URL,
 		ClientID: []byte(fmt.Sprintf("isrc-push-%d", rand.Int63())),
-	})
-	if err != nil {
+	}); err != nil {
 		panic(err)
 	}
 	fmt.Println("MQTT session has been created")
@@ -92,9 +95,11 @@ func main() {
 
 	// Parsed collection
 	cp := session.DB("isrc").C("parsed")
-	cp.EnsureIndex(mgo.Index{
+	if err := cp.EnsureIndex(mgo.Index{
 		Key: []string{"timestamp"},
-	})
+	}); err != nil {
+		panic(err)
+	}
 
 	// Subscribe to topics
 	err = cli.Subscribe(&client.SubscribeOptions{
