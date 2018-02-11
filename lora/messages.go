@@ -11,6 +11,7 @@ type RxMessage struct {
 	FPort           int
 	FCnt            int
 	RxInfo          []RxInfo
+	TxInfo          TxInfo
 	Data            []byte
 }
 
@@ -24,8 +25,8 @@ type RxInfo struct {
 	LoRaSNR int `json:"LoRaSNR"`
 }
 
-// TxMessage contains payload send to your nodes
-type TxMessage struct {
+// TxInfo contains transmission information
+type TxInfo struct {
 	Frequency int
 	Adr       bool
 	CodeRate  string
