@@ -52,8 +52,10 @@ func (p PM) GetThing(name string) (thing.Thing, error) {
 	}
 
 	data, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
 	if err != nil {
+		return t, err
+	}
+	if err := resp.Body.Close(); err != nil {
 		return t, err
 	}
 
