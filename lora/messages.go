@@ -26,8 +26,7 @@ type RxInfo struct {
 
 // TxMessage contains payload send to your nodes
 type TxMessage struct {
-	Reference string
-	Confirmed bool
-	FPort     int
-	Data      []byte
+	Frequency int
+	Adr       bool
+	CodeRate  string
 }
