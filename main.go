@@ -65,12 +65,16 @@ func main() {
 
 	// Raw collection
 	cr := session.DB("isrc").C("raw")
-	if err := cr.Create(&mgo.CollectionInfo{
-		Capped:  true,
-		MaxDocs: 100,
-	}); err != nil {
-		panic(err)
-	}
+	// TODO correct this as soon as possible
+	/*
+		if err := cr.Create(&mgo.CollectionInfo{
+			Capped:   true,
+			MaxDocs:  100,
+			MaxBytes: 1024,
+		}); err != nil {
+			panic(err)
+		}
+	*/
 
 	// Create an MQTT client
 	cli := client.New(&client.Options{
