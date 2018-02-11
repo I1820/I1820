@@ -47,7 +47,7 @@ func handle() http.Handler {
 
 		api.GET("/things", thingsHandler)
 		api.GET("/things/:thingid", thingDataHandler)
-		api.GET("/key/:key", thingKeyDataHandler)
+		api.GET("/things/:thingid/key/:key", thingKeyDataHandler)
 	}
 
 	r.NoRoute(func(c *gin.Context) {
@@ -123,7 +123,8 @@ func thingsHandler(c *gin.Context) {
 func thingKeyDataHandler(c *gin.Context) {
 	var results []bson.M
 
-	id := c.Param("key")
+	key := c.Param("key")
+	id := c.Param("thingid")
 
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil {
@@ -138,16 +139,17 @@ func thingKeyDataHandler(c *gin.Context) {
 	}
 
 	if err := isrcDB.C("parsed").Find(bson.M{
-		fmt.Sprintf("data.%s", id): bson.M{
+		fmt.Sprintf("data.%s", key): bson.M{
 			"$exists": true,
 		},
+		"thingid": id,
 		"timestamp": bson.M{
 			"$gt": time.Unix(offset, 0),
 		},
 	}).Select(bson.M{
-		fmt.Sprintf("data.%s", id): true,
-		"timestamp":                true,
-		"thingid":                  true,
+		fmt.Sprintf("data.%s", key): true,
+		"timestamp":                 true,
+		"thingid":                   true,
 	}).Limit(limit).All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
