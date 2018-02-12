@@ -61,6 +61,7 @@ func New(name string) (Runner, error) {
 		if err := dockerClient.ContainerRemove(ctx, rid, types.ContainerRemoveOptions{
 			Force: true,
 		}); err != nil {
+			return Runner{}, err
 		}
 
 		return Runner{}, err
