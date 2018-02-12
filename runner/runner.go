@@ -163,11 +163,8 @@ func (r Runner) Remove() error {
 		return err
 	}
 
-	if err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
+	err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
 		Force: true,
-	}); err != nil {
-		return err
-	}
-
-	return nil
+	})
+	return err
 }
