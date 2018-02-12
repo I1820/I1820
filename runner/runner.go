@@ -29,6 +29,7 @@ var dockerClient *client.Client
 type Runner struct {
 	ID   string `json:"id"`
 	Port string `json:"port"`
+	rID  string
 }
 
 func init() {
@@ -45,6 +46,67 @@ func init() {
 
 // New creates runner docker with given user name
 func New(name string) (Runner, error) {
+	ctx := context.Background()
+
+	rid, err := createRedis(name)
+
+	if err != nil {
+		return Runner{}, err
+	}
+
+	gid, eport, err := createRunner(name)
+
+	if err != nil {
+		// Removes redis container
+		if err := dockerClient.ContainerRemove(ctx, rid, types.ContainerRemoveOptions{
+			Force: true,
+		}); err != nil {
+		}
+
+		return Runner{}, err
+	}
+
+	return Runner{
+		ID:   gid,
+		Port: eport,
+		rID:  rid,
+	}, nil
+}
+
+func createRedis(name string) (string, error) {
+	ctx := context.Background()
+
+	imageName := "redis:alpine"
+
+	_, err := dockerClient.ImagePull(ctx, imageName, types.ImagePullOptions{})
+	if err != nil {
+		return "", err
+	}
+
+	lport, _ := nat.NewPort("tcp", "6379")
+
+	resp, err := dockerClient.ContainerCreate(ctx,
+		&container.Config{
+			Image: imageName,
+			ExposedPorts: nat.PortSet{
+				lport: struct{}{},
+			},
+		},
+		&container.HostConfig{
+			NetworkMode: "isrc",
+		}, nil, fmt.Sprintf("rd_%s", name))
+	if err != nil {
+		return "", err
+	}
+
+	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+		return "", err
+	}
+
+	return resp.ID, nil
+}
+
+func createRunner(name string) (string, string, error) {
 	rand := rand.New(rand.NewSource(time.Now().Unix()))
 	ctx := context.Background()
 
@@ -52,7 +114,7 @@ func New(name string) (Runner, error) {
 
 	_, err := dockerClient.ImagePull(ctx, imageName, types.ImagePullOptions{})
 	if err != nil {
-		return Runner{}, err
+		return "", "", err
 	}
 
 	lport, _ := nat.NewPort("tcp", "8080")
@@ -64,8 +126,12 @@ func New(name string) (Runner, error) {
 			ExposedPorts: nat.PortSet{
 				lport: struct{}{},
 			},
+			Env: []string{
+				fmt.Sprintf("REDIS_HOST=rd_%s", name),
+			},
 		},
 		&container.HostConfig{
+			NetworkMode: "isrc",
 			PortBindings: nat.PortMap{
 				lport: []nat.PortBinding{
 					nat.PortBinding{
@@ -76,28 +142,31 @@ func New(name string) (Runner, error) {
 			},
 		}, nil, fmt.Sprintf("el-%s", name))
 	if err != nil {
-		return Runner{}, err
+		return "", "", err
 	}
 
 	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		return Runner{}, err
+		return "", "", err
 	}
 
-	return Runner{
-		ID:   resp.ID,
-		Port: eport,
-	}, nil
+	return resp.ID, eport, nil
 }
 
 // Remove removes runner docker
 func (r Runner) Remove() error {
 	ctx := context.Background()
 
-	err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
+	if err := dockerClient.ContainerRemove(ctx, r.rID, types.ContainerRemoveOptions{
 		Force: true,
-	})
-	if err != nil {
+	}); err != nil {
 		return err
 	}
+
+	if err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
+		Force: true,
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
