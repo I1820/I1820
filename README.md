@@ -3,3 +3,11 @@
 
 ## Introduction
 PM is project manager for ISRC platform. It creates projects and corresponding runners (containers) for users.
+
+## Installation
+```sh
+sudo usermod -aG docker $USER
+```
+```sh
+docker network create isrc
+```
