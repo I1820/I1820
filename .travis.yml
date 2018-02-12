@@ -25,6 +25,7 @@ before_install:
 install:
   - dep ensure
   - docker pull aiotrc/gorunner
+  - docker pull redis:alpine
   - docker network create isrc
 
 script:
