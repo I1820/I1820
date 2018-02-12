@@ -25,6 +25,7 @@ before_install:
 install:
   - dep ensure
   - docker pull aiotrc/gorunner
+  - docker network create isrc
 
 script:
   - go vet -v $PKGS                   # go vet is the official Go static analyzer
