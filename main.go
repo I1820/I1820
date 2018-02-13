@@ -13,7 +13,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -26,6 +25,7 @@ import (
 	"github.com/aiotrc/uplink/lora"
 	"github.com/aiotrc/uplink/pm"
 	"github.com/jinzhu/configor"
+	log "github.com/sirupsen/logrus"
 	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
 )
@@ -76,7 +76,9 @@ func main() {
 	// Create an MQTT client
 	cli := client.New(&client.Options{
 		ErrorHandler: func(err error) {
-			log.Printf("MQTT client: %v", err)
+			log.WithFields(log.Fields{
+				"component": "uplink",
+			}).Errorf("MQTT Client %s", err)
 		},
 	})
 	defer cli.Terminate()
@@ -87,7 +89,7 @@ func main() {
 		Address:  Config.Broker.URL,
 		ClientID: []byte(fmt.Sprintf("isrc-push-%d", rand.Int63())),
 	}); err != nil {
-		panic(err)
+		log.Fatalf("Mongo session %s: %s", Config.Broker.URL, err)
 	}
 	fmt.Println("MQTT session has been created")
 
@@ -112,20 +114,26 @@ func main() {
 				Handler: func(topicName, message []byte) {
 					var m lora.RxMessage
 					if err := json.Unmarshal(message, &m); err != nil {
-						log.Printf("Message: %v", err)
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("JSON Unmarshal: %s", err)
 						return
 					}
 					fmt.Println(m)
 
 					if err := cr.Insert(m); err != nil {
-						log.Printf("Mongo insert [raw]: %v", err)
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("Mongo insert [raw]: %s", err)
 						return
 					}
 
 					// Find thing
 					t, err := pm.GetThing(m.DevEUI)
 					if err != nil {
-						log.Printf("GetThing error: %s", err)
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("PM GetThing: %s", err)
 						return
 					}
 					// Create decoder
@@ -133,13 +141,17 @@ func main() {
 					// Decode
 					parsed, err := decoder.Decode(m.Data, m.DevEUI)
 					if err != nil {
-						log.Printf("Decoder: %v", err)
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("Decode: %s", err)
 						return
 					}
 
 					var bdoc interface{}
 					if err := bson.UnmarshalJSON([]byte(parsed), &bdoc); err != nil {
-						log.Printf("Unmarshal JSON: %v\n %s", err, parsed)
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("Unmarshal JSON: %s\n %q", err, parsed)
 						return
 					}
 					if err := cp.Insert(&struct {
@@ -153,7 +165,9 @@ func main() {
 						ThingID:   m.DevEUI,
 						RxInfo:    m.RxInfo,
 					}); err != nil {
-						log.Printf("Mongo insert [parsed]: %v", err)
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("Mongo insert [parsed]: %s\n", err)
 						return
 					}
 				},
@@ -161,7 +175,7 @@ func main() {
 		},
 	})
 	if err != nil {
-		panic(err)
+		log.Fatalf("MQTT subscription: %s", err)
 	}
 
 	// Set up channel on which to send signal notifications.
