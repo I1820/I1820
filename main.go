@@ -58,7 +58,7 @@ func main() {
 		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
 	}
 	defer session.Close()
-	fmt.Println("Mongo session %s has been created", Config.DB.URL)
+	fmt.Printf("Mongo session %s has been created\n", Config.DB.URL)
 
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
@@ -91,7 +91,7 @@ func main() {
 	}); err != nil {
 		log.Fatalf("Mongo session %s: %s", Config.Broker.URL, err)
 	}
-	fmt.Println("MQTT session %s has been created", Config.Broker.URL)
+	fmt.Printf("MQTT session %s has been created\n", Config.Broker.URL)
 
 	// PM
 	pm := pm.New(Config.PM.URL)
