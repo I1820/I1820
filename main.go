@@ -119,7 +119,7 @@ func main() {
 						}).Errorf("JSON Unmarshal: %s", err)
 						return
 					}
-					fmt.Println(m)
+					log.Info(m)
 
 					if err := cr.Insert(m); err != nil {
 						log.WithFields(log.Fields{
