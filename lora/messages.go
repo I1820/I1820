@@ -21,8 +21,8 @@ type RxInfo struct {
 	Mac     string
 	Name    string
 	Time    time.Time
-	RSSI    int `json:"rssi"`
-	LoRaSNR int `json:"LoRaSNR"`
+	RSSI    int     `json:"rssi"`
+	LoRaSNR float64 `json:"LoRaSNR"`
 }
 
 // TxInfo contains transmission information
