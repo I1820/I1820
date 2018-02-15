@@ -81,11 +81,6 @@ func createRedis(name string) (string, error) {
 
 	imageName := "redis:alpine"
 
-	_, err := dockerClient.ImagePull(ctx, imageName, types.ImagePullOptions{})
-	if err != nil {
-		return "", err
-	}
-
 	lport, _ := nat.NewPort("tcp", "6379")
 
 	resp, err := dockerClient.ContainerCreate(ctx,
@@ -114,11 +109,6 @@ func createRunner(name string, mgu string) (string, string, error) {
 	ctx := context.Background()
 
 	imageName := "aiotrc/gorunner"
-
-	_, err := dockerClient.ImagePull(ctx, imageName, types.ImagePullOptions{})
-	if err != nil {
-		return "", "", err
-	}
 
 	lport, _ := nat.NewPort("tcp", "8080")
 	eport := fmt.Sprintf("%d", 8080+rand.Intn(100))
