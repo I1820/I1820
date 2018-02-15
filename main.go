@@ -132,7 +132,7 @@ func projectNewHandler(c *gin.Context) {
 
 	name := json.Name
 
-	p, err := project.New(name)
+	p, err := project.New(name, Config.DB.URL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

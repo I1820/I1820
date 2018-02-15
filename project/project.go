@@ -19,8 +19,8 @@ type Project struct {
 }
 
 // New creates new project with given name
-func New(name string) (*Project, error) {
-	r, err := runner.New(name)
+func New(name string, mgu string) (*Project, error) {
+	r, err := runner.New(name, mgu)
 
 	if err != nil {
 		return nil, err
