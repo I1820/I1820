@@ -45,7 +45,9 @@ func init() {
 }
 
 // New creates runner docker with given user name
-func New(name string) (Runner, error) {
+// mge represents mongo url that is used in runners
+// for collecting errors
+func New(name string, mgu string) (Runner, error) {
 	ctx := context.Background()
 
 	rid, err := createRedis(name)
@@ -54,7 +56,7 @@ func New(name string) (Runner, error) {
 		return Runner{}, err
 	}
 
-	gid, eport, err := createRunner(name)
+	gid, eport, err := createRunner(name, mgu)
 
 	if err != nil {
 		// Removes redis container
@@ -107,7 +109,7 @@ func createRedis(name string) (string, error) {
 	return resp.ID, nil
 }
 
-func createRunner(name string) (string, string, error) {
+func createRunner(name string, mgu string) (string, string, error) {
 	rand := rand.New(rand.NewSource(time.Now().Unix()))
 	ctx := context.Background()
 
@@ -129,7 +131,7 @@ func createRunner(name string) (string, string, error) {
 			},
 			Env: []string{
 				fmt.Sprintf("REDIS_HOST=rd_%s", name),
-				fmt.Sprintf("MONGO_URL=127.0.0.1:27017"),
+				fmt.Sprintf("MONGO_URL=%s", mgu),
 			},
 		},
 		&container.HostConfig{
