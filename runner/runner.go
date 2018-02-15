@@ -144,7 +144,7 @@ func createRunner(name string, mgu string) (string, string, error) {
 					},
 				},
 			},
-		}, nil, fmt.Sprintf("el-%s", name))
+		}, nil, fmt.Sprintf("el_%s", name))
 	if err != nil {
 		return "", "", err
 	}
