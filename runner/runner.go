@@ -122,6 +122,7 @@ func createRunner(name string, mgu string) (string, string, error) {
 			Env: []string{
 				fmt.Sprintf("REDIS_HOST=rd_%s", name),
 				fmt.Sprintf("MONGO_URL=%s", mgu),
+				fmt.Sprintf("NAME=%s", name),
 			},
 		},
 		&container.HostConfig{
