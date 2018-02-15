@@ -17,16 +17,30 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"github.com/aiotrc/pm/project"
 	"github.com/aiotrc/pm/thing"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/configor"
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
-// database or memory?
+// Config represents main configuration
+var Config = struct {
+	DB struct {
+		URL string `default:"127.0.0.1" env:"db_url"`
+	}
+}{}
+
+// in-memory databases for things and projects
 var projects map[string]*project.Project
 var things map[string]thing.Thing
+
+// ISRC database
+var isrcDB *mgo.Database
 
 // init initiates global variables
 func init() {
@@ -45,6 +59,7 @@ func handle() http.Handler {
 		api.POST("/project", projectNewHandler)
 		api.DELETE("/project/:name", projectRemoveHandler)
 		api.POST("/project/:project/things/", thingAddHandler)
+		api.GET("/project/:project/logs/", projectLogHandler)
 
 		api.GET("/things/:name", thingGetHandler)
 	}
@@ -57,6 +72,22 @@ func handle() http.Handler {
 }
 
 func main() {
+	// Load configuration
+	if err := configor.Load(&Config, "config.yml"); err != nil {
+		panic(err)
+	}
+
+	// Create a Mongo Session
+	session, err := mgo.Dial(Config.DB.URL)
+	if err != nil {
+		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
+	}
+	isrcDB = session.DB("isrc")
+	defer session.Close()
+
+	// Optional. Switch the session to a monotonic behavior.
+	session.SetMode(mgo.Monotonic, true)
+
 	fmt.Println("PM AIoTRC @ 2018")
 
 	r := handle()
@@ -159,4 +190,25 @@ func thingGetHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+}
+
+func projectLogHandler(c *gin.Context) {
+	var results []bson.M
+
+	id := c.Param("proeject")
+
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := isrcDB.C("errors").Find(bson.M{
+		"project": id,
+	}).Limit(limit).All(&results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, results)
 }
