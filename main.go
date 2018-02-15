@@ -57,6 +57,7 @@ func handle() http.Handler {
 		api.GET("/about", aboutHandler)
 
 		api.POST("/project", projectNewHandler)
+		api.GET("/project", projectListHandler)
 		api.DELETE("/project/:name", projectRemoveHandler)
 		api.POST("/project/:project/things/", thingAddHandler)
 		api.GET("/project/:project/logs/", projectLogHandler)
@@ -190,6 +191,10 @@ func thingGetHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+}
+
+func projectListHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, projects)
 }
 
 func projectLogHandler(c *gin.Context) {
