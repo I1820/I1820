@@ -194,7 +194,13 @@ func thingGetHandler(c *gin.Context) {
 }
 
 func projectListHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, projects)
+	pl := make([]*project.Project, 0)
+
+	for _, project := range projects {
+		pl = append(pl, project)
+	}
+
+	c.JSON(http.StatusOK, pl)
 }
 
 func projectLogHandler(c *gin.Context) {
