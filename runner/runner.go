@@ -129,6 +129,7 @@ func createRunner(name string) (string, string, error) {
 			},
 			Env: []string{
 				fmt.Sprintf("REDIS_HOST=rd_%s", name),
+				fmt.Sprintf("MONGO_URL=127.0.0.1:27017"),
 			},
 		},
 		&container.HostConfig{
