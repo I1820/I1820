@@ -25,6 +25,15 @@ import (
 
 // Config represents main configuration
 var Config = struct {
+	Broker struct {
+		URL string `default:"127.0.0.1:1883" env:"broker_url"`
+	}
+	Decoder struct {
+		Host string `default:"127.0.0.1" env:"decoder_host"`
+	}
+	PM struct {
+		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
+	}
 }{}
 
 // handle registers apis and create http handler
