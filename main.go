@@ -19,6 +19,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/aiotrc/downlink/encoder"
 	pmclient "github.com/aiotrc/pm/client"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
@@ -29,8 +30,8 @@ var Config = struct {
 	Broker struct {
 		URL string `default:"127.0.0.1:1883" env:"broker_url"`
 	}
-	Decoder struct {
-		Host string `default:"127.0.0.1" env:"decoder_host"`
+	Encoder struct {
+		Host string `default:"127.0.0.1" env:"encoder_host"`
 	}
 	PM struct {
 		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
@@ -113,6 +114,16 @@ func sendHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	encoder := encoder.New(fmt.Sprintf("http://%s:%s", Config.Encoder.Host, t.Project.Runner.Port))
+
+	raw, err := encoder.Encode(r.Data, r.ThingID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Data(http.StatusOK, "application/octet-stream", raw)
 
 	fmt.Println(t)
 }
