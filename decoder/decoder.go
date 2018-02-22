@@ -22,7 +22,7 @@ type Decoder struct {
 	URL string
 }
 
-// New creates new decoder based on given remove address
+// New creates new decoder based on given remote address
 func New(url string) Decoder {
 	return Decoder{
 		URL: url,
