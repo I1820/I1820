@@ -18,6 +18,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/aiotrc/pm/client"
 )
 
 func TestCreate(t *testing.T) {
@@ -76,6 +78,23 @@ func TestThingCreate(t *testing.T) {
 	if resp.StatusCode != 200 {
 		t.Fatalf("Response: %s", data)
 	}
+}
+
+func TestClient(t *testing.T) {
+	h := handle()
+	s := httptest.NewServer(h)
+	defer s.Close()
+
+	p := client.New(s.URL)
+
+	thing, err := p.GetThing("Me")
+
+	if err != nil {
+		t.Fatalf("GetThing error: %s\n", err)
+	}
+
+	t.Logf("http://somewhere:%s\n", thing.Project.Runner.Port)
+
 }
 
 func TestThingRemove(t *testing.T) {
