@@ -4,13 +4,14 @@
  * |
  * | Creation Date: 22-02-2018
  * |
- * | File Name:     data.go
+ * | File Name:     requests.go
  * +===============================================
  */
 
 package main
 
 type sendReq struct {
-	Data      string `json: "data"`
-	ProjectID string `json: "project_id"`
+	Data      string `json:"data" binding:"required"`
+	ProjectID string `json:"project_id"`
+	ThingID   string `json:"thing_id" binding:"required"`
 }
