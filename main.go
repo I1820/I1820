@@ -63,6 +63,7 @@ func handle() http.Handler {
 		api.GET("/project/:project/logs/", projectLogHandler)
 
 		api.GET("/things/:name", thingGetHandler)
+		api.DELETE("/things/:name", thingRemoveHandler)
 	}
 
 	r.NoRoute(func(c *gin.Context) {
@@ -222,4 +223,16 @@ func projectLogHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, results)
+}
+
+func thingRemoveHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	if t, ok := things[name]; ok {
+		c.JSON(http.StatusOK, t)
+		delete(things, name)
+		return
+	}
+
+	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
 }
