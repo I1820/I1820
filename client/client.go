@@ -68,7 +68,15 @@ func (p PM) GetThing(name string) (thing.Thing, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return t, fmt.Errorf("%s", data)
+		var e struct {
+			Error string
+		}
+
+		if err := json.Unmarshal(data, &e); err != nil {
+			return t, fmt.Errorf("%s", data)
+		}
+
+		return t, fmt.Errorf("%s", e.Error)
 	}
 
 	if err := json.Unmarshal(data, &t); err != nil {
