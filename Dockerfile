@@ -11,4 +11,4 @@ RUN cd $GOPATH/src/github.com/aiotrc/pm/ && $GOPATH/bin/dep ensure && go build -
 FROM alpine
 WORKDIR /app
 COPY --from=build-env /pm /app/
-ENTRYPOINT ["./dm"]
+ENTRYPOINT ["./pm"]
