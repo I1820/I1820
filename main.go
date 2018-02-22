@@ -87,9 +87,12 @@ func aboutHandler(c *gin.Context) {
 }
 
 func sendHandler(c *gin.Context) {
-	var r interface{}
+	var r sendReq
 
-	c.BindJSON(&r)
+	if err := c.BindJSON(&r); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	fmt.Println(r)
 }
