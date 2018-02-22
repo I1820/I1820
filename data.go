@@ -10,8 +10,7 @@
 
 package main
 
-// Data downlink
-type Data struct {
+type sendReq struct {
 	Data      string `json: "data"`
 	ProjectID string `json: "project_id"`
 }
