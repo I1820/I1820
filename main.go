@@ -21,9 +21,9 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	pmclient "github.com/aiotrc/pm/client"
 	"github.com/aiotrc/uplink/decoder"
 	"github.com/aiotrc/uplink/lora"
-	"github.com/aiotrc/uplink/pm"
 	"github.com/jinzhu/configor"
 	log "github.com/sirupsen/logrus"
 	"github.com/yosssi/gmq/mqtt"
@@ -94,7 +94,7 @@ func main() {
 	fmt.Printf("MQTT session %s has been created\n", Config.Broker.URL)
 
 	// PM
-	pm := pm.New(Config.PM.URL)
+	pm := pmclient.New(Config.PM.URL)
 
 	// Parsed collection
 	cp := session.DB("isrc").C("parsed")
