@@ -3,7 +3,25 @@
 
 [[projects]]
   name = "docker.io/go-docker"
-  packages = [".","api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume"]
+  packages = [
+    ".",
+    "api",
+    "api/types",
+    "api/types/blkiodev",
+    "api/types/container",
+    "api/types/events",
+    "api/types/filters",
+    "api/types/image",
+    "api/types/mount",
+    "api/types/network",
+    "api/types/registry",
+    "api/types/strslice",
+    "api/types/swarm",
+    "api/types/swarm/runtime",
+    "api/types/time",
+    "api/types/versions",
+    "api/types/volume"
+  ]
   revision = "b3f5b5de7bbce0acc6a7fc0a4c2b88db678e262e"
   version = "v1.0.0"
 
@@ -22,17 +40,29 @@
 [[projects]]
   branch = "master"
   name = "github.com/aiotrc/pm"
-  packages = ["project","runner","thing"]
-  revision = "cafb9114b3c4cc862e9ff0fc575328fba13a8690"
+  packages = [
+    "client",
+    "project",
+    "runner",
+    "thing"
+  ]
+  revision = "4af38ce01731571e5e9facce17e98c246f168741"
 
 [[projects]]
   name = "github.com/docker/distribution"
-  packages = ["digestset","reference"]
+  packages = [
+    "digestset",
+    "reference"
+  ]
   revision = "edc3ab29cdff8694dd6feb85cfeb4b5f1b38ed9c"
 
 [[projects]]
   name = "github.com/docker/go-connections"
-  packages = ["nat","sockets","tlsconfig"]
+  packages = [
+    "nat",
+    "sockets",
+    "tlsconfig"
+  ]
   revision = "3ede32e2033de7505e6500d6c868c2b9ed9f169d"
   version = "v0.3.0"
 
@@ -62,7 +92,10 @@
 
 [[projects]]
   name = "github.com/opencontainers/image-spec"
-  packages = ["specs-go","specs-go/v1"]
+  packages = [
+    "specs-go",
+    "specs-go/v1"
+  ]
   revision = "d60099175f88c47cd379c4738d158884749ed235"
   version = "v1.0.1"
 
@@ -80,7 +113,11 @@
 
 [[projects]]
   name = "github.com/yosssi/gmq"
-  packages = ["mqtt","mqtt/client","mqtt/packet"]
+  packages = [
+    "mqtt",
+    "mqtt/client",
+    "mqtt/packet"
+  ]
   revision = "31fa037b1019e383aa033aee1e4d04e106c88ed2"
   version = "v0.0.1"
 
@@ -93,19 +130,32 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","context/ctxhttp","proxy"]
+  packages = [
+    "context",
+    "context/ctxhttp",
+    "proxy"
+  ]
   revision = "2fb46b16b8dda405028c50f7c7f0f9dd1fa6bfb1"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/mgo.v2"
-  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [[projects]]
@@ -117,6 +167,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "33116a7adeeded148d5d735bc88274b8c50cc727c86f2a2d4fcc58a9faab8086"
+  inputs-digest = "79a9e41914a8b7cd86e9196951d2d4a0cff0ecad9bca46dcbc74c570a298b4c0"
   solver-name = "gps-cdcl"
   solver-version = 1
