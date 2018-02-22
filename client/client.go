@@ -15,14 +15,20 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/aiotrc/pm/thing"
 )
 
-var cache map[string]thing.Thing
+var cache map[string]entry
+
+type entry struct {
+	th thing.Thing
+	ti time.Time
+}
 
 func init() {
-	cache = make(map[string]thing.Thing)
+	cache = make(map[string]entry)
 }
 
 // PM is way for connecting to PM :joy:
@@ -40,8 +46,10 @@ func New(url string) PM {
 
 // GetThing gets thing information from pm using http request
 func (p PM) GetThing(name string) (thing.Thing, error) {
-	if t, ok := cache[name]; ok {
-		return t, nil
+	if e, ok := cache[name]; ok {
+		if time.Now().Sub(e.ti) < time.Second {
+			return e.th, nil
+		}
 	}
 
 	var t thing.Thing
@@ -67,7 +75,10 @@ func (p PM) GetThing(name string) (thing.Thing, error) {
 		return t, err
 	}
 
-	cache[name] = t
+	cache[name] = entry{
+		th: t,
+		ti: time.Now(),
+	}
 
 	return t, nil
 }
