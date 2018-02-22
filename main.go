@@ -19,6 +19,7 @@ import (
 	"os/signal"
 	"time"
 
+	pmclient "github.com/aiotrc/pm/client"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
 )
@@ -35,6 +36,8 @@ var Config = struct {
 		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
 	}
 }{}
+
+var pm pmclient.PM
 
 // handle registers apis and create http handler
 func handle() http.Handler {
@@ -59,6 +62,8 @@ func main() {
 	if err := configor.Load(&Config, "config.yml"); err != nil {
 		panic(err)
 	}
+
+	pm = pmclient.New(Config.PM.URL)
 
 	fmt.Println("Downlink AIoTRC @ 2018")
 
@@ -103,5 +108,11 @@ func sendHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(r)
+	t, err := pm.GetThing(r.ThingID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(t)
 }
