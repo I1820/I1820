@@ -39,14 +39,10 @@ func (d Decoder) Decode(payload []byte, id string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	switch r.StatusCode {
-	case 200:
-		return string(b), nil
-	case 404:
+
+	if r.StatusCode != 200 {
 		return "", fmt.Errorf("%s", b)
-	case 500:
-		return "", fmt.Errorf("%s", b)
-	default:
-		return "", fmt.Errorf("unkown status code \"%s\"", b)
 	}
+
+	return string(b), nil
 }
