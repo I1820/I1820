@@ -13,7 +13,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,6 +22,8 @@ import (
 	pmclient "github.com/aiotrc/pm/client"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
+	log "github.com/sirupsen/logrus"
+	"github.com/yosssi/gmq/mqtt/client"
 )
 
 // Config represents main configuration
@@ -65,6 +66,16 @@ func main() {
 	}
 
 	pm = pmclient.New(Config.PM.URL)
+
+	// Create an MQTT client
+	cli := client.New(&client.Options{
+		ErrorHandler: func(err error) {
+			log.WithFields(log.Fields{
+				"component": "downlink",
+			}).Errorf("MQTT Client %s", err)
+		},
+	})
+	defer cli.Terminate()
 
 	fmt.Println("Downlink AIoTRC @ 2018")
 
