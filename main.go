@@ -123,6 +123,8 @@ func sendHandler(c *gin.Context) {
 		return
 	}
 
+	// TODO MQTT connection
+
 	c.Data(http.StatusOK, "application/octet-stream", raw)
 
 	fmt.Println(t)
