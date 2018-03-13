@@ -12,17 +12,21 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
 	"github.com/aiotrc/downlink/encoder"
+	"github.com/aiotrc/downlink/lora"
 	pmclient "github.com/aiotrc/pm/client"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
 	log "github.com/sirupsen/logrus"
+	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
 )
 
@@ -40,6 +44,7 @@ var Config = struct {
 }{}
 
 var pm pmclient.PM
+var cli *client.Client
 
 // handle registers apis and create http handler
 func handle() http.Handler {
@@ -68,7 +73,7 @@ func main() {
 	pm = pmclient.New(Config.PM.URL)
 
 	// Create an MQTT client
-	cli := client.New(&client.Options{
+	cli = client.New(&client.Options{
 		ErrorHandler: func(err error) {
 			log.WithFields(log.Fields{
 				"component": "downlink",
@@ -77,7 +82,18 @@ func main() {
 	})
 	defer cli.Terminate()
 
+	// Connect to the MQTT Server.
+	if err := cli.Connect(&client.ConnectOptions{
+		Network:  "tcp",
+		Address:  Config.Broker.URL,
+		ClientID: []byte(fmt.Sprintf("isrc-push-%d", rand.Int63())),
+	}); err != nil {
+		log.Fatalf("Mongo session %s: %s", Config.Broker.URL, err)
+	}
+	fmt.Printf("MQTT session %s has been created\n", Config.Broker.URL)
+
 	fmt.Println("Downlink AIoTRC @ 2018")
+	os.Exit(0)
 
 	r := handle()
 
@@ -134,7 +150,23 @@ func sendHandler(c *gin.Context) {
 		return
 	}
 
-	// TODO MQTT connection
+	b, err := json.Marshal(lora.TxMessage{
+		FPort:     2,
+		Data:      []byte("A"),
+		Confirmed: false,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if err := cli.Publish(&client.PublishOptions{
+		QoS:       mqtt.QoS0,
+		TopicName: []byte("application/1/node/0000000000000011/tx"),
+		Message:   b,
+	}); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.Data(http.StatusOK, "application/octet-stream", raw)
 
