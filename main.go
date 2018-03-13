@@ -93,7 +93,6 @@ func main() {
 	fmt.Printf("MQTT session %s has been created\n", Config.Broker.URL)
 
 	fmt.Println("Downlink AIoTRC @ 2018")
-	os.Exit(0)
 
 	r := handle()
 
