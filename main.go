@@ -160,7 +160,7 @@ func sendHandler(c *gin.Context) {
 	}
 	if err := cli.Publish(&client.PublishOptions{
 		QoS:       mqtt.QoS0,
-		TopicName: []byte(fmt.Sprintf("application/1/node/%s/tx", r.ThingID)),
+		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", t.Project.Name, r.ThingID)),
 		Message:   b,
 	}); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
