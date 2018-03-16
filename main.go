@@ -126,13 +126,13 @@ func thingKeyDataHandler(c *gin.Context) {
 	key := c.Param("key")
 	id := c.Param("thingid")
 
-	limit, err := strconv.Atoi(c.Query("limit"))
+	since, err := strconv.ParseInt(c.Query("since"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	offset, err := strconv.ParseInt(c.Query("offset"), 10, 64)
+	untill, err := strconv.ParseInt(c.Query("untill"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -144,13 +144,14 @@ func thingKeyDataHandler(c *gin.Context) {
 		},
 		"thingid": id,
 		"timestamp": bson.M{
-			"$gt": time.Unix(offset, 0),
+			"$gt": time.Unix(since, 0),
+			"$lt": time.Unix(untill, 0),
 		},
 	}).Select(bson.M{
 		fmt.Sprintf("data.%s", key): true,
 		"timestamp":                 true,
 		"thingid":                   true,
-	}).Limit(limit).All(&results); err != nil {
+	}).All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
@@ -162,13 +163,13 @@ func thingDataHandler(c *gin.Context) {
 
 	id := c.Param("thingid")
 
-	limit, err := strconv.Atoi(c.Query("limit"))
+	since, err := strconv.ParseInt(c.Query("since"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	offset, err := strconv.ParseInt(c.Query("offset"), 10, 64)
+	untill, err := strconv.ParseInt(c.Query("untill"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -177,9 +178,10 @@ func thingDataHandler(c *gin.Context) {
 	if err := isrcDB.C("parsed").Find(bson.M{
 		"thingid": id,
 		"timestamp": bson.M{
-			"$gt": time.Unix(offset, 0),
+			"$gt": time.Unix(since, 0),
+			"$lt": time.Unix(untill, 0),
 		},
-	}).Limit(limit).All(&results); err != nil {
+	}).All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
