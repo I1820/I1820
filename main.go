@@ -132,7 +132,7 @@ func thingKeyDataHandler(c *gin.Context) {
 		return
 	}
 
-	untill, err := strconv.ParseInt(c.Query("untill"), 10, 64)
+	until, err := strconv.ParseInt(c.Query("until"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -145,7 +145,7 @@ func thingKeyDataHandler(c *gin.Context) {
 		"thingid": id,
 		"timestamp": bson.M{
 			"$gt": time.Unix(since, 0),
-			"$lt": time.Unix(untill, 0),
+			"$lt": time.Unix(until, 0),
 		},
 	}).Select(bson.M{
 		fmt.Sprintf("data.%s", key): true,
@@ -169,7 +169,7 @@ func thingDataHandler(c *gin.Context) {
 		return
 	}
 
-	untill, err := strconv.ParseInt(c.Query("untill"), 10, 64)
+	until, err := strconv.ParseInt(c.Query("until"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -179,7 +179,7 @@ func thingDataHandler(c *gin.Context) {
 		"thingid": id,
 		"timestamp": bson.M{
 			"$gt": time.Unix(since, 0),
-			"$lt": time.Unix(untill, 0),
+			"$lt": time.Unix(until, 0),
 		},
 	}).All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
