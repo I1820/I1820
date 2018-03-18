@@ -204,17 +204,30 @@ func thingsDataHandler(c *gin.Context) {
 		return
 	}
 
-	if err := isrcDB.C("parsed").Find(bson.M{
-		"thingid": bson.M{
-			"$in": json.ThingIDs,
-		},
-		"timestamp": bson.M{
-			"$gt": time.Unix(json.Since, 0),
-			"$lt": time.Unix(json.Until, 0),
-		},
-	}).Sort("timestamp").All(&results); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if len(json.ThingIDs) > 0 {
+		if err := isrcDB.C("parsed").Find(bson.M{
+			"thingid": bson.M{
+				"$in": json.ThingIDs,
+			},
+			"timestamp": bson.M{
+				"$gt": time.Unix(json.Since, 0),
+				"$lt": time.Unix(json.Until, 0),
+			},
+		}).Sort("timestamp").All(&results); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	} else {
+		if err := isrcDB.C("parsed").Find(bson.M{
+			"timestamp": bson.M{
+				"$gt": time.Unix(json.Since, 0),
+				"$lt": time.Unix(json.Until, 0),
+			},
+		}).Sort("timestamp").All(&results); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 	}
 
 	c.JSON(http.StatusOK, results)
