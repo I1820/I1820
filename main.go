@@ -47,6 +47,7 @@ func handle() http.Handler {
 
 		api.GET("/things", thingsHandler)
 		api.GET("/things/:thingid", thingDataHandler)
+		api.POST("/things", thingsDataHandler)
 		api.GET("/things/:thingid/key/:key", thingKeyDataHandler)
 	}
 
@@ -187,4 +188,35 @@ func thingDataHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, results)
+}
+
+func thingsDataHandler(c *gin.Context) {
+	var results []bson.M
+
+	var json struct {
+		ThingIDs []string `json:"thing_ids"`
+		Since    int64
+		Until    int64
+	}
+
+	if err := c.BindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := isrcDB.C("parsed").Find(bson.M{
+		"thingid": bson.M{
+			"$in": json.ThingIDs,
+		},
+		"timestamp": bson.M{
+			"$gt": time.Unix(json.Since, 0),
+			"$lt": time.Unix(json.Until, 0),
+		},
+	}).Sort("timestamp").All(&results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, results)
+
 }
