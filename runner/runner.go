@@ -13,10 +13,9 @@ package runner
 import (
 	"context"
 	"fmt"
-	"math/rand"
-	"time"
 
 	"github.com/docker/go-connections/nat"
+	"github.com/phayes/freeport"
 
 	client "docker.io/go-docker"
 	"docker.io/go-docker/api/types"
@@ -105,13 +104,15 @@ func createRedis(name string) (string, error) {
 }
 
 func createRunner(name string, mgu string) (string, string, error) {
-	rand := rand.New(rand.NewSource(time.Now().Unix()))
 	ctx := context.Background()
 
 	imageName := "aiotrc/gorunner"
 
 	lport, _ := nat.NewPort("tcp", "8080")
-	eport := fmt.Sprintf("%d", 8080+rand.Intn(100))
+	eport, err := freeport.GetFreePort()
+	if err != nil {
+		return "", "", err
+	}
 
 	resp, err := dockerClient.ContainerCreate(ctx,
 		&container.Config{
@@ -131,7 +132,7 @@ func createRunner(name string, mgu string) (string, string, error) {
 				lport: []nat.PortBinding{
 					nat.PortBinding{
 						HostIP:   "0.0.0.0",
-						HostPort: eport,
+						HostPort: string(eport),
 					},
 				},
 			},
@@ -144,7 +145,7 @@ func createRunner(name string, mgu string) (string, string, error) {
 		return "", "", err
 	}
 
-	return resp.ID, eport, nil
+	return resp.ID, string(eport), nil
 }
 
 // Remove removes runner docker
