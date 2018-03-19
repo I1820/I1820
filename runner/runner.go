@@ -13,6 +13,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/docker/go-connections/nat"
 	"github.com/phayes/freeport"
@@ -132,7 +133,7 @@ func createRunner(name string, mgu string) (string, string, error) {
 				lport: []nat.PortBinding{
 					nat.PortBinding{
 						HostIP:   "0.0.0.0",
-						HostPort: string(eport),
+						HostPort: strconv.Itoa(eport),
 					},
 				},
 			},
@@ -145,7 +146,7 @@ func createRunner(name string, mgu string) (string, string, error) {
 		return "", "", err
 	}
 
-	return resp.ID, string(eport), nil
+	return resp.ID, strconv.Itoa(eport), nil
 }
 
 // Remove removes runner docker
