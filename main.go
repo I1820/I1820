@@ -59,8 +59,8 @@ func handle() http.Handler {
 		api.POST("/project", projectNewHandler)
 		api.GET("/project", projectListHandler)
 		api.DELETE("/project/:name", projectRemoveHandler)
-		api.POST("/project/:project/things/", thingAddHandler)
-		api.GET("/project/:project/logs/", projectLogHandler)
+		api.POST("/project/:project/things", thingAddHandler)
+		api.GET("/project/:project/logs", projectLogHandler)
 
 		api.GET("/things/:name", thingGetHandler)
 		api.DELETE("/things/:name", thingRemoveHandler)
