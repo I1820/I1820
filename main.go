@@ -23,6 +23,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/aiotrc/dm/alias"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
 )
@@ -37,6 +38,9 @@ var Config = struct {
 // ISRC database
 var isrcDB *mgo.Database
 
+// aliases
+var aliases map[string]*alias.Alias
+
 // handle registers apis and create http handler
 func handle() http.Handler {
 	r := gin.Default()
@@ -49,6 +53,8 @@ func handle() http.Handler {
 		api.GET("/things/:thingid", thingDataHandler)
 		api.POST("/things", thingsDataHandler)
 		api.GET("/things/:thingid/key/:key", thingKeyDataHandler)
+
+		api.POST("/alias", aliasCreateHandler)
 	}
 
 	r.NoRoute(func(c *gin.Context) {
@@ -149,9 +155,11 @@ func thingKeyDataHandler(c *gin.Context) {
 			"$lt": time.Unix(until, 0),
 		},
 	}).Select(bson.M{
+		"_id": false,
 		fmt.Sprintf("data.%s", key): true,
 		"timestamp":                 true,
 		"thingid":                   true,
+		"rxinfo":                    true,
 	}).All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
@@ -176,6 +184,16 @@ func thingDataHandler(c *gin.Context) {
 		return
 	}
 
+	var proj interface{}
+	if _, ok := aliases[id]; ok {
+		ala := bson.M{}
+		for key, name := range aliases[id].Map {
+			ala[name] = fmt.Sprintf("$data.%s", key)
+		}
+		proj = ala
+	} else {
+		proj = true
+	}
 	pipe := isrcDB.C("parsed").Pipe([]bson.M{
 		{"$match": bson.M{
 			"thingid": id,
@@ -184,7 +202,13 @@ func thingDataHandler(c *gin.Context) {
 				"$lt": time.Unix(until, 0),
 			},
 		}},
-		{"$project": bson.M{}},
+		{"$project": bson.M{
+			"_id":       false,
+			"rxinfo":    true,
+			"timestamp": true,
+			"thingid":   true,
+			"data":      proj,
+		}},
 	})
 	if err := pipe.All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -236,4 +260,25 @@ func thingsDataHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, results)
 
+}
+
+func aliasCreateHandler(c *gin.Context) {
+	var json struct {
+		Name string
+		Map  map[string]string
+	}
+
+	if err := c.BindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// create, build and store
+	a := alias.New(json.Name)
+	for key, name := range json.Map {
+		a.Add(key, name)
+	}
+	aliases[a.Name] = a
+
+	c.JSON(http.StatusOK, a)
 }
