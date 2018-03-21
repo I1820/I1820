@@ -176,13 +176,17 @@ func thingDataHandler(c *gin.Context) {
 		return
 	}
 
-	if err := isrcDB.C("parsed").Find(bson.M{
-		"thingid": id,
-		"timestamp": bson.M{
-			"$gt": time.Unix(since, 0),
-			"$lt": time.Unix(until, 0),
-		},
-	}).All(&results); err != nil {
+	pipe := isrcDB.C("parsed").Pipe([]bson.M{
+		{"$match": bson.M{
+			"thingid": id,
+			"timestamp": bson.M{
+				"$gt": time.Unix(since, 0),
+				"$lt": time.Unix(until, 0),
+			},
+		}},
+		{"$project": bson.M{}},
+	})
+	if err := pipe.All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
