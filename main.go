@@ -41,6 +41,10 @@ var isrcDB *mgo.Database
 // aliases
 var aliases map[string]*alias.Alias
 
+func init() {
+	aliases = make(map[string]*alias.Alias)
+}
+
 // handle registers apis and create http handler
 func handle() http.Handler {
 	r := gin.Default()
