@@ -16,6 +16,14 @@ type Alias struct {
 	Map     map[string]string
 }
 
+// New creates new empty Alias
+func New(project string) *Alias {
+	return &Alias{
+		Project: project,
+		Map:     make(map[string]string),
+	}
+}
+
 // Add adds new mapping between key and name
 func (a *Alias) Add(key string, name string) {
 	a.Map[key] = name
