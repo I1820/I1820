@@ -12,15 +12,15 @@ package alias
 
 // Alias provides a structure for storing data fields aliasing
 type Alias struct {
-	Project string
-	Map     map[string]string
+	Name string
+	Map  map[string]string
 }
 
 // New creates new empty Alias
-func New(project string) *Alias {
+func New(name string) *Alias {
 	return &Alias{
-		Project: project,
-		Map:     make(map[string]string),
+		Name: name,
+		Map:  make(map[string]string),
 	}
 }
 
