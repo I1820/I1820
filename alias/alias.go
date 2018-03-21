@@ -11,6 +11,7 @@
 package alias
 
 // Alias provides a structure for storing data fields aliasing
+// Name is a thing identification and aliases are defined per things
 type Alias struct {
 	Name string
 	Map  map[string]string
