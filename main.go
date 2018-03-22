@@ -234,25 +234,36 @@ func thingsDataHandler(c *gin.Context) {
 	}
 
 	if len(json.ThingIDs) > 0 {
-		if err := isrcDB.C("parsed").Find(bson.M{
-			"thingid": bson.M{
-				"$in": json.ThingIDs,
-			},
-			"timestamp": bson.M{
-				"$gt": time.Unix(json.Since, 0),
-				"$lt": time.Unix(json.Until, 0),
-			},
-		}).Sort("timestamp").All(&results); err != nil {
+		pipe := isrcDB.C("parsed").Pipe([]bson.M{
+			{"$match": bson.M{
+				"thingid": bson.M{
+					"$in": json.ThingIDs,
+				},
+				"timestamp": bson.M{
+					"$gt": time.Unix(json.Since, 0),
+					"$lt": time.Unix(json.Until, 0),
+				},
+			}},
+			{"$sort": bson.M{"timestamp": 1}},
+		})
+		if err := pipe.All(&results); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 	} else {
-		if err := isrcDB.C("parsed").Find(bson.M{
-			"timestamp": bson.M{
-				"$gt": time.Unix(json.Since, 0),
-				"$lt": time.Unix(json.Until, 0),
-			},
-		}).Sort("timestamp").All(&results); err != nil {
+		pipe := isrcDB.C("parsed").Pipe([]bson.M{
+			{"$match": bson.M{
+				"thingid": bson.M{
+					"$in": json.ThingIDs,
+				},
+				"timestamp": bson.M{
+					"$gt": time.Unix(json.Since, 0),
+					"$lt": time.Unix(json.Until, 0),
+				},
+			}},
+			{"$sort": bson.M{"timestamp": 1}},
+		})
+		if err := pipe.All(&results); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
