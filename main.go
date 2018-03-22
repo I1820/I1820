@@ -188,15 +188,11 @@ func thingDataHandler(c *gin.Context) {
 		return
 	}
 
-	var proj interface{}
+	aliasing := bson.M{}
 	if _, ok := aliases[id]; ok {
-		ala := bson.M{}
 		for key, name := range aliases[id].Map {
-			ala[name] = fmt.Sprintf("$data.%s", key)
+			aliasing[name] = fmt.Sprintf("$data.%s", key)
 		}
-		proj = ala
-	} else {
-		proj = true
 	}
 	pipe := isrcDB.C("parsed").Pipe([]bson.M{
 		{"$match": bson.M{
@@ -206,12 +202,13 @@ func thingDataHandler(c *gin.Context) {
 				"$lt": time.Unix(until, 0),
 			},
 		}},
-		{"$project": bson.M{
-			"_id":       false,
-			"rxinfo":    true,
-			"timestamp": true,
-			"thingid":   true,
-			"data":      proj,
+		{"$addFields": bson.M{
+			"info": func() interface{} {
+				if len(aliasing) == 0 {
+					return nil
+				}
+				return aliasing
+			}(),
 		}},
 	})
 	if err := pipe.All(&results); err != nil {
