@@ -159,11 +159,13 @@ func main() {
 						Timestamp time.Time
 						ThingID   string
 						RxInfo    []lora.RxInfo
+						Project   string
 					}{
 						Data:      bdoc,
 						Timestamp: time.Now(),
 						ThingID:   m.DevEUI,
 						RxInfo:    m.RxInfo,
+						Project:   t.Project.Name,
 					}); err != nil {
 						log.WithFields(log.Fields{
 							"component": "uplink",
