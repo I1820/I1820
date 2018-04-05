@@ -206,7 +206,7 @@ func projectListHandler(c *gin.Context) {
 }
 
 func projectLogHandler(c *gin.Context) {
-	var results []bson.M
+	var results []bson.M = make([]bson.M, 0)
 
 	id := c.Param("proeject")
 
