@@ -208,7 +208,7 @@ func projectListHandler(c *gin.Context) {
 func projectLogHandler(c *gin.Context) {
 	var results []bson.M = make([]bson.M, 0)
 
-	id := c.Param("proeject")
+	id := c.Param("project")
 
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil {
