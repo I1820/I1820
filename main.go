@@ -136,6 +136,9 @@ func main() {
 						}).Errorf("PM GetThing: %s", err)
 						return
 					}
+					if !t.Status {
+						return
+					}
 					// Create decoder
 					decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, t.Project.Runner.Port))
 					// Decode

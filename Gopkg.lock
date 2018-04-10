@@ -46,7 +46,7 @@
     "runner",
     "thing"
   ]
-  revision = "4af38ce01731571e5e9facce17e98c246f168741"
+  revision = "5e974407bb77da5134d8b370241e13e708334c84"
 
 [[projects]]
   name = "github.com/docker/distribution"
@@ -69,8 +69,8 @@
 [[projects]]
   name = "github.com/docker/go-units"
   packages = ["."]
-  revision = "0dadbb0345b35ec7ef35e228dabb8de89a65bf52"
-  version = "v0.3.2"
+  revision = "47565b4f722fb6ceae66b95f853feed578a4a51c"
+  version = "v0.3.3"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -82,7 +82,7 @@
   branch = "master"
   name = "github.com/jinzhu/configor"
   packages = ["."]
-  revision = "6ecfe629230f24c2e92c7894c6ab21b83b757a39"
+  revision = "ec34f328956f53dfbd06e9f5306e37e6943443c3"
 
 [[projects]]
   name = "github.com/opencontainers/go-digest"
@@ -100,6 +100,12 @@
   version = "v1.0.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/phayes/freeport"
+  packages = ["."]
+  revision = "e27662a4a9d6b2083dfd7e7b5d0e30985daca925"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -109,7 +115,7 @@
   branch = "master"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "8c0189d9f6bbf301e5d055d34268156b317016af"
+  revision = "778f2e774c725116edbc3d039dc0dfc1cc62aae8"
 
 [[projects]]
   name = "github.com/yosssi/gmq"
@@ -125,7 +131,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "9de5f2eaf759b4c4550b3db39fed2e9e5f86f45c"
+  revision = "beb2a9779c3b677077c41673505f150149fce895"
 
 [[projects]]
   branch = "master"
@@ -133,9 +139,10 @@
   packages = [
     "context",
     "context/ctxhttp",
+    "internal/socks",
     "proxy"
   ]
-  revision = "2fb46b16b8dda405028c50f7c7f0f9dd1fa6bfb1"
+  revision = "61147c48b25b599e5b561d2e9c4f3e1ef489ca41"
 
 [[projects]]
   branch = "master"
@@ -144,7 +151,7 @@
     "unix",
     "windows"
   ]
-  revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
+  revision = "3b87a42e500a6dc65dae1a55d0b641295971163e"
 
 [[projects]]
   branch = "v2"
@@ -159,10 +166,10 @@
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
 
 [solve-meta]
   analyzer-name = "dep"
