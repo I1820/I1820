@@ -63,6 +63,8 @@ func handle() http.Handler {
 		api.GET("/project/:project/logs", projectLogHandler)
 
 		api.GET("/things/:name", thingGetHandler)
+		api.GET("/things/:name/activate", thingActivateHandler)
+		api.GET("/things/:name/deactivate", thingDeactivateHandler)
 		api.DELETE("/things/:name", thingRemoveHandler)
 		api.GET("/things", thingListHandler)
 	}
@@ -177,6 +179,7 @@ func thingAddHandler(c *gin.Context) {
 		things[name] = thing.Thing{
 			Project: p,
 			ID:      name,
+			Status:  true,
 		}
 		c.JSON(http.StatusOK, things[name])
 		return
@@ -188,6 +191,30 @@ func thingGetHandler(c *gin.Context) {
 	name := c.Param("name")
 
 	if t, ok := things[name]; ok {
+		c.JSON(http.StatusOK, t)
+		return
+	}
+
+	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+}
+
+func thingActivateHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	if t, ok := things[name]; ok {
+		t.Status = false
+		c.JSON(http.StatusOK, t)
+		return
+	}
+
+	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+}
+
+func thingDeactivateHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	if t, ok := things[name]; ok {
+		t.Status = true
 		c.JSON(http.StatusOK, t)
 		return
 	}
