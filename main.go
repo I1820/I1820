@@ -245,7 +245,7 @@ func projectLogHandler(c *gin.Context) {
 
 	if err := isrcDB.C("errors").Find(bson.M{
 		"project": id,
-	}).Limit(limit).All(&results); err != nil {
+	}).Limit(limit).Sort("Time").All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
