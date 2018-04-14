@@ -158,7 +158,7 @@ func projectRemoveHandler(c *gin.Context) {
 			return
 		}
 
-		c.String(http.StatusOK, name)
+		c.JSON(http.StatusOK, p)
 		return
 	}
 	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
