@@ -47,6 +47,7 @@ func handle() http.Handler {
 
 		api.GET("/things", thingsHandler)
 		api.GET("/things/:thingid", thingDataHandler)
+		api.GET("/things/:thingid/2", thingDataHandlerExperimental)
 		api.POST("/things", thingsDataHandler)
 		api.GET("/things/:thingid/key/:key", thingKeyDataHandler)
 	}
@@ -159,6 +160,57 @@ func thingKeyDataHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, results)
+}
+
+func thingDataHandlerExperimental(c *gin.Context) {
+	var results []bson.M
+
+	id := c.Param("thingid")
+
+	since, err := strconv.ParseInt(c.Query("since"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	until, err := strconv.ParseInt(c.Query("until"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+
+	}
+
+	pipe := isrcDB.C("parsed").Pipe([]bson.M{
+		{"$match": bson.M{
+			"thingid": id,
+			"timestamp": bson.M{
+				"$gt": time.Unix(since, 0),
+				"$lt": time.Unix(until, 0),
+			},
+		}},
+		{"$group": bson.M{
+			"_id": bson.M{
+				"dayOfYear": bson.M{"$dayOfYear": "$timestamp"},
+				"hour":      bson.M{"$hour": "$timestamp"},
+				"interval": bson.M{
+					"$subtract": []bson.M{
+						bson.M{"$minute": "$timestamp"},
+						bson.M{"$mod": []interface{}{bson.M{"$minute": "$timestamp"}, 15}},
+					},
+				},
+			},
+			"count": bson.M{"$sum": 1},
+			"last":  bson.M{"$last": "$data"},
+		}},
+		{"$sort": bson.M{"timestamp": -1}},
+	})
+	if err := pipe.All(&results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, results)
+
 }
 
 func thingDataHandler(c *gin.Context) {
