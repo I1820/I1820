@@ -186,6 +186,7 @@ func thingDataHandler(c *gin.Context) {
 				"$lt": time.Unix(until, 0),
 			},
 		}},
+		{"$sort": bson.M{"timestamp": -1}},
 	})
 	if err := pipe.All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -220,7 +221,7 @@ func thingsDataHandler(c *gin.Context) {
 					"$lt": time.Unix(json.Until, 0),
 				},
 			}},
-			{"$sort": bson.M{"timestamp": 1}},
+			{"$sort": bson.M{"timestamp": -1}},
 		})
 		if err := pipe.All(&results); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -237,7 +238,7 @@ func thingsDataHandler(c *gin.Context) {
 					"$lt": time.Unix(json.Until, 0),
 				},
 			}},
-			{"$sort": bson.M{"timestamp": 1}},
+			{"$sort": bson.M{"timestamp": -1}},
 		})
 		if err := pipe.All(&results); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
