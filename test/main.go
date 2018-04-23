@@ -14,17 +14,13 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/brocaar/lora-app-server/api"
 	"github.com/go-resty/resty"
 	"github.com/jinzhu/configor"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"golang.org/x/net/http2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -55,9 +51,7 @@ func (j jwt) RequireTransportSecurity() bool {
 
 func main() {
 	// Disable https certificate validation
-	http.DefaultTransport = &http2.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	// Load configuration
 	if err := configor.Load(&Config, "config.yml"); err != nil {
@@ -130,58 +124,4 @@ func login() {
 	}).Infoln(response)
 
 	jwtToken = response.Jwt
-}
-
-func gatewayFrames() {
-	resp, err := resty.R().
-		SetAuthToken(jwtToken).
-		SetDoNotParseResponse(false).
-		Get(Config.Loraserver.BaseURL + "/gateways/b827ebffff47d1a5/frames")
-	if err != nil {
-		log.WithFields(log.Fields{
-			"Phase": "gatewayFrames",
-		}).Fatalf("Request: %s", err)
-	}
-
-	defer resp.RawBody().Close()
-
-	framer := http2.NewFramer(ioutil.Discard, resp.RawBody())
-	for {
-		f, err := framer.ReadFrame()
-		if err == io.EOF || err == io.ErrUnexpectedEOF {
-			break
-		}
-		switch err.(type) {
-		case nil:
-			log.Println(f)
-		case http2.ConnectionError:
-			// Ignore. There will be many errors of type "PROTOCOL_ERROR, DATA
-			// frame with stream ID 0". Presumably we are abusing the framer.
-		default:
-			log.Println(err, framer.ErrorDetail())
-		}
-	}
-
-	if resp.StatusCode() != 200 {
-		log.WithFields(log.Fields{
-			"Phase": "gatewayFrames",
-		}).Fatalf("StatusCode: %d", resp.StatusCode())
-	}
-
-	if _, err := io.Copy(os.Stdout, resp.RawBody()); err != nil {
-		log.WithFields(log.Fields{
-			"Phase": "gatewayFrames",
-		}).Fatalf("io.Copy: %s", err)
-	}
-
-	var response struct {
-		UplinkFrames []struct {
-			PhyPayloadJSON string
-			Frequency      int
-		}
-	}
-
-	log.WithFields(log.Fields{
-		"Phase": "gatewayFrames",
-	}).Infoln(response)
 }
