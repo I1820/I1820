@@ -35,6 +35,7 @@ var Config = struct {
 	}
 }{}
 
+// RPC JWT credential
 type jwt struct {
 	token string
 }
