@@ -92,7 +92,6 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *GatewayFrame, error
 
 	gc := api.NewGatewayClient(asConn)
 	s, err := gc.StreamFrameLogs(context.Background(), &api.StreamGatewayFrameLogsRequest{
-		//Mac: "b827ebffff47d1a5",
 		Mac: mac,
 	})
 	if err != nil {
@@ -107,11 +106,22 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *GatewayFrame, error
 			if err != nil {
 				return
 			}
-			c <- &GatewayFrame{
-				Mac:            mac,
-				UplinkFrames:   d.UplinkFrames,
-				DownlinkFrames: d.DownlinkFrames,
+
+			for _, up := range d.UplinkFrames {
+				c <- &GatewayFrame{
+					Mac:           mac,
+					UplinkFrame:   up,
+					DownlinkFrame: nil,
+				}
 			}
+			for _, dl := range d.DownlinkFrames {
+				c <- &GatewayFrame{
+					Mac:           mac,
+					UplinkFrame:   nil,
+					DownlinkFrame: dl,
+				}
+			}
+
 		}
 	}()
 
