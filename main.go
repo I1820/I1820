@@ -23,6 +23,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/aiotrc/dm/loraserver"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
 )
@@ -32,10 +33,17 @@ var Config = struct {
 	DB struct {
 		URL string `default:"127.0.0.1" env:"db_url"`
 	}
+
+	LoRaServer struct {
+		URL string `default:"platform.ceit.aut.ac.ir:50013" env:"loraserver_url"`
+	}
 }{}
 
 // ISRC database
 var isrcDB *mgo.Database
+
+// ISRC loraserver.io
+var isrcLoRaServer *loraserver.LoRaServer
 
 // handle registers apis and create http handler
 func handle() http.Handler {
@@ -50,6 +58,9 @@ func handle() http.Handler {
 		api.GET("/things/:thingid/2", thingDataHandlerExperimental)
 		api.POST("/things", thingsDataHandler)
 		api.GET("/things/:thingid/key/:key", thingKeyDataHandler)
+
+		api.GET("/gateway/:gatewayid/enable", gatewayLogEnable)
+		api.GET("/gateway/:gatewayid", gatewayLogFetch)
 	}
 
 	r.NoRoute(func(c *gin.Context) {
@@ -65,6 +76,13 @@ func main() {
 		panic(err)
 	}
 
+	// Create a loraserver.io session
+	l, err := loraserver.New(Config.LoRaServer.URL)
+	if err != nil {
+		log.Fatalf("loraserver.io session %s: %v", Config.LoRaServer.URL, err)
+	}
+	isrcLoRaServer = l
+
 	// Create a Mongo Session
 	session, err := mgo.Dial(Config.DB.URL)
 	if err != nil {
@@ -76,7 +94,7 @@ func main() {
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
-	fmt.Println("DM AIoTRC @ 2017")
+	fmt.Println("DM AIoTRC @ 2018")
 
 	srv := &http.Server{
 		Addr:    ":1372",
@@ -301,4 +319,54 @@ func thingsDataHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, results)
 
+}
+
+func gatewayLogEnable(c *gin.Context) {
+	mac := c.Param("gatewayid")
+
+	ch, err := isrcLoRaServer.GatewayFrameStream(mac)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	go func() {
+		for d := range ch {
+			isrcDB.C("gateway").Insert(d)
+		}
+	}()
+
+	c.JSON(http.StatusOK, true)
+}
+
+func gatewayLogFetch(c *gin.Context) {
+	var results []bson.M = make([]bson.M, 0)
+
+	mac := c.Param("gatewayid")
+
+	skip, err := strconv.ParseInt(c.Query("skip"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	pipe := isrcDB.C("gateway").Pipe([]bson.M{
+		{"$match": bson.M{
+			"mac": mac,
+		}},
+		{"$skip": skip},
+		{"$limit": limit},
+	})
+	if err := pipe.All(&results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, results)
 }
