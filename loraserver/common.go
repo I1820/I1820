@@ -18,7 +18,8 @@ type GatewayFrame struct {
 	Mac string
 
 	// Contains zero or one uplink frame.
-	UplinkFrames []*api.UplinkFrameLog
+	UplinkFrame *api.UplinkFrameLog
+
 	// Contains zero or one downlink frame.
-	DownlinkFrames []*api.DownlinkFrameLog
+	DownlinkFrame *api.DownlinkFrameLog
 }
