@@ -77,7 +77,7 @@ func (l *LoRaServer) login() error {
 }
 
 // GatewayFrameStream streams gateway frame logs
-func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *api.StreamGatewayFrameLogsResponse, error) {
+func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *GatewayFrame, error) {
 	grpcOpts := []grpc.DialOption{
 		grpc.WithPerRPCCredentials(jwt{
 			token: l.jwtToken,
@@ -99,14 +99,20 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *api.StreamGatewayFr
 		return nil, err
 	}
 
-	c := make(chan *api.StreamGatewayFrameLogsResponse)
+	c := make(chan *GatewayFrame)
 
 	go func() {
-		d, err := s.Recv()
-		if err != nil {
-			return
+		for {
+			d, err := s.Recv()
+			if err != nil {
+				return
+			}
+			c <- &GatewayFrame{
+				Mac:            mac,
+				UplinkFrames:   d.UplinkFrames,
+				DownlinkFrames: d.DownlinkFrames,
+			}
 		}
-		c <- d
 	}()
 
 	return c, nil
