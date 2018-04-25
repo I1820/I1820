@@ -10,7 +10,7 @@
 
 package loraserver
 
-import "context"
+import "golang.org/x/net/context"
 
 // RPC JWT credential
 type jwt struct {

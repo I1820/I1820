@@ -12,11 +12,16 @@ package loraserver
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/brocaar/lora-app-server/api"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 // LoRaServer represents loraserver.io endpoint
@@ -69,4 +74,37 @@ func (l *LoRaServer) login() error {
 
 	l.jwtToken = response.Jwt
 	return nil
+}
+
+// GatewayFrameStream streams gateway frame logs
+func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan int, error) {
+	grpcOpts := []grpc.DialOption{
+		grpc.WithPerRPCCredentials(jwt{
+			token: l.jwtToken,
+		}),
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})),
+	}
+
+	asConn, err := grpc.Dial("platform.ceit.aut.ac.ir:50013", grpcOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	gc := api.NewGatewayClient(asConn)
+	s, err := gc.StreamFrameLogs(context.Background(), &api.StreamGatewayFrameLogsRequest{
+		//Mac: "b827ebffff47d1a5",
+		Mac: mac,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	d, err := s.Recv()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(d)
+
+	c := make(chan int)
+	return c, nil
 }
