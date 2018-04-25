@@ -98,7 +98,7 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *GatewayFrame, error
 		return nil, err
 	}
 
-	c := make(chan *GatewayFrame)
+	c := make(chan *GatewayFrame, 1024)
 
 	go func() {
 		for {
