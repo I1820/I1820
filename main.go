@@ -91,6 +91,15 @@ func main() {
 	isrcDB = session.DB("isrc")
 	defer session.Close()
 
+	// gateway collection
+	cg := session.DB("isrc").C("gateway")
+	if err := cg.EnsureIndex(mgo.Index{
+		Key:         []string{"created_at"},
+		ExpireAfter: 10 * time.Second,
+	}); err != nil {
+		panic(err)
+	}
+
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
@@ -333,6 +342,7 @@ func gatewayLogEnable(c *gin.Context) {
 	go func() {
 		for d := range ch {
 			isrcDB.C("gateway").Insert(d)
+			time.Sleep(10 * time.Millisecond)
 		}
 	}()
 
