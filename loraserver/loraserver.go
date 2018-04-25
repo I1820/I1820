@@ -53,7 +53,7 @@ func (l *LoRaServer) login() error {
 		"username": "admin",
 		"password": "admin",
 	})
-	resp, err := l.hc.Post(l.BaseURL+"/internal/login", "application/json", bytes.NewBuffer(d))
+	resp, err := l.hc.Post("https://"+l.BaseURL+"/api/internal/login", "application/json", bytes.NewBuffer(d))
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (l *LoRaServer) login() error {
 }
 
 // GatewayFrameStream streams gateway frame logs
-func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan int, error) {
+func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *api.StreamGatewayFrameLogsResponse, error) {
 	grpcOpts := []grpc.DialOption{
 		grpc.WithPerRPCCredentials(jwt{
 			token: l.jwtToken,
@@ -85,7 +85,7 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan int, error) {
 		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})),
 	}
 
-	asConn, err := grpc.Dial("platform.ceit.aut.ac.ir:50013", grpcOpts...)
+	asConn, err := grpc.Dial(l.BaseURL, grpcOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,12 +99,15 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan int, error) {
 		return nil, err
 	}
 
-	d, err := s.Recv()
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(d)
+	c := make(chan *api.StreamGatewayFrameLogsResponse)
 
-	c := make(chan int)
+	go func() {
+		d, err := s.Recv()
+		if err != nil {
+			return
+		}
+		c <- d
+	}()
+
 	return c, nil
 }
