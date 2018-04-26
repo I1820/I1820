@@ -31,10 +31,13 @@ type LoRaServer struct {
 
 	jwtToken string
 	hc       *http.Client
+
+	username string
+	password string
 }
 
 // New creates new loraserver.io endpoint and connects to it
-func New(baseURL string) (*LoRaServer, error) {
+func New(baseURL, username, password string) (*LoRaServer, error) {
 	l := &LoRaServer{
 		BaseURL: baseURL,
 
@@ -51,8 +54,8 @@ func New(baseURL string) (*LoRaServer, error) {
 
 func (l *LoRaServer) login() error {
 	d, _ := json.Marshal(map[string]string{
-		"username": "admin",
-		"password": "admin",
+		"username": l.username,
+		"password": l.password,
 	})
 	resp, err := l.hc.Post("https://"+l.BaseURL+"/api/internal/login", "application/json", bytes.NewBuffer(d))
 	if err != nil {

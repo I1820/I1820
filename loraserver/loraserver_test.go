@@ -16,14 +16,14 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-	_, err := New("platform.ceit.aut.ac.ir:50013")
+	_, err := New("platform.ceit.aut.ac.ir:50013", "admin", "admin")
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestGatewayFrameStream(t *testing.T) {
-	l, err := New("platform.ceit.aut.ac.ir:50013")
+	l, err := New("platform.ceit.aut.ac.ir:50013", "admin", "admin")
 	if err != nil {
 		t.Fatal(err)
 	}

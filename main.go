@@ -35,7 +35,9 @@ var Config = struct {
 	}
 
 	LoRaServer struct {
-		URL string `default:"platform.ceit.aut.ac.ir:50013" env:"loraserver_url"`
+		URL      string `default:"platform.ceit.aut.ac.ir:50013" env:"loraserver_url"`
+		Username string `default:"admin" env:"loraserver_user"`
+		Password string `default:"admin" env:"loraserver_pass"`
 	}
 }{}
 
@@ -77,7 +79,7 @@ func main() {
 	}
 
 	// Create a loraserver.io session
-	l, err := loraserver.New(Config.LoRaServer.URL)
+	l, err := loraserver.New(Config.LoRaServer.URL, Config.LoRaServer.Username, Config.LoRaServer.Password)
 	if err != nil {
 		log.Fatalf("loraserver.io session %s: %v", Config.LoRaServer.URL, err)
 	}
