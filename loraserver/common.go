@@ -10,7 +10,11 @@
 
 package loraserver
 
-import "github.com/brocaar/lora-app-server/api"
+import (
+	"time"
+
+	"github.com/brocaar/lora-app-server/api"
+)
 
 // GatewayFrame is loraserver.io raw gateway frames
 type GatewayFrame struct {
@@ -22,4 +26,7 @@ type GatewayFrame struct {
 
 	// Contains zero or one downlink frame.
 	DownlinkFrame *api.DownlinkFrameLog
+
+	// Record creation time
+	Timestamp time.Time
 }

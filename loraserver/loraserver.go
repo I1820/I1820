@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/brocaar/lora-app-server/api"
 	"google.golang.org/grpc"
@@ -112,6 +113,8 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *GatewayFrame, error
 					Mac:           mac,
 					UplinkFrame:   up,
 					DownlinkFrame: nil,
+
+					Timestamp: time.Now(),
 				}
 			}
 			for _, dl := range d.DownlinkFrames {
@@ -119,6 +122,8 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *GatewayFrame, error
 					Mac:           mac,
 					UplinkFrame:   nil,
 					DownlinkFrame: dl,
+
+					Timestamp: time.Now(),
 				}
 			}
 
