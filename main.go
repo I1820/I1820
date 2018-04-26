@@ -94,7 +94,7 @@ func main() {
 	// gateway collection
 	cg := session.DB("isrc").C("gateway")
 	if err := cg.EnsureIndex(mgo.Index{
-		Key:         []string{"created_at"},
+		Key:         []string{"timestamp"},
 		ExpireAfter: 10 * time.Second,
 	}); err != nil {
 		panic(err)
