@@ -63,14 +63,16 @@ func (l *LoRaServer) login() error {
 		return fmt.Errorf("StatusCode: %d", resp.StatusCode)
 	}
 
-	defer resp.Body.Close()
-
 	var response struct {
 		Jwt string
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
 	if err := json.Unmarshal(body, &response); err != nil {
 		return fmt.Errorf("JSON Unmarshal: %s", err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
 	}
 
 	l.jwtToken = response.Jwt
