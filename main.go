@@ -46,6 +46,7 @@ var isrcDB *mgo.Database
 
 // ISRC loraserver.io
 var isrcLoRaServer *loraserver.LoRaServer
+var enabledGateways map[string]bool
 
 // handle registers apis and create http handler
 func handle() http.Handler {
@@ -84,6 +85,7 @@ func main() {
 		log.Fatalf("loraserver.io session %s: %v", Config.LoRaServer.URL, err)
 	}
 	isrcLoRaServer = l
+	enabledGateways = make(map[string]bool)
 
 	// Create a Mongo Session
 	session, err := mgo.Dial(Config.DB.URL)
@@ -335,6 +337,11 @@ func thingsDataHandler(c *gin.Context) {
 func gatewayLogEnable(c *gin.Context) {
 	mac := c.Param("gatewayid")
 
+	if _, ok := enabledGateways[mac]; ok {
+		c.JSON(http.StatusOK, false)
+		return
+	}
+
 	ch, err := isrcLoRaServer.GatewayFrameStream(mac)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -348,6 +355,8 @@ func gatewayLogEnable(c *gin.Context) {
 			}
 		}
 	}()
+
+	enabledGateways[mac] = true
 
 	c.JSON(http.StatusOK, true)
 }
