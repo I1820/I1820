@@ -47,6 +47,9 @@ func New(baseURL, username, password string) (*LoRaServer, error) {
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
 		},
+
+		username: username,
+		password: password,
 	}
 
 	return l, l.login()
