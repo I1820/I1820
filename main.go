@@ -341,8 +341,9 @@ func gatewayLogEnable(c *gin.Context) {
 
 	go func() {
 		for d := range ch {
-			isrcDB.C("gateway").Insert(d)
-			time.Sleep(10 * time.Millisecond)
+			if err := isrcDB.C("gateway").Insert(d); err != nil {
+				log.Println(err)
+			}
 		}
 	}()
 
