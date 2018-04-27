@@ -41,13 +41,19 @@ func init() {
 		panic(err)
 	}
 
+	if _, err := cli.NetworkCreate(context.Background(), "isrc", types.NetworkCreate{
+		CheckDuplicate: false,
+	}); err != nil {
+		panic(err)
+	}
+
 	dockerClient = cli
 }
 
 // New creates runner docker with given user name
-// mge represents mongo url that is used in runners
-// for collecting errors
-func New(name string, mgu string) (Runner, error) {
+// mgu represents mongo url that is used in runners
+// for collecting errors and access to thing data
+func New(name string, envs []Env) (Runner, error) {
 	ctx := context.Background()
 
 	rid, err := createRedis(name)
@@ -56,7 +62,7 @@ func New(name string, mgu string) (Runner, error) {
 		return Runner{}, err
 	}
 
-	gid, eport, err := createRunner(name, mgu)
+	gid, eport, err := createRunner(name, envs)
 
 	if err != nil {
 		// Removes redis container
@@ -104,7 +110,7 @@ func createRedis(name string) (string, error) {
 	return resp.ID, nil
 }
 
-func createRunner(name string, mgu string) (string, string, error) {
+func createRunner(name string, envs []Env) (string, string, error) {
 	ctx := context.Background()
 
 	imageName := "aiotrc/gorunner"
@@ -115,17 +121,26 @@ func createRunner(name string, mgu string) (string, string, error) {
 		return "", "", err
 	}
 
+	dockerEnvs := []string{
+		fmt.Sprintf("REDIS_HOST=rd_%s", name),
+		//fmt.Sprintf("MONGO_URL=%s", mgu),
+		fmt.Sprintf("NAME=%s", name),
+	}
+
+	// There is at least one user defined environment variables
+	if envs != nil {
+		for _, e := range envs {
+			dockerEnvs = append(dockerEnvs, fmt.Sprintf("%s=%s", e.Name, e.Value))
+		}
+	}
+
 	resp, err := dockerClient.ContainerCreate(ctx,
 		&container.Config{
 			Image: imageName,
 			ExposedPorts: nat.PortSet{
 				lport: struct{}{},
 			},
-			Env: []string{
-				fmt.Sprintf("REDIS_HOST=rd_%s", name),
-				fmt.Sprintf("MONGO_URL=%s", mgu),
-				fmt.Sprintf("NAME=%s", name),
-			},
+			Env: dockerEnvs,
 		},
 		&container.HostConfig{
 			NetworkMode: "isrc",
