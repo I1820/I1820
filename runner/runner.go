@@ -123,7 +123,6 @@ func createRunner(name string, envs []Env) (string, string, error) {
 
 	dockerEnvs := []string{
 		fmt.Sprintf("REDIS_HOST=rd_%s", name),
-		//fmt.Sprintf("MONGO_URL=%s", mgu),
 		fmt.Sprintf("NAME=%s", name),
 	}
 
