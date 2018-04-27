@@ -13,7 +13,7 @@ package runner
 import "testing"
 
 func TestBasic(t *testing.T) {
-	r, err := New("Eli", "127.0.0.1:27017")
+	r, err := New("Eli", nil)
 
 	if err != nil {
 		t.Fatalf("Runner creation error: %s", err)
