@@ -1,7 +1,7 @@
 #!/bin/bash
 # In The Name Of God
 # ========================================
-# [] File Name : $file.name
+# [] File Name : cleanup.sh
 #
 # [] Creation Date : $time.strftime("%d-%m-%Y")
 #
@@ -12,6 +12,3 @@ docker rm -f `docker ps --format '{{.Names}}' | grep el_`
 
 echo "Remove redises of existing projects"
 docker rm -f `docker ps --format '{{.Names}}' | grep rd_`
-
-echo "Create ISRC Network"
-docker network create isrc
