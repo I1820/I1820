@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/aiotrc/pm/project"
+	"github.com/aiotrc/pm/runner"
 	"github.com/aiotrc/pm/thing"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
@@ -137,7 +138,9 @@ func projectNewHandler(c *gin.Context) {
 
 	name := json.Name
 
-	p, err := project.New(name, Config.DB.URL)
+	p, err := project.New(name, []runner.Env{
+		{Name: "MONGO_URL", Value: Config.DB.URL},
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
