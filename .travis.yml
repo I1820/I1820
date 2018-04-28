@@ -1,7 +1,11 @@
+services:
+  - mongodb
+
 language: go
 go: 1.9
 env:
   - DEP_VERSION="0.3.2"
+
 
 before_install:
   # Setup some env variables
