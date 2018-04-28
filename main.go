@@ -73,20 +73,7 @@ func handle() http.Handler {
 	return r
 }
 
-func main() {
-	// Load configuration
-	if err := configor.Load(&Config, "config.yml"); err != nil {
-		panic(err)
-	}
-
-	// Create a loraserver.io session
-	l, err := loraserver.New(Config.LoRaServer.URL, Config.LoRaServer.Username, Config.LoRaServer.Password)
-	if err != nil {
-		log.Fatalf("loraserver.io session %s: %v", Config.LoRaServer.URL, err)
-	}
-	isrcLoRaServer = l
-	enabledGateways = make(map[string]bool)
-
+func setupDB() {
 	// Create a Mongo Session
 	session, err := mgo.Dial(Config.DB.URL)
 	if err != nil {
@@ -99,13 +86,34 @@ func main() {
 	cg := session.DB("isrc").C("gateway")
 	if err := cg.EnsureIndex(mgo.Index{
 		Key:         []string{"timestamp"},
-		ExpireAfter: 10 * time.Second,
+		ExpireAfter: 60 * time.Second,
 	}); err != nil {
 		panic(err)
 	}
 
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
+}
+
+func setupLoRaServer() {
+	// Create a loraserver.io session
+	l, err := loraserver.New(Config.LoRaServer.URL, Config.LoRaServer.Username, Config.LoRaServer.Password)
+	if err != nil {
+		log.Fatalf("loraserver.io session %s: %v", Config.LoRaServer.URL, err)
+	}
+	isrcLoRaServer = l
+	enabledGateways = make(map[string]bool)
+}
+
+func main() {
+	// Load configuration
+	if err := configor.Load(&Config, "config.yml"); err != nil {
+		panic(err)
+	}
+
+	setupDB()
+
+	setupLoRaServer()
 
 	fmt.Println("DM AIoTRC @ 2018")
 
@@ -366,7 +374,7 @@ func gatewayLogFetch(c *gin.Context) {
 
 	mac := c.Param("gatewayid")
 
-	skip, err := strconv.ParseInt(c.Query("skip"), 10, 64)
+	since, err := strconv.ParseInt(c.Query("since"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -381,8 +389,10 @@ func gatewayLogFetch(c *gin.Context) {
 	pipe := isrcDB.C("gateway").Pipe([]bson.M{
 		{"$match": bson.M{
 			"mac": mac,
+			"timestamp": bson.M{
+				"$gt": time.Unix(since, 0),
+			},
 		}},
-		{"$skip": skip},
 		{"$limit": limit},
 	})
 	if err := pipe.All(&results); err != nil {
