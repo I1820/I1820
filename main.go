@@ -80,7 +80,6 @@ func setupDB() {
 		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
 	}
 	isrcDB = session.DB("isrc")
-	defer session.Close()
 
 	// gateway collection
 	cg := session.DB("isrc").C("gateway")
