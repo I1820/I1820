@@ -17,8 +17,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"gopkg.in/mgo.v2/bson"
 )
 
 func TestAbout(t *testing.T) {
@@ -62,9 +60,26 @@ func TestThings(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var results []bson.M
-	json.Unmarshal(body, &results)
+	var results []struct {
+		ID    string `json:"_id"`
+		Total int
+	}
+	if err := json.Unmarshal(body, &results); err != nil {
+		t.Fatal(err)
+	}
 	t.Log(results)
+
+	if len(results) == 0 {
+		t.Fatal(fmt.Errorf("Invalid number of records: %d", len(results)))
+	}
+
+	for _, r := range results {
+		if r.ID == "0000000000000003" {
+			if r.Total != 1 {
+				t.Fatal(fmt.Errorf("Invalid number of thing 0000000000000003 records: %d", r.Total))
+			}
+		}
+	}
 
 	if err := resp.Body.Close(); err != nil {
 		t.Fatal(err)
