@@ -8,7 +8,7 @@
 # [] Created By : $user.name ($user.email)
 # =======================================
 echo "Remove dockers of existing projects"
-docker rm -f `docker ps --format '{{.Names}}' | grep el_`
+docker rm -f $(docker ps --format '{{.Names}}' | grep el_)
 
 echo "Remove redises of existing projects"
-docker rm -f `docker ps --format '{{.Names}}' | grep rd_`
+docker rm -f $(docker ps --format '{{.Names}}' | grep rd_)
