@@ -12,3 +12,5 @@ docker rm -f `docker ps --format '{{.Names}}' | grep el_`
 
 echo "Remove redises of existing projects"
 docker rm -f `docker ps --format '{{.Names}}' | grep rd_`
+
+docker system prune
