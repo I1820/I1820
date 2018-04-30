@@ -73,6 +73,9 @@ func main() {
 	})
 	defer cli.Terminate()
 
+	// Raw collection
+	cr := session.DB("isrc").C("raw")
+
 	// Connect to the MQTT Server.
 	if err := cli.Connect(&client.ConnectOptions{
 		Network:  "tcp",
