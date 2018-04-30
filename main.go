@@ -63,16 +63,6 @@ func main() {
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
-	// Raw collection
-	cr := session.DB("isrc").C("raw")
-	if err := cr.Create(&mgo.CollectionInfo{
-		Capped:   true,
-		MaxDocs:  100,
-		MaxBytes: 1024,
-	}); err != nil && err.Error() != "a collection 'isrc.raw' already exists" {
-		panic(err)
-	}
-
 	// Create an MQTT client
 	cli := client.New(&client.Options{
 		ErrorHandler: func(err error) {
