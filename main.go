@@ -88,7 +88,7 @@ func main() {
 		Address:  Config.Broker.URL,
 		ClientID: []byte(fmt.Sprintf("isrc-push-%d", rand.Int63())),
 	}); err != nil {
-		log.Fatalf("Mongo session %s: %s", Config.Broker.URL, err)
+		log.Fatalf("MQTT session %s: %s", Config.Broker.URL, err)
 	}
 	fmt.Printf("MQTT session %s has been created\n", Config.Broker.URL)
 
