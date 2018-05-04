@@ -11,3 +11,7 @@ PM is project manager for ISRC platform. It creates projects and corresponding r
 ```sh
 sudo usermod -aG docker $USER
 ```
+2. Create ISRC network
+```sh
+docker network create isrc
+```
