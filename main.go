@@ -25,14 +25,14 @@ import (
 	"github.com/aiotrc/pm/thing"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/mongodb/mongo-go-driver/bson"
+	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
 
 // Config represents main configuration
 var Config = struct {
 	DB struct {
-		URL string `default:"172.18.0.1:27017" env:"db_url"`
+		URL string `default:"mongodb://172.18.0.1:27017" env:"db_url"`
 	}
 }{}
 
@@ -62,6 +62,7 @@ func handle() http.Handler {
 		api.DELETE("/project/:name", projectRemoveHandler)
 		api.POST("/project/:project/things", thingAddHandler)
 		api.GET("/project/:project/logs", projectLogHandler)
+		api.GET("/project/:project/", projectDetailHandler)
 
 		api.GET("/things/:name", thingGetHandler)
 		api.GET("/things/:name/activate", thingActivateHandler)
@@ -77,22 +78,23 @@ func handle() http.Handler {
 	return r
 }
 
+func initDB() {
+	// Create a Mongo Session
+	client, err := mgo.NewClient(Config.DB.URL)
+	if err != nil {
+		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
+	}
+	isrcDB = client.Database("isrc")
+	// TODO removes logs on sepcific period (Time field)
+}
+
 func main() {
 	// Load configuration
 	if err := configor.Load(&Config, "config.yml"); err != nil {
 		panic(err)
 	}
 
-	// Create a Mongo Session
-	session, err := mgo.Dial(Config.DB.URL)
-	if err != nil {
-		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
-	}
-	isrcDB = session.DB("isrc")
-	defer session.Close()
-
-	// Optional. Switch the session to a monotonic behavior.
-	session.SetMode(mgo.Monotonic, true)
+	initDB()
 
 	fmt.Println("PM AIoTRC @ 2018")
 
@@ -146,25 +148,55 @@ func projectNewHandler(c *gin.Context) {
 		return
 	}
 
-	projects[name] = p
+	isrcDB.Collection("pm").InsertOne(context.Background(), p)
+
+	c.JSON(http.StatusOK, p)
+}
+
+func projectDetailHandler(c *gin.Context) {
+	name := c.Param("project")
+
+	var p project.Project
+
+	dr := isrcDB.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+		bson.EC.String("name", name),
+	))
+
+	if err := dr.Decode(&p); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, p)
 }
 
 func projectRemoveHandler(c *gin.Context) {
 	name := c.Param("name")
 
-	if p, ok := projects[name]; ok {
-		delete(projects, name)
+	var p project.Project
 
-		if err := p.Runner.Remove(); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+	dr := isrcDB.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+		bson.EC.String("name", name),
+	))
 
-		c.JSON(http.StatusOK, p)
+	if err := dr.Decode(&p); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
+
+	if err := p.Runner.Remove(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if _, err := isrcDB.Collection("pm").DeleteOne(context.Background(), bson.NewDocument(
+		bson.EC.String("name", name),
+	)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, p)
 }
 
 func thingAddHandler(c *gin.Context) {
@@ -236,7 +268,7 @@ func projectListHandler(c *gin.Context) {
 }
 
 func projectLogHandler(c *gin.Context) {
-	var results []bson.M = make([]bson.M, 0)
+	var results = make([]*bson.Document, 0)
 
 	id := c.Param("project")
 
@@ -246,9 +278,33 @@ func projectLogHandler(c *gin.Context) {
 		return
 	}
 
-	if err := isrcDB.C("errors").Find(bson.M{
-		"project": id,
-	}).Limit(limit).Sort("Time").All(&results); err != nil {
+	cur, err := isrcDB.Collection("errors").Aggregate(context.Background(), bson.NewArray(
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.Int32("$limit", int32(limit)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$sort", bson.EC.Int32("Time", -1)),
+		),
+	))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	for cur.Next(context.Background()) {
+		result := bson.NewDocument()
+
+		if err := cur.Decode(result); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		results = append(results, result)
+	}
+	if err := cur.Close(context.Background()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
