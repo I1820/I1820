@@ -200,6 +200,32 @@ func projectRemoveHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, p)
 }
 
+func projectListHandler(c *gin.Context) {
+	ps := make([]project.Project, 0)
+
+	cur, err := isrcDB.Collection("pm").Find(context.Background(), bson.NewDocument())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	for cur.Next(context.Background()) {
+		var p project.Project
+
+		if err := cur.Decode(&p); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		ps = append(ps, p)
+	}
+	if err := cur.Close(context.Background()); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, ps)
+}
+
 func thingAddHandler(c *gin.Context) {
 	name := c.Param("project")
 
@@ -263,16 +289,6 @@ func thingDeactivateHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
-}
-
-func projectListHandler(c *gin.Context) {
-	pl := make([]*project.Project, 0)
-
-	for _, project := range projects {
-		pl = append(pl, project)
-	}
-
-	c.JSON(http.StatusOK, pl)
 }
 
 func projectLogHandler(c *gin.Context) {
