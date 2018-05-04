@@ -101,7 +101,7 @@ func setupLoRaServer() {
 		log.Fatalf("loraserver.io session %s: %v", Config.LoRaServer.URL, err)
 	}
 
-	fmt.Println("loraserver.io session: %s:%s@%s", Config.LoRaServer.URL, Config.LoRaServer.Username, Config.LoRaServer.Password)
+	fmt.Printf("loraserver.io session: %s:%s@%s", Config.LoRaServer.URL, Config.LoRaServer.Username, Config.LoRaServer.Password)
 
 	isrcLoRaServer = l
 	enabledGateways = make(map[string]bool)
