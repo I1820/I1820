@@ -14,8 +14,8 @@ import "github.com/aiotrc/pm/runner"
 
 // Project represents structure of ISRC projects
 type Project struct {
-	Name   string        `json:"name"`
-	Runner runner.Runner `json:"runner"`
+	Name   string        `json:"name" bson:"name"`
+	Runner runner.Runner `json:"runner" bson:"runner"`
 }
 
 // New creates new project with given name

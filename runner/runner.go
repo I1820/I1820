@@ -27,9 +27,9 @@ var dockerClient *client.Client
 
 // Runner represents runner docker information
 type Runner struct {
-	ID   string `json:"id"`
-	Port string `json:"port"`
-	rID  string
+	ID      string `json:"id" bson:"id"`
+	Port    string `json:"port" bson:"port"`
+	RedisID string `json:"rid" bson:"redisid"`
 }
 
 func init() {
@@ -79,9 +79,9 @@ func New(name string, envs []Env) (Runner, error) {
 	}
 
 	return Runner{
-		ID:   gid,
-		Port: eport,
-		rID:  rid,
+		ID:      gid,
+		Port:    eport,
+		RedisID: rid,
 	}, nil
 }
 
@@ -170,7 +170,7 @@ func createRunner(name string, envs []Env) (string, string, error) {
 func (r Runner) Remove() error {
 	ctx := context.Background()
 
-	if err := dockerClient.ContainerRemove(ctx, r.rID, types.ContainerRemoveOptions{
+	if err := dockerClient.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
 		Force: true,
 	}); err != nil {
 		return err
