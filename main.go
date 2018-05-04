@@ -26,6 +26,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/core/options"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
 
@@ -47,6 +48,11 @@ var isrcDB *mgo.Database
 func init() {
 	projects = make(map[string]*project.Project)
 	things = make(map[string]thing.Thing)
+
+	// Load configuration
+	if err := configor.Load(&Config, "config.yml"); err != nil {
+		panic(err)
+	}
 }
 
 // handle registers apis and create http handler
@@ -78,7 +84,7 @@ func handle() http.Handler {
 	return r
 }
 
-func initDB() {
+func setupDB() {
 	// Create a Mongo Session
 	client, err := mgo.NewClient(Config.DB.URL)
 	if err != nil {
@@ -89,12 +95,7 @@ func initDB() {
 }
 
 func main() {
-	// Load configuration
-	if err := configor.Load(&Config, "config.yml"); err != nil {
-		panic(err)
-	}
-
-	initDB()
+	setupDB()
 
 	fmt.Println("PM AIoTRC @ 2018")
 
@@ -200,7 +201,7 @@ func projectRemoveHandler(c *gin.Context) {
 }
 
 func thingAddHandler(c *gin.Context) {
-	project := c.Param("project")
+	name := c.Param("project")
 
 	var json thingReq
 	if err := c.BindJSON(&json); err != nil {
@@ -208,18 +209,25 @@ func thingAddHandler(c *gin.Context) {
 		return
 	}
 
-	name := json.Name
+	t := thing.Thing{
+		ID:     json.Name,
+		Status: true,
+	}
 
-	if p, ok := projects[project]; ok {
-		things[name] = thing.Thing{
-			Project: p,
-			ID:      name,
-			Status:  true,
-		}
-		c.JSON(http.StatusOK, things[name])
+	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
+		bson.EC.String("name", name),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$push", bson.EC.Interface("things", t)),
+	), mgo.Opt.ReturnDocument(options.After))
+
+	var p project.Project
+
+	if err := dr.Decode(&p); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
+
+	c.JSON(http.StatusOK, p)
 }
 
 func thingGetHandler(c *gin.Context) {
