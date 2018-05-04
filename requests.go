@@ -13,6 +13,7 @@ package main
 // project request payload
 type projectReq struct {
 	Name string `json:"name" binding:"required"`
+	// TODO adds docker constraints and envs
 }
 
 // thing request payload
