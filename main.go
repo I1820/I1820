@@ -85,7 +85,7 @@ func setupDB() {
 	cg := session.DB("isrc").C("gateway")
 	if err := cg.EnsureIndex(mgo.Index{
 		Key:         []string{"timestamp"},
-		ExpireAfter: 60 * time.Second,
+		ExpireAfter: 120 * time.Second,
 	}); err != nil {
 		panic(err)
 	}
