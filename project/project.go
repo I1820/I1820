@@ -10,12 +10,16 @@
 
 package project
 
-import "github.com/aiotrc/pm/runner"
+import (
+	"github.com/aiotrc/pm/runner"
+	"github.com/aiotrc/pm/thing"
+)
 
 // Project represents structure of ISRC projects
 type Project struct {
 	Name   string        `json:"name" bson:"name"`
 	Runner runner.Runner `json:"runner" bson:"runner"`
+	Things []thing.Thing `json:"things" bson:"things"`
 }
 
 // New creates new project with given name
