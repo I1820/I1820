@@ -41,11 +41,14 @@ func init() {
 		panic(err)
 	}
 
-	if _, err := cli.NetworkCreate(context.Background(), "isrc", types.NetworkCreate{
-		CheckDuplicate: false,
-	}); err != nil {
-		panic(err)
-	}
+	// TODO corrects network creation
+	/*
+		if _, err := cli.NetworkCreate(context.Background(), "isrc", types.NetworkCreate{
+			CheckDuplicate: false,
+		}); err != nil {
+			panic(err)
+		}
+	*/
 
 	dockerClient = cli
 }
