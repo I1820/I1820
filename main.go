@@ -380,22 +380,37 @@ func gatewayLogFetch(c *gin.Context) {
 
 	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		limit = 0
 		return
 	}
 
-	pipe := isrcDB.C("gateway").Pipe([]bson.M{
-		{"$match": bson.M{
-			"mac": mac,
-			"timestamp": bson.M{
-				"$gt": time.Unix(since, 0),
-			},
-		}},
-		{"$limit": limit},
-	})
-	if err := pipe.All(&results); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if limit != 0 {
+		pipe := isrcDB.C("gateway").Pipe([]bson.M{
+			{"$match": bson.M{
+				"mac": mac,
+				"timestamp": bson.M{
+					"$gt": time.Unix(since, 0),
+				},
+			}},
+			{"$limit": limit},
+		})
+		if err := pipe.All(&results); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	} else {
+		pipe := isrcDB.C("gateway").Pipe([]bson.M{
+			{"$match": bson.M{
+				"mac": mac,
+				"timestamp": bson.M{
+					"$gt": time.Unix(since, 0),
+				},
+			}},
+		})
+		if err := pipe.All(&results); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, results)
