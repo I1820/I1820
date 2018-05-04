@@ -384,7 +384,6 @@ func gatewayLogFetch(c *gin.Context) {
 	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
 	if err != nil {
 		limit = 0
-		return
 	}
 
 	if limit != 0 {
