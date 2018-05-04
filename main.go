@@ -395,6 +395,7 @@ func gatewayLogFetch(c *gin.Context) {
 				},
 			}},
 			{"$limit": limit},
+			{"$sort": bson.M{"timestamp": -1}},
 		})
 		if err := pipe.All(&results); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -408,6 +409,7 @@ func gatewayLogFetch(c *gin.Context) {
 					"$gt": time.Unix(since, 0),
 				},
 			}},
+			{"$sort": bson.M{"timestamp": -1}},
 		})
 		if err := pipe.All(&results); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
