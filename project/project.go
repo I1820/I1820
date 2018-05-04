@@ -33,5 +33,6 @@ func New(name string, envs []runner.Env) (*Project, error) {
 	return &Project{
 		Name:   name,
 		Runner: r,
+		Things: make([]thing.Thing, 0),
 	}, nil
 }
