@@ -10,11 +10,8 @@
 
 package thing
 
-import "github.com/aiotrc/pm/project"
-
 // Thing contains identification and parent project
 type Thing struct {
-	ID      string // DevEUI
-	Status  bool   // active/deactive
-	Project *project.Project
+	ID     string `json:"id" bson:"id"`         // DevEUI
+	Status bool   `json:"status" bson:"status"` // active/deactive
 }
