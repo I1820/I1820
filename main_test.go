@@ -27,6 +27,8 @@ func TestCreate(t *testing.T) {
 	s := httptest.NewServer(h)
 	defer s.Close()
 
+	setupDB()
+
 	d, err := json.Marshal(projectReq{Name: "Her"})
 	if err != nil {
 		t.Fatalf("Project request marshaling: %s\n", d)
@@ -55,6 +57,8 @@ func TestThingCreate(t *testing.T) {
 	h := handle()
 	s := httptest.NewServer(h)
 	defer s.Close()
+
+	setupDB()
 
 	d, err := json.Marshal(thingReq{Name: "Me"})
 	if err != nil {
@@ -85,6 +89,8 @@ func TestClient(t *testing.T) {
 	s := httptest.NewServer(h)
 	defer s.Close()
 
+	setupDB()
+
 	p := client.New(s.URL)
 
 	thing, err := p.GetThing("Me")
@@ -94,13 +100,14 @@ func TestClient(t *testing.T) {
 	}
 
 	t.Logf("http://somewhere:%s\n", thing.Project.Runner.Port)
-
 }
 
 func TestThingRemove(t *testing.T) {
 	h := handle()
 	s := httptest.NewServer(h)
 	defer s.Close()
+
+	setupDB()
 
 	req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/api/things/%s", s.URL, "Me"), nil)
 	resp, err := http.DefaultClient.Do(req)
@@ -127,6 +134,8 @@ func TestRemove(t *testing.T) {
 	h := handle()
 	s := httptest.NewServer(h)
 	defer s.Close()
+
+	setupDB()
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/project/%s", s.URL, "Her"), nil)
 	cli := http.Client{}
