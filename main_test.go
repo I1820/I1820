@@ -93,13 +93,13 @@ func TestClient(t *testing.T) {
 
 	p := client.New(s.URL)
 
-	thing, err := p.GetThing("Me")
+	pr, err := p.GetThingProject("Me")
 
 	if err != nil {
 		t.Fatalf("GetThing error: %s\n", err)
 	}
 
-	t.Logf("http://somewhere:%s\n", thing.Project.Runner.Port)
+	t.Logf("http://somewhere:%s\n", pr.Runner.Port)
 }
 
 func TestThingRemove(t *testing.T) {
