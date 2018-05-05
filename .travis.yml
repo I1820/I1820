@@ -8,6 +8,7 @@ language: go
 go: 1.9
 env:
   - DEP_VERSION="0.3.2"
+  - db_url="mongodb://127.0.0.1:27017"
 
 before_install:
   # Setup some env variables
