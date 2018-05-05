@@ -92,8 +92,7 @@
 [[projects]]
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
-  version = "v1.1.0"
+  revision = "5a0f697c9ed9d68fef0116532c6e05cfeae00e55"
 
 [[projects]]
   branch = "master"
@@ -104,10 +103,10 @@
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
-  version = "v0.0.3"
+  revision = "57fdcb988a5c543893cc61bce354a6e24ab70022"
 
 [[projects]]
+  branch = "master"
   name = "github.com/mongodb/mongo-go-driver"
   packages = [
     "bson",
@@ -135,8 +134,7 @@
     "internal",
     "mongo"
   ]
-  revision = "ff5ad991913ea56c4609391ff190eaf83edf339b"
-  version = "v0.0.4"
+  revision = "c2b67526609026a809d10fbe1b3913b2a28efbb9"
 
 [[projects]]
   name = "github.com/opencontainers/go-digest"
@@ -154,10 +152,10 @@
   version = "v1.0.1"
 
 [[projects]]
-  branch = "master"
   name = "github.com/phayes/freeport"
   packages = ["."]
-  revision = "e27662a4a9d6b2083dfd7e7b5d0e30985daca925"
+  revision = "b8543db493a5ed890c5499e935e2cad7504f3a04"
+  version = "1.0.2"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -168,14 +166,12 @@
 [[projects]]
   name = "github.com/ugorji/go"
   packages = ["codec"]
-  revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
-  version = "v1.1.1"
+  revision = "c88ee250d0221a57af388746f5cf03768c21d6e2"
 
 [[projects]]
-  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["pbkdf2"]
-  revision = "4ec37c66abab2c7e02ae775328b2ff001c3f025a"
+  revision = "5f31782cfb2b6373211f8f9fbf31283fa234b570"
 
 [[projects]]
   branch = "master"
@@ -189,10 +185,9 @@
   revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
 
 [[projects]]
-  branch = "master"
   name = "golang.org/x/sync"
   packages = ["semaphore"]
-  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
+  revision = "fd80eb99c8f653c847d294a001bdf2a3a6f768f5"
 
 [[projects]]
   branch = "master"
@@ -206,8 +201,8 @@
 [[projects]]
   name = "gopkg.in/go-playground/validator.v8"
   packages = ["."]
-  revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
-  version = "v8.18.2"
+  revision = "5f57d2222ad794d0dffb07e664ea05e2ee07d60c"
+  version = "v8.18.1"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
@@ -218,6 +213,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3228a29fa213ade8fe81fe8a416cafa387a79a71cc1041558272d018f15ae5d2"
+  inputs-digest = "bd66846863750d6e6d045dacf7625804f97671d0246ffb2138793c8ffb9bbd3f"
   solver-name = "gps-cdcl"
   solver-version = 1
