@@ -37,18 +37,11 @@ var Config = struct {
 	}
 }{}
 
-// in-memory databases for things and projects
-var projects map[string]*project.Project
-var things map[string]thing.Thing
-
 // ISRC database
 var isrcDB *mgo.Database
 
 // init initiates global variables
 func init() {
-	projects = make(map[string]*project.Project)
-	things = make(map[string]thing.Thing)
-
 	// Load configuration
 	if err := configor.Load(&Config, "config.yml"); err != nil {
 		panic(err)
@@ -279,27 +272,31 @@ func thingGetHandler(c *gin.Context) {
 }
 
 func thingActivateHandler(c *gin.Context) {
-	name := c.Param("name")
+	/*
+		name := c.Param("name")
 
-	if t, ok := things[name]; ok {
-		t.Status = false
-		c.JSON(http.StatusOK, t)
-		return
-	}
+		if t, ok := things[name]; ok {
+			t.Status = false
+			c.JSON(http.StatusOK, t)
+			return
+		}
 
-	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+	*/
 }
 
 func thingDeactivateHandler(c *gin.Context) {
-	name := c.Param("name")
+	/*
+		name := c.Param("name")
 
-	if t, ok := things[name]; ok {
-		t.Status = true
-		c.JSON(http.StatusOK, t)
-		return
-	}
+		if t, ok := things[name]; ok {
+			t.Status = true
+			c.JSON(http.StatusOK, t)
+			return
+		}
 
-	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+	*/
 }
 
 func projectLogHandler(c *gin.Context) {
@@ -350,21 +347,30 @@ func projectLogHandler(c *gin.Context) {
 func thingRemoveHandler(c *gin.Context) {
 	name := c.Param("name")
 
-	if t, ok := things[name]; ok {
-		c.JSON(http.StatusOK, t)
-		delete(things, name)
+	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$pull", bson.EC.SubDocumentFromElements(
+			"things", bson.EC.String("id", name)),
+		),
+	), mgo.Opt.ReturnDocument(options.After))
+
+	var p project.Project
+
+	if err := dr.Decode(&p); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+	c.JSON(http.StatusOK, p)
 }
 
 func thingListHandler(c *gin.Context) {
-	tl := make([]thing.Thing, 0)
+	/*
+		tl := make([]thing.Thing, 0)
 
-	for _, thing := range things {
-		tl = append(tl, thing)
-	}
+		for _, thing := range things {
+			tl = append(tl, thing)
+		}
 
-	c.JSON(http.StatusOK, tl)
+		c.JSON(http.StatusOK, tl)
+	*/
 }
