@@ -86,7 +86,7 @@ func handle() http.Handler {
 
 func setupDB() {
 	// Create a Mongo Session
-	client, err := mgo.NewClient(Config.DB.URL)
+	client, err := mgo.Connect(context.Background(), Config.DB.URL, nil)
 	if err != nil {
 		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
 	}
