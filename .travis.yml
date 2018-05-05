@@ -2,7 +2,7 @@ sudo: required
 
 services:
   - docker
-  - mongo
+  - mongodb
 
 language: go
 go: 1.9
