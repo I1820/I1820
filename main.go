@@ -259,12 +259,20 @@ func thingAddHandler(c *gin.Context) {
 func thingGetHandler(c *gin.Context) {
 	name := c.Param("name")
 
-	if t, ok := things[name]; ok {
-		c.JSON(http.StatusOK, t)
+	var p project.Project
+
+	dr := isrcDB.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("things", bson.EC.ArrayFromElements("$in",
+			bson.VC.DocumentFromElements(bson.EC.String("id", name)),
+		)),
+	))
+
+	if err := dr.Decode(&p); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+	c.JSON(http.StatusOK, p)
 }
 
 func thingActivateHandler(c *gin.Context) {
