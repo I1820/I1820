@@ -149,7 +149,10 @@ func projectNewHandler(c *gin.Context) {
 		return
 	}
 
-	isrcDB.Collection("pm").InsertOne(context.Background(), p)
+	if err := isrcDB.Collection("pm").InsertOne(context.Background(), p); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, p)
 }
