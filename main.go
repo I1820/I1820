@@ -265,8 +265,8 @@ func thingGetHandler(c *gin.Context) {
 	var p project.Project
 
 	dr := isrcDB.Collection("pm").FindOne(context.Background(), bson.NewDocument(
-		bson.EC.SubDocumentFromElements("things", bson.EC.ArrayFromElements("$in",
-			bson.VC.DocumentFromElements(bson.EC.String("id", name)),
+		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements("$elemMatch",
+			bson.EC.String("id", name),
 		)),
 	))
 
