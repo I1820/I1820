@@ -276,31 +276,53 @@ func thingGetHandler(c *gin.Context) {
 }
 
 func thingActivateHandler(c *gin.Context) {
-	/*
-		name := c.Param("name")
+	name := c.Param("name")
 
-		if t, ok := things[name]; ok {
-			t.Status = false
-			c.JSON(http.StatusOK, t)
-			return
+	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements(
+			"$elemMatch", bson.EC.String("id", name),
+		)),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("things.$.status", true)),
+	), mgo.Opt.ReturnDocument(options.After))
+
+	var p project.Project
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
+		return
+	}
 
-		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
-	*/
+	c.JSON(http.StatusOK, p)
 }
 
 func thingDeactivateHandler(c *gin.Context) {
-	/*
-		name := c.Param("name")
+	name := c.Param("name")
 
-		if t, ok := things[name]; ok {
-			t.Status = true
-			c.JSON(http.StatusOK, t)
-			return
+	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements(
+			"$elemMatch", bson.EC.String("id", name),
+		)),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("things.$.status", false)),
+	), mgo.Opt.ReturnDocument(options.After))
+
+	var p project.Project
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
+		return
+	}
 
-		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
-	*/
+	c.JSON(http.StatusOK, p)
 }
 
 func projectLogHandler(c *gin.Context) {
