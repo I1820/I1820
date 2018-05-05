@@ -17,13 +17,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aiotrc/pm/thing"
+	"github.com/aiotrc/pm/project"
 )
 
 var cache map[string]entry
 
 type entry struct {
-	th thing.Thing
+	pr project.Project
 	ti time.Time
 }
 
@@ -44,27 +44,31 @@ func New(url string) PM {
 	}
 }
 
-// GetThing gets thing information from pm using http request
-func (p PM) GetThing(name string) (thing.Thing, error) {
-	if e, ok := cache[name]; ok {
-		if time.Now().Sub(e.ti) < time.Second {
-			return e.th, nil
+// GetThingProject gets project contains given thing from pm using http request
+func (p PM) GetThingProject(name string) (project.Project, error) {
+	for _, e := range cache {
+		for _, t := range e.pr.Things {
+			if t.ID == name {
+				if time.Now().Sub(e.ti) < time.Second {
+					return e.pr, nil
+				}
+			}
 		}
 	}
 
-	var t thing.Thing
+	var pr project.Project
 
 	resp, err := http.Get(fmt.Sprintf("%s/api/things/%s", p.URL, name))
 	if err != nil {
-		return t, err
+		return pr, err
 	}
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return t, err
+		return pr, err
 	}
 	if err := resp.Body.Close(); err != nil {
-		return t, err
+		return pr, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -73,20 +77,20 @@ func (p PM) GetThing(name string) (thing.Thing, error) {
 		}
 
 		if err := json.Unmarshal(data, &e); err != nil {
-			return t, fmt.Errorf("%s", data)
+			return pr, fmt.Errorf("%s", data)
 		}
 
-		return t, fmt.Errorf("%s", e.Error)
+		return pr, fmt.Errorf("%s", e.Error)
 	}
 
-	if err := json.Unmarshal(data, &t); err != nil {
-		return t, err
+	if err := json.Unmarshal(data, &p); err != nil {
+		return pr, err
 	}
 
 	cache[name] = entry{
-		th: t,
+		pr: pr,
 		ti: time.Now(),
 	}
 
-	return t, nil
+	return pr, nil
 }
