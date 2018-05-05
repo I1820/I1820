@@ -364,13 +364,39 @@ func thingRemoveHandler(c *gin.Context) {
 }
 
 func thingListHandler(c *gin.Context) {
-	/*
-		tl := make([]thing.Thing, 0)
+	results := make([]thing.Thing, 0)
 
-		for _, thing := range things {
-			tl = append(tl, thing)
+	cur, err := isrcDB.Collection("pm").Aggregate(context.Background(), bson.NewArray(
+		bson.VC.DocumentFromElements(
+			bson.EC.String("$unwind", "$things"),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$replaceRoot", bson.EC.String("newRoot", "$things")),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$sort", bson.EC.Int32("Time", -1)),
+		),
+	))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	for cur.Next(context.Background()) {
+		var result thing.Thing
+
+		if err := cur.Decode(&result); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
-		c.JSON(http.StatusOK, tl)
-	*/
+		results = append(results, result)
+	}
+	if err := cur.Close(context.Background()); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, results)
+
 }
