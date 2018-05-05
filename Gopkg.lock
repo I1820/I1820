@@ -106,7 +106,6 @@
   revision = "57fdcb988a5c543893cc61bce354a6e24ab70022"
 
 [[projects]]
-  branch = "master"
   name = "github.com/mongodb/mongo-go-driver"
   packages = [
     "bson",
@@ -134,7 +133,8 @@
     "internal",
     "mongo"
   ]
-  revision = "c2b67526609026a809d10fbe1b3913b2a28efbb9"
+  revision = "ff5ad991913ea56c4609391ff190eaf83edf339b"
+  version = "v0.0.4"
 
 [[projects]]
   name = "github.com/opencontainers/go-digest"
@@ -213,6 +213,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bd66846863750d6e6d045dacf7625804f97671d0246ffb2138793c8ffb9bbd3f"
+  inputs-digest = "e33e3771a58c1c9a06925a8b90ebd8cbd8a6d5a128c6ab6bec309a7049787c35"
   solver-name = "gps-cdcl"
   solver-version = 1

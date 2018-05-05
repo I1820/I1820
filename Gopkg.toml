@@ -42,7 +42,7 @@
   name = "github.com/jinzhu/configor"
 
 [[constraint]]
-  branch = "master"
+  version = "0.0.4"
   name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
