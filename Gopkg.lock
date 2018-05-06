@@ -46,7 +46,7 @@
     "runner",
     "thing"
   ]
-  revision = "5e974407bb77da5134d8b370241e13e708334c84"
+  revision = "ae2cc194584dd67edbe9d852308214d3e68e0fdd"
 
 [[projects]]
   name = "github.com/docker/distribution"
@@ -100,10 +100,10 @@
   version = "v1.0.1"
 
 [[projects]]
-  branch = "master"
   name = "github.com/phayes/freeport"
   packages = ["."]
-  revision = "e27662a4a9d6b2083dfd7e7b5d0e30985daca925"
+  revision = "b8543db493a5ed890c5499e935e2cad7504f3a04"
+  version = "1.0.2"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -131,7 +131,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "beb2a9779c3b677077c41673505f150149fce895"
+  revision = "4ec37c66abab2c7e02ae775328b2ff001c3f025a"
 
 [[projects]]
   branch = "master"
@@ -142,7 +142,7 @@
     "internal/socks",
     "proxy"
   ]
-  revision = "61147c48b25b599e5b561d2e9c4f3e1ef489ca41"
+  revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
 
 [[projects]]
   branch = "master"
@@ -151,7 +151,7 @@
     "unix",
     "windows"
   ]
-  revision = "3b87a42e500a6dc65dae1a55d0b641295971163e"
+  revision = "6f686a352de66814cdd080d970febae7767857a3"
 
 [[projects]]
   branch = "v2"
