@@ -73,9 +73,6 @@ func main() {
 	})
 	defer cli.Terminate()
 
-	// Raw collection
-	cr := session.DB("isrc").C("raw")
-
 	// Connect to the MQTT Server.
 	if err := cli.Connect(&client.ConnectOptions{
 		Network:  "tcp",
@@ -90,7 +87,7 @@ func main() {
 	pm := pmclient.New(Config.PM.URL)
 
 	// Parsed collection
-	cp := session.DB("isrc").C("parsed")
+	cp := session.DB("isrc").C("data")
 	if err := cp.EnsureIndex(mgo.Index{
 		Key: []string{"timestamp"},
 	}); err != nil {
@@ -114,26 +111,24 @@ func main() {
 					}
 					log.Info(m)
 
-					if err := cr.Insert(m); err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("Mongo insert [raw]: %s", err)
-						return
-					}
-
 					// Find thing
-					t, err := pm.GetThing(m.DevEUI)
+					p, err := pm.GetThingProject(m.DevEUI)
 					if err != nil {
 						log.WithFields(log.Fields{
 							"component": "uplink",
-						}).Errorf("PM GetThing: %s", err)
+						}).Errorf("PM GetThingProject: %s", err)
 						return
 					}
-					if !t.Status {
-						return
-					}
+					// TODO: thing activation
+					/*
+						if !t.Status {
+							return
+						}
+					*/
+
 					// Create decoder
-					decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, t.Project.Runner.Port))
+					decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, p.Runner.Port))
+
 					// Decode
 					parsed, err := decoder.Decode(m.Data, m.DevEUI)
 					if err != nil {
@@ -150,24 +145,31 @@ func main() {
 						}).Errorf("Unmarshal JSON: %s\n %q", err, parsed)
 						return
 					}
-					if err := cp.Insert(&struct {
-						Data      interface{}
-						Timestamp time.Time
-						ThingID   string
-						RxInfo    []lora.RxInfo
-						Project   string
-					}{
-						Data:      bdoc,
-						Timestamp: time.Now(),
-						ThingID:   m.DevEUI,
-						RxInfo:    m.RxInfo,
-						Project:   t.Project.Name,
-					}); err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("Mongo insert [parsed]: %s\n", err)
-						return
-					}
+
+					defer func() {
+						if err := cp.Insert(&struct {
+							Raw       []byte
+							Data      interface{}
+							Timestamp time.Time
+							ThingID   string
+							RxInfo    []lora.RxInfo
+							TxInfo    lora.TxInfo
+							Project   string
+						}{
+							Raw:       m.Data,
+							Data:      bdoc,
+							Timestamp: time.Now(),
+							ThingID:   m.DevEUI,
+							RxInfo:    m.RxInfo,
+							TxInfo:    m.TxInfo,
+							Project:   p.Name,
+						}); err != nil {
+							log.WithFields(log.Fields{
+								"component": "uplink",
+							}).Errorf("Mongo insert: %s\n", err)
+							return
+						}
+					}()
 				},
 			},
 		},
