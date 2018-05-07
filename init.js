@@ -10,18 +10,18 @@
 
 
 db.data.insert({
-  raw: BinData(0, "omMxMDAZF3BjMTAxGRnO"),
+  raw: new BinData(0, "omMxMDAZF3BjMTAxGRnO"),
   data: {
     101: 6606,
     100: 6000
   },
-  timestamp: ISODate("2018-05-07T05:49:54.415Z"),
+  timestamp: new ISODate("2018-05-07T05:49:54.415Z"),
   thingid: "0000000000000001",
   rxinfo: [
     {
       mac: "b827ebffff633260",
       name: "isrc-gateway",
-      time: ISODate("2018-05-07T05:49:53.874Z"),
+      time: new ISODate("2018-05-07T05:49:53.874Z"),
       rssi: -57,
       lorasnr: 10
     }
@@ -34,15 +34,15 @@ db.data.insert({
   project: "hello"
 
 }, {
-  raw: BinData(0, "omMxMDAZF3BjMTAxGRnO"),
+  raw: new BinData(0, "omMxMDAZF3BjMTAxGRnO"),
   data: null,
-  timestamp: ISODate("2018-05-06T18:40:03.156Z"),
+  timestamp: new ISODate("2018-05-06T18:40:03.156Z"),
   thingid: "0000000000000010",
   rxinfo: [
     {
       mac: "b827ebffff633260",
       name: "isrc-gateway",
-      time: ISODate("2018-05-06T18:40:03.151Z"),
+      time: new ISODate("2018-05-06T18:40:03.151Z"),
       rssi: -57,
       lorasnr: 10
     }
