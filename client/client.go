@@ -83,7 +83,7 @@ func (p PM) GetThingProject(name string) (project.Project, error) {
 		return pr, fmt.Errorf("%s", e.Error)
 	}
 
-	if err := json.Unmarshal(data, &p); err != nil {
+	if err := json.Unmarshal(data, &pr); err != nil {
 		return pr, err
 	}
 
