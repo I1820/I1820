@@ -153,7 +153,7 @@ func aboutHandler(c *gin.Context) {
 func thingsHandler(c *gin.Context) {
 	var results []bson.M
 
-	pipe := isrcDB.C("parsed").Pipe([]bson.M{
+	pipe := isrcDB.C("data").Pipe([]bson.M{
 		{"$group": bson.M{"_id": "$thingid", "total": bson.M{"$sum": 1}}},
 	})
 	if err := pipe.All(&results); err != nil {
@@ -181,7 +181,7 @@ func thingKeyDataHandler(c *gin.Context) {
 		return
 	}
 
-	if err := isrcDB.C("parsed").Find(bson.M{
+	if err := isrcDB.C("data").Find(bson.M{
 		fmt.Sprintf("data.%s", key): bson.M{
 			"$exists": true,
 		},
@@ -217,7 +217,7 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 		return
 	}
 
-	pipe := isrcDB.C("parsed").Pipe([]bson.M{
+	pipe := isrcDB.C("data").Pipe([]bson.M{
 		{"$match": bson.M{
 			"thingid": bson.M{
 				"$in": json.ThingIDs,
@@ -270,7 +270,7 @@ func thingDataHandler(c *gin.Context) {
 		return
 	}
 
-	pipe := isrcDB.C("parsed").Pipe([]bson.M{
+	pipe := isrcDB.C("data").Pipe([]bson.M{
 		{"$match": bson.M{
 			"thingid": id,
 			"timestamp": bson.M{
@@ -303,7 +303,7 @@ func thingsDataHandler(c *gin.Context) {
 	}
 
 	if len(json.ThingIDs) > 0 {
-		pipe := isrcDB.C("parsed").Pipe([]bson.M{
+		pipe := isrcDB.C("data").Pipe([]bson.M{
 			{"$match": bson.M{
 				"thingid": bson.M{
 					"$in": json.ThingIDs,
@@ -320,7 +320,7 @@ func thingsDataHandler(c *gin.Context) {
 			return
 		}
 	} else {
-		pipe := isrcDB.C("parsed").Pipe([]bson.M{
+		pipe := isrcDB.C("data").Pipe([]bson.M{
 			{"$match": bson.M{
 				"thingid": bson.M{
 					"$in": json.ThingIDs,
