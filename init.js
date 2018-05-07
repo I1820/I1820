@@ -9,14 +9,48 @@
  */
 
 
-db.parsed.insert({
-  thingid: '0000000000000003',
+db.data.insert({
+  raw: BinData(0, "omMxMDAZF3BjMTAxGRnO"),
   data: {
-    241: 78,
-    242: 24.958986282348633,
-    243: 51.340187072753906,
-    244: 35.70711898803711,
-    245: 1233.9000244140625
+    101: 6606,
+    100: 6000
   },
-  timestamp: new Date(1995, 2, 20, 12, 0, 0, 0)
+  timestamp: ISODate("2018-05-07T05:49:54.415Z"),
+  thingid: "0000000000000001",
+  rxinfo: [
+    {
+      mac: "b827ebffff633260",
+      name: "isrc-gateway",
+      time: ISODate("2018-05-07T05:49:53.874Z"),
+      rssi: -57,
+      lorasnr: 10
+    }
+  ],
+  txinfo: {
+    frequency: 868100000,
+    adr: true,
+    coderate: "4/6"
+  },
+  project: "hello"
+
+}, {
+  raw: BinData(0, "omMxMDAZF3BjMTAxGRnO"),
+  data: null,
+  timestamp: ISODate("2018-05-06T18:40:03.156Z"),
+  thingid: "0000000000000010",
+  rxinfo: [
+    {
+      mac: "b827ebffff633260",
+      name: "isrc-gateway",
+      time: ISODate("2018-05-06T18:40:03.151Z"),
+      rssi: -57,
+      lorasnr: 10
+    }
+  ],
+  txinfo: {
+    frequency : 868100000,
+    adr : true,
+    coderate : "4/6"
+  },
+  project : ""
 });
