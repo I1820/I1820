@@ -46,7 +46,7 @@
     "runner",
     "thing"
   ]
-  revision = "ae2cc194584dd67edbe9d852308214d3e68e0fdd"
+  revision = "f1921d31561b4a773db5b6066b1825c84591e3b8"
 
 [[projects]]
   name = "github.com/docker/distribution"
