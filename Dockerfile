@@ -7,6 +7,7 @@ RUN cd $GOPATH/src/github.com/aiotrc/uplink/ && dep ensure && go build -v -o /up
 
 # Final stage
 FROM alpine
+RUN apk add --no-cache tzdata
 WORKDIR /app
 COPY --from=build-env /uplink /app/
 ENTRYPOINT ["./uplink"]
