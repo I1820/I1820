@@ -7,6 +7,7 @@ RUN cd $GOPATH/src/github.com/aiotrc/dm/ && dep ensure && go build -v -o /dm
 
 # Final stage
 FROM alpine
+RUN apk add --no-cache tzdata
 WORKDIR /app
 COPY --from=build-env /dm /app/
 ENTRYPOINT ["./dm"]
