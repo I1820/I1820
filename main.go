@@ -178,7 +178,12 @@ func projectRemoveHandler(c *gin.Context) {
 	))
 
 	if err := dr.Decode(&p); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == mgo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
+		} else {
+
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
