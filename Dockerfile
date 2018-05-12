@@ -1,4 +1,3 @@
-MAINTAINER parham.alvani@gmail.com
 # Build stage
 FROM golang:alpine AS build-env
 ADD . $GOPATH/src/github.com/aiotrc/pm
