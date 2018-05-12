@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/aiotrc/pm/plog"
 	"github.com/aiotrc/pm/project"
 	"github.com/aiotrc/pm/runner"
 	"github.com/aiotrc/pm/thing"
@@ -331,7 +332,7 @@ func thingDeactivateHandler(c *gin.Context) {
 }
 
 func projectLogHandler(c *gin.Context) {
-	var results = make([]*bson.Document, 0)
+	var pls = make([]plog.ProjectLog, 0)
 
 	id := c.Param("project")
 
@@ -358,21 +359,21 @@ func projectLogHandler(c *gin.Context) {
 	}
 
 	for cur.Next(context.Background()) {
-		result := bson.NewDocument()
+		var pl plog.ProjectLog
 
-		if err := cur.Decode(result); err != nil {
+		if err := cur.Decode(&pl); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		results = append(results, result)
+		pls = append(pls, pl)
 	}
 	if err := cur.Close(context.Background()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, results)
+	c.JSON(http.StatusOK, pls)
 }
 
 func thingRemoveHandler(c *gin.Context) {
