@@ -107,6 +107,11 @@ func createRedis(name string) (string, error) {
 	}
 
 	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+		if err := dockerClient.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{
+			Force: true,
+		}); err != nil {
+		}
+
 		return "", err
 	}
 
@@ -160,6 +165,11 @@ func createRunner(name string, envs []Env) (string, string, error) {
 	}
 
 	if err := dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+		if err := dockerClient.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{
+			Force: true,
+		}); err != nil {
+		}
+
 		return "", "", err
 	}
 
@@ -173,11 +183,12 @@ func (r Runner) Remove() error {
 	if err := dockerClient.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
 		Force: true,
 	}); err != nil {
-		return err
 	}
 
-	err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
+	if err := dockerClient.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
 		Force: true,
-	})
-	return err
+	}); err != nil {
+	}
+
+	return nil
 }
