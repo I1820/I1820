@@ -13,7 +13,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,6 +25,7 @@ import (
 	"github.com/aiotrc/dm/loraserver"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/configor"
+	log "github.com/sirupsen/logrus"
 )
 
 // Config represents main configuration
@@ -47,6 +47,13 @@ var isrcDB *mgo.Database
 // ISRC loraserver.io
 var isrcLoRaServer *loraserver.LoRaServer
 var enabledGateways map[string]bool
+
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+	gin.DefaultWriter = log.WithFields(log.Fields{
+		"component": "dm",
+	}).Writer()
+}
 
 // handle registers apis and create http handler
 func handle() http.Handler {
@@ -351,16 +358,26 @@ func gatewayLogEnable(c *gin.Context) {
 		return
 	}
 
-	ch, err := isrcLoRaServer.GatewayFrameStream(mac)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
 	go func() {
-		for d := range ch {
-			if err := isrcDB.C("gateway").Insert(d); err != nil {
-				log.Println(err)
+		for {
+			ch, err := isrcLoRaServer.GatewayFrameStream(mac)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"component": "dm",
+				}).Error(err)
+				time.Sleep(1 * time.Second)
+				continue
+			}
+			log.WithFields(log.Fields{
+				"component": "dm",
+			}).Infof("Enabled %s", mac)
+
+			for d := range ch {
+				if err := isrcDB.C("gateway").Insert(d); err != nil {
+					log.WithFields(log.Fields{
+						"component": "dm",
+					}).Error(err)
+				}
 			}
 		}
 	}()

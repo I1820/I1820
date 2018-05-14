@@ -17,6 +17,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -52,7 +53,20 @@ func New(baseURL, username, password string) (*LoRaServer, error) {
 		password: password,
 	}
 
-	return l, l.login()
+	if err := l.login(); err != nil {
+		return nil, err
+	}
+
+	go func() {
+		for {
+			time.Sleep(1 * time.Hour)
+			if err := l.login(); err != nil {
+				log.Println(err)
+			}
+		}
+	}()
+
+	return l, nil
 }
 
 func (l *LoRaServer) login() error {
@@ -113,6 +127,8 @@ func (l *LoRaServer) GatewayFrameStream(mac string) (<-chan *GatewayFrame, error
 		for {
 			d, err := s.Recv()
 			if err != nil {
+				log.Println(err)
+				close(c)
 				return
 			}
 
