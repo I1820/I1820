@@ -270,9 +270,9 @@ func thingAddHandler(c *gin.Context) {
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		return
 	}
@@ -281,6 +281,8 @@ func thingAddHandler(c *gin.Context) {
 }
 
 func thingGetHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	name := c.Param("name")
 
 	var p project.Project
@@ -293,10 +295,9 @@ func thingGetHandler(c *gin.Context) {
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
 		} else {
-
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		return
 	}
@@ -305,6 +306,8 @@ func thingGetHandler(c *gin.Context) {
 }
 
 func thingActivateHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	name := c.Param("name")
 
 	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
@@ -319,9 +322,9 @@ func thingActivateHandler(c *gin.Context) {
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		return
 	}
@@ -330,6 +333,8 @@ func thingActivateHandler(c *gin.Context) {
 }
 
 func thingDeactivateHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	name := c.Param("name")
 
 	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
@@ -344,9 +349,9 @@ func thingDeactivateHandler(c *gin.Context) {
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Thing %s not found", name)})
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		return
 	}
@@ -355,6 +360,8 @@ func thingDeactivateHandler(c *gin.Context) {
 }
 
 func projectLogHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	var pls = make([]plog.ProjectLog, 0)
 
 	id := c.Param("project")
@@ -377,7 +384,7 @@ func projectLogHandler(c *gin.Context) {
 		),
 	))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -385,14 +392,14 @@ func projectLogHandler(c *gin.Context) {
 		var pl plog.ProjectLog
 
 		if err := cur.Decode(&pl); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
 		pls = append(pls, pl)
 	}
 	if err := cur.Close(context.Background()); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -400,6 +407,8 @@ func projectLogHandler(c *gin.Context) {
 }
 
 func thingRemoveHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	name := c.Param("name")
 
 	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(), bson.NewDocument(
@@ -411,7 +420,7 @@ func thingRemoveHandler(c *gin.Context) {
 	var p project.Project
 
 	if err := dr.Decode(&p); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -419,6 +428,8 @@ func thingRemoveHandler(c *gin.Context) {
 }
 
 func thingListHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	results := make([]thing.Thing, 0)
 
 	cur, err := isrcDB.Collection("pm").Aggregate(context.Background(), bson.NewArray(
@@ -441,14 +452,14 @@ func thingListHandler(c *gin.Context) {
 		var result thing.Thing
 
 		if err := cur.Decode(&result); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
 		results = append(results, result)
 	}
 	if err := cur.Close(context.Background()); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
