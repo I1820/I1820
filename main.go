@@ -13,7 +13,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -29,6 +28,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/core/options"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	log "github.com/sirupsen/logrus"
 )
 
 // Config represents main configuration
@@ -43,6 +43,11 @@ var isrcDB *mgo.Database
 
 // init initiates global variables
 func init() {
+	gin.SetMode(gin.ReleaseMode)
+	gin.DefaultWriter = log.WithFields(log.Fields{
+		"component": "pm",
+	}).Writer()
+
 	// Load configuration
 	if err := configor.Load(&Config, "config.yml"); err != nil {
 		panic(err)
@@ -52,6 +57,12 @@ func init() {
 // handle registers apis and create http handler
 func handle() http.Handler {
 	r := gin.Default()
+
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "404 Not Found"})
+	})
+
+	r.Use(gin.ErrorLogger())
 
 	api := r.Group("/api")
 	{
@@ -70,10 +81,6 @@ func handle() http.Handler {
 		api.DELETE("/things/:name", thingRemoveHandler)
 		api.GET("/things", thingListHandler)
 	}
-
-	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{"error": "404 Not Found"})
-	})
 
 	return r
 }
@@ -127,9 +134,10 @@ func aboutHandler(c *gin.Context) {
 }
 
 func projectNewHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	var json projectReq
 	if err := c.BindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -139,12 +147,12 @@ func projectNewHandler(c *gin.Context) {
 		{Name: "MONGO_URL", Value: Config.DB.URL},
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	if _, err := isrcDB.Collection("pm").InsertOne(context.Background(), p); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -152,6 +160,8 @@ func projectNewHandler(c *gin.Context) {
 }
 
 func projectDetailHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	name := c.Param("project")
 
 	var p project.Project
@@ -161,7 +171,11 @@ func projectDetailHandler(c *gin.Context) {
 	))
 
 	if err := dr.Decode(&p); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err == mgo.ErrNoDocuments {
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
+		} else {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -169,6 +183,8 @@ func projectDetailHandler(c *gin.Context) {
 }
 
 func projectRemoveHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	name := c.Param("name")
 
 	var p project.Project
@@ -179,23 +195,22 @@ func projectRemoveHandler(c *gin.Context) {
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Project %s not found", name)})
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
 		} else {
-
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		return
 	}
 
 	if err := p.Runner.Remove(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	if _, err := isrcDB.Collection("pm").DeleteOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", name),
 	)); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -203,25 +218,27 @@ func projectRemoveHandler(c *gin.Context) {
 }
 
 func projectListHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	ps := make([]project.Project, 0)
 
 	cur, err := isrcDB.Collection("pm").Find(context.Background(), bson.NewDocument())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
 	for cur.Next(context.Background()) {
 		var p project.Project
 
 		if err := cur.Decode(&p); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
 		ps = append(ps, p)
 	}
 	if err := cur.Close(context.Background()); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -229,11 +246,12 @@ func projectListHandler(c *gin.Context) {
 }
 
 func thingAddHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	name := c.Param("project")
 
 	var json thingReq
 	if err := c.BindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
