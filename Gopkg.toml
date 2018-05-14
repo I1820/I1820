@@ -34,10 +34,6 @@
   version = "1.2.0"
 
 [[constraint]]
-  name = "github.com/go-resty/resty"
-  branch = "master"
-
-[[constraint]]
   branch = "master"
   name = "github.com/jinzhu/configor"
 

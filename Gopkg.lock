@@ -10,8 +10,8 @@
 [[projects]]
   name = "github.com/brocaar/lora-app-server"
   packages = ["api"]
-  revision = "e925d467a72429d68c261299517e6d20daf49d5a"
-  version = "0.20.1"
+  revision = "369fcdefb173ac536015d33c3bbe39992767e448"
+  version = "0.20.2"
 
 [[projects]]
   branch = "master"
@@ -30,13 +30,6 @@
   version = "v1.2"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/go-resty/resty"
-  packages = ["."]
-  revision = "1199afcd6b5ef023d6b2350c910bab92b1689375"
-
-[[projects]]
-  branch = "master"
   name = "github.com/golang/protobuf"
   packages = [
     "jsonpb",
@@ -48,7 +41,8 @@
     "ptypes/struct",
     "ptypes/timestamp"
   ]
-  revision = "e09c5db296004fbe3f74490e84dcd62c3c5ddb1b"
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/grpc-ecosystem/grpc-gateway"
@@ -99,7 +93,6 @@
     "idna",
     "internal/timeseries",
     "lex/httplex",
-    "publicsuffix",
     "trace"
   ]
   revision = "5f9ae10d9af5b1c89ae6904293b14b064d4ada23"
@@ -200,6 +193,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "53f2e9aceb6da3a7e1d8bd6b35e68d4b1f3ca837da733df89b7d1d36f9c6cf1d"
+  inputs-digest = "09b2fe4c46b822e46b16a1527f2948815d0d7d505c91c52d5b37c1b0b68ff32a"
   solver-name = "gps-cdcl"
   solver-version = 1
