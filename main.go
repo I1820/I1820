@@ -108,7 +108,7 @@ func setupLoRaServer() {
 		log.Fatalf("loraserver.io session %s: %v", Config.LoRaServer.URL, err)
 	}
 
-	fmt.Printf("loraserver.io session: %s:%s@%s", Config.LoRaServer.URL, Config.LoRaServer.Username, Config.LoRaServer.Password)
+	fmt.Printf("loraserver.io session: %s:%s@%s\n", Config.LoRaServer.URL, Config.LoRaServer.Username, Config.LoRaServer.Password)
 
 	isrcLoRaServer = l
 	enabledGateways = make(map[string]bool)
@@ -315,6 +315,9 @@ func thingsDataHandler(c *gin.Context) {
 				"thingid": bson.M{
 					"$in": json.ThingIDs,
 				},
+				"data": bson.M{
+					"$ne": nil,
+				},
 				"timestamp": bson.M{
 					"$gt": time.Unix(json.Since, 0),
 					"$lt": time.Unix(json.Until, 0),
@@ -329,8 +332,8 @@ func thingsDataHandler(c *gin.Context) {
 	} else {
 		pipe := isrcDB.C("data").Pipe([]bson.M{
 			{"$match": bson.M{
-				"thingid": bson.M{
-					"$in": json.ThingIDs,
+				"data": bson.M{
+					"$ne": nil,
 				},
 				"timestamp": bson.M{
 					"$gt": time.Unix(json.Since, 0),
