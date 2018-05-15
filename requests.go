@@ -12,6 +12,7 @@ package main
 
 type sendReq struct {
 	Data      string `json:"data" binding:"required"`
-	ProjectID string `json:"project_id"`
 	ThingID   string `json:"thing_id" binding:"required"`
+	FPort     int    `json:"fport"`
+	Confirmed bool   `json:"confirmed"`
 }
