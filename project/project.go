@@ -20,6 +20,7 @@ type Project struct {
 	Name   string        `json:"name" bson:"name"`
 	Runner runner.Runner `json:"runner" bson:"runner"`
 	Things []thing.Thing `json:"things" bson:"things"`
+	Status bool          `json:"status" bson:"status"` // active/inactive
 }
 
 // New creates new project with given name
@@ -34,5 +35,6 @@ func New(name string, envs []runner.Env) (*Project, error) {
 		Name:   name,
 		Runner: r,
 		Things: make([]thing.Thing, 0),
+		Status: true,
 	}, nil
 }

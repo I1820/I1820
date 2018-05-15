@@ -74,6 +74,8 @@ func handle() http.Handler {
 		api.POST("/project/:project/things", thingAddHandler)
 		api.GET("/project/:project/logs", projectLogHandler)
 		api.GET("/project/:project/", projectDetailHandler)
+		api.GET("/project/:project/activate", projectActivateHandler)
+		api.GET("/project/:project/deactivate", projectDeactivateHandler)
 
 		api.GET("/things/:name", thingGetHandler)
 		api.GET("/things/:name/activate", thingActivateHandler)
@@ -267,6 +269,56 @@ func projectListHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, ps)
 }
 
+func projectActivateHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
+	name := c.Param("project")
+
+	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
+		bson.EC.String("name", name),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", true)),
+	), mgo.Opt.ReturnDocument(options.After))
+
+	var p project.Project
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
+		} else {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, p)
+}
+
+func projectDeactivateHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
+	name := c.Param("project")
+
+	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
+		bson.EC.String("name", name),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", false)),
+	), mgo.Opt.ReturnDocument(options.After))
+
+	var p project.Project
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			c.AbortWithError(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
+		} else {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, p)
+}
+
 func thingAddHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
@@ -310,6 +362,7 @@ func thingGetHandler(c *gin.Context) {
 	var p project.Project
 
 	dr := isrcDB.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+		bson.EC.Boolean("status", true),
 		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements("$elemMatch",
 			bson.EC.String("id", name),
 		)),
