@@ -135,13 +135,13 @@ func sendHandler(c *gin.Context) {
 		return
 	}
 
-	t, err := pm.GetThing(r.ThingID)
+	p, err := pm.GetThingProject(r.ThingID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	encoder := encoder.New(fmt.Sprintf("http://%s:%s", Config.Encoder.Host, t.Project.Runner.Port))
+	encoder := encoder.New(fmt.Sprintf("http://%s:%s", Config.Encoder.Host, p.Runner.Port))
 
 	raw, err := encoder.Encode(r.Data, r.ThingID)
 	if err != nil {
@@ -160,7 +160,7 @@ func sendHandler(c *gin.Context) {
 	}
 	if err := cli.Publish(&client.PublishOptions{
 		QoS:       mqtt.QoS0,
-		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", t.Project.Name, r.ThingID)),
+		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", p.Name, r.ThingID)),
 		Message:   b,
 	}); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -169,5 +169,5 @@ func sendHandler(c *gin.Context) {
 
 	c.Data(http.StatusOK, "application/octet-stream", raw)
 
-	fmt.Println(t)
+	fmt.Println(p)
 }
