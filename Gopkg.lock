@@ -46,7 +46,7 @@
     "runner",
     "thing"
   ]
-  revision = "f1921d31561b4a773db5b6066b1825c84591e3b8"
+  revision = "ec5c49668df6a2ccefe64d04f94a459e7873eae7"
 
 [[projects]]
   name = "github.com/docker/distribution"
@@ -115,7 +115,7 @@
   branch = "master"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "778f2e774c725116edbc3d039dc0dfc1cc62aae8"
+  revision = "bde08903c767a7f835dfbe69f769f4b3225f8b1b"
 
 [[projects]]
   name = "github.com/yosssi/gmq"
@@ -131,7 +131,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "4ec37c66abab2c7e02ae775328b2ff001c3f025a"
+  revision = "1a580b3eff7814fc9b40602fd35256c63b50f491"
 
 [[projects]]
   branch = "master"
@@ -142,7 +142,7 @@
     "internal/socks",
     "proxy"
   ]
-  revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
+  revision = "2491c5de3490fced2f6cff376127c667efeed857"
 
 [[projects]]
   branch = "master"
@@ -151,7 +151,7 @@
     "unix",
     "windows"
   ]
-  revision = "6f686a352de66814cdd080d970febae7767857a3"
+  revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
 
 [[projects]]
   branch = "v2"
