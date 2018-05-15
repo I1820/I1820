@@ -93,6 +93,28 @@ func setupDB() {
 	}
 	isrcDB = client.Database("isrc")
 	// TODO removes logs on sepcific period (Time field)
+
+	if _, err := isrcDB.Collection("pm").Indexes().CreateMany(
+		context.Background(),
+		mgo.IndexModel{
+			Keys: bson.NewDocument(
+				bson.EC.Int32("name", 1),
+			),
+			Options: bson.NewDocument(
+				bson.EC.Boolean("unique", true),
+			),
+		},
+		mgo.IndexModel{
+			Keys: bson.NewDocument(
+				bson.EC.Int32("things.id", 1),
+			),
+			Options: bson.NewDocument(
+				bson.EC.Boolean("unique", true),
+			),
+		},
+	); err != nil {
+		log.Fatalf("Create index %v", err)
+	}
 }
 
 func main() {
@@ -263,7 +285,7 @@ func thingAddHandler(c *gin.Context) {
 	dr := isrcDB.Collection("pm").FindOneAndUpdate(context.Background(), bson.NewDocument(
 		bson.EC.String("name", name),
 	), bson.NewDocument(
-		bson.EC.SubDocumentFromElements("$push", bson.EC.Interface("things", t)),
+		bson.EC.SubDocumentFromElements("$addToSet", bson.EC.Interface("things", t)),
 	), mgo.Opt.ReturnDocument(options.After))
 
 	var p project.Project
