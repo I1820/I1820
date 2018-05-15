@@ -127,7 +127,6 @@ func main() {
 					*/
 
 					defer func() {
-						fmt.Println("Hello")
 						if err := cp.Insert(&struct {
 							Raw       []byte
 							Data      interface{}
