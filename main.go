@@ -107,7 +107,9 @@ func main() {
 						}).Errorf("JSON Unmarshal: %s", err)
 						return
 					}
-					log.Info(m)
+					log.WithFields(log.Fields{
+						"component": "uplink",
+					}).Info(m)
 
 					var bdoc interface{}
 
@@ -127,6 +129,10 @@ func main() {
 					*/
 
 					defer func() {
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Info("Insert into databse")
+
 						if err := cp.Insert(&struct {
 							Raw       []byte
 							Data      interface{}
