@@ -57,8 +57,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
 	}
-	defer session.Close()
-	fmt.Printf("Mongo session %s has been created\n", Config.DB.URL)
 
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
@@ -111,6 +109,8 @@ func main() {
 					}
 					log.Info(m)
 
+					var bdoc interface{}
+
 					// Find thing
 					p, err := pm.GetThingProject(m.DevEUI)
 					if err != nil {
@@ -126,27 +126,8 @@ func main() {
 						}
 					*/
 
-					// Create decoder
-					decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, p.Runner.Port))
-
-					// Decode
-					parsed, err := decoder.Decode(m.Data, m.DevEUI)
-					if err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("Decode: %s", err)
-						return
-					}
-
-					var bdoc interface{}
-					if err := bson.UnmarshalJSON([]byte(parsed), &bdoc); err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("Unmarshal JSON: %s\n %q", err, parsed)
-						return
-					}
-
 					defer func() {
+						fmt.Println("Hello")
 						if err := cp.Insert(&struct {
 							Raw       []byte
 							Data      interface{}
@@ -170,6 +151,25 @@ func main() {
 							return
 						}
 					}()
+
+					// Create decoder
+					decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, p.Runner.Port))
+
+					// Decode
+					parsed, err := decoder.Decode(m.Data, m.DevEUI)
+					if err != nil {
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("Decode: %s", err)
+						return
+					}
+
+					if err := bson.UnmarshalJSON([]byte(parsed), &bdoc); err != nil {
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("Unmarshal JSON: %s\n %q", err, parsed)
+						return
+					}
 				},
 			},
 		},
