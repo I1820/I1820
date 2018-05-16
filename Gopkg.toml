@@ -38,8 +38,8 @@
   version = "0.0.1"
 
 [[constraint]]
-  branch = "v2"
-  name = "gopkg.in/mgo.v2"
+  version = "0.0.4"
+  name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
   branch = "master"

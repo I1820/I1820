@@ -73,6 +73,12 @@
   version = "v0.3.3"
 
 [[projects]]
+  name = "github.com/go-stack/stack"
+  packages = ["."]
+  revision = "259ab82a6cad3992b4e21ff5cac294ccb06474bc"
+  version = "v1.7.0"
+
+[[projects]]
   name = "github.com/gogo/protobuf"
   packages = ["proto"]
   revision = "100ba4e885062801d56799d78530b73b178a78f3"
@@ -83,6 +89,37 @@
   name = "github.com/jinzhu/configor"
   packages = ["."]
   revision = "ec34f328956f53dfbd06e9f5306e37e6943443c3"
+
+[[projects]]
+  name = "github.com/mongodb/mongo-go-driver"
+  packages = [
+    "bson",
+    "bson/builder",
+    "bson/decimal",
+    "bson/elements",
+    "bson/objectid",
+    "core/addr",
+    "core/auth",
+    "core/auth/internal/gssapi",
+    "core/command",
+    "core/connection",
+    "core/connstring",
+    "core/description",
+    "core/dispatch",
+    "core/options",
+    "core/readconcern",
+    "core/readpref",
+    "core/result",
+    "core/tag",
+    "core/topology",
+    "core/version",
+    "core/wiremessage",
+    "core/writeconcern",
+    "internal",
+    "mongo"
+  ]
+  revision = "ff5ad991913ea56c4609391ff190eaf83edf339b"
+  version = "v0.0.4"
 
 [[projects]]
   name = "github.com/opencontainers/go-digest"
@@ -119,18 +156,17 @@
 
 [[projects]]
   name = "github.com/yosssi/gmq"
-  packages = [
-    "mqtt",
-    "mqtt/client",
-    "mqtt/packet"
-  ]
+  packages = ["mqtt"]
   revision = "31fa037b1019e383aa033aee1e4d04e106c88ed2"
   version = "v0.0.1"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
+  packages = [
+    "pbkdf2",
+    "ssh/terminal"
+  ]
   revision = "1a580b3eff7814fc9b40602fd35256c63b50f491"
 
 [[projects]]
@@ -146,24 +182,18 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/sync"
+  packages = ["semaphore"]
+  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows"
   ]
   revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
-
-[[projects]]
-  branch = "v2"
-  name = "gopkg.in/mgo.v2"
-  packages = [
-    ".",
-    "bson",
-    "internal/json",
-    "internal/sasl",
-    "internal/scram"
-  ]
-  revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
@@ -174,6 +204,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "79a9e41914a8b7cd86e9196951d2d4a0cff0ecad9bca46dcbc74c570a298b4c0"
+  inputs-digest = "67808f21afa41c73fa944d73b1657862c614ea6b68f58b9872ebe2cc66a5cf34"
   solver-name = "gps-cdcl"
   solver-version = 1
