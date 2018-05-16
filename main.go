@@ -11,6 +11,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -18,8 +19,8 @@ import (
 	"os/signal"
 	"time"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/mongodb/mongo-go-driver/bson"
+	mgo "github.com/mongodb/mongo-go-driver/mongo"
 
 	pmclient "github.com/aiotrc/pm/client"
 	"github.com/aiotrc/uplink/decoder"
@@ -33,7 +34,7 @@ import (
 // Config represents main configuration
 var Config = struct {
 	DB struct {
-		URL string `default:"127.0.0.1" env:"db_url"`
+		URL string `default:"mongodb://127.0.0.1" env:"db_url"`
 	}
 	Broker struct {
 		URL string `default:"127.0.0.1:1883" env:"broker_url"`
@@ -53,13 +54,10 @@ func main() {
 	}
 
 	// Create a Mongo Session
-	session, err := mgo.Dial(Config.DB.URL)
+	session, err := mgo.Connect(context.Background(), Config.DB.URL, nil)
 	if err != nil {
 		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
 	}
-
-	// Optional. Switch the session to a monotonic behavior.
-	session.SetMode(mgo.Monotonic, true)
 
 	// Create an MQTT client
 	cli := client.New(&client.Options{
@@ -84,12 +82,22 @@ func main() {
 	// PM
 	pm := pmclient.New(Config.PM.URL)
 
-	// Parsed collection
-	cp := session.DB("isrc").C("data")
-	if err := cp.EnsureIndex(mgo.Index{
-		Key: []string{"timestamp"},
-	}); err != nil {
-		panic(err)
+	// Data collection
+	cd := session.Database("isrc").Collection("data")
+	if _, err := cd.Indexes().CreateMany(
+		context.Background(),
+		mgo.IndexModel{
+			Keys: bson.NewDocument(
+				bson.EC.Int32("timestamp", 1),
+			),
+		},
+		mgo.IndexModel{
+			Keys: bson.NewDocument(
+				bson.EC.String("data._location", "2dsphere"),
+			),
+		},
+	); err != nil {
+		log.Fatalf("Create index %v", err)
 	}
 
 	// Subscribe to topics
@@ -133,7 +141,7 @@ func main() {
 							"component": "uplink",
 						}).Info("Insert into databse")
 
-						if err := cp.Insert(&struct {
+						if _, err := cd.InsertOne(context.Background(), &struct {
 							Raw       []byte
 							Data      interface{}
 							Timestamp time.Time
@@ -169,7 +177,7 @@ func main() {
 						return
 					}
 
-					if err := bson.UnmarshalJSON([]byte(parsed), &bdoc); err != nil {
+					if err := json.Unmarshal([]byte(parsed), &bdoc); err != nil {
 						log.WithFields(log.Fields{
 							"component": "uplink",
 						}).Errorf("Unmarshal JSON: %s\n %q", err, parsed)
