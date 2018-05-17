@@ -103,8 +103,15 @@ func main() {
 	// Subscribe to topics
 	err = cli.Subscribe(&client.SubscribeOptions{
 		SubReqs: []*client.SubReq{
+			// https://docs.loraserver.io/use/getting-started/
 			&client.SubReq{
-				// https://docs.loraserver.io/use/getting-started/
+				TopicFilter: []byte("application/+/node/+/error"),
+				QoS:         mqtt.QoS0,
+				Handler: func(topicName, message []byte) {
+					fmt.Println(string(message))
+				},
+			},
+			&client.SubReq{
 				TopicFilter: []byte("application/+/node/+/rx"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
