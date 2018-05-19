@@ -50,16 +50,18 @@ var cli *client.Client
 func handle() http.Handler {
 	r := gin.Default()
 
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "404 Not Found"})
+	})
+
+	r.Use(gin.ErrorLogger())
+
 	api := r.Group("/api")
 	{
 		api.GET("/about", aboutHandler)
 
 		api.POST("/send", sendHandler)
 	}
-
-	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{"error": "404 Not Found"})
-	})
 
 	return r
 }
@@ -128,16 +130,16 @@ func aboutHandler(c *gin.Context) {
 }
 
 func sendHandler(c *gin.Context) {
-	var r sendReq
+	c.Header("Content-Type", "application/json")
 
+	var r sendReq
 	if err := c.BindJSON(&r); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	p, err := pm.GetThingProject(r.ThingID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -145,17 +147,17 @@ func sendHandler(c *gin.Context) {
 
 	raw, err := encoder.Encode(r.Data, r.ThingID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	b, err := json.Marshal(lora.TxMessage{
-		FPort:     2,
+		FPort:     r.FPort,
 		Data:      raw,
-		Confirmed: false,
+		Confirmed: r.Confirmed,
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	if err := cli.Publish(&client.PublishOptions{
@@ -163,11 +165,9 @@ func sendHandler(c *gin.Context) {
 		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", p.Name, r.ThingID)),
 		Message:   b,
 	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.Data(http.StatusOK, "application/octet-stream", raw)
-
-	fmt.Println(p)
+	c.JSON(http.StatusOK, raw)
 }
