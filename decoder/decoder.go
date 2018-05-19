@@ -12,6 +12,7 @@ package decoder
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -31,7 +32,12 @@ func New(url string) Decoder {
 
 // Decode decodes given data with user provided decoder
 func (d Decoder) Decode(payload []byte, id string) (string, error) {
-	r, err := http.Post(fmt.Sprintf("%s/api/decode/%s", d.URL, id), "application/json", bytes.NewBuffer(payload))
+	jsd, err := json.Marshal(payload)
+	if err != nil {
+		return "", err
+	}
+
+	r, err := http.Post(fmt.Sprintf("%s/api/decode/%s", d.URL, id), "application/json", bytes.NewBuffer(jsd))
 	if err != nil {
 		return "", err
 	}
