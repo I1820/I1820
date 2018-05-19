@@ -11,8 +11,8 @@
 package main
 
 type sendReq struct {
-	Data      string `json:"data" binding:"required"`
-	ThingID   string `json:"thing_id" binding:"required"`
-	FPort     int    `json:"fport"`
-	Confirmed bool   `json:"confirmed"`
+	Data      interface{} `json:"data" binding:"required"`
+	ThingID   string      `json:"thing_id" binding:"required"`
+	FPort     int         `json:"fport"`
+	Confirmed bool        `json:"confirmed"`
 }
