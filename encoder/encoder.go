@@ -12,6 +12,7 @@ package encoder
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -30,11 +31,17 @@ func New(url string) Encoder {
 }
 
 // Encode encodes given data with user provided encoder
-func (e Encoder) Encode(payload string, id string) ([]byte, error) {
-	r, err := http.Post(fmt.Sprintf("%s/api/encode/%s", e.URL, id), "application/json", bytes.NewBuffer([]byte(payload)))
+func (e Encoder) Encode(payload interface{}, id string) ([]byte, error) {
+	jsn, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
+
+	r, err := http.Post(fmt.Sprintf("%s/api/encode/%s", e.URL, id), "application/json", bytes.NewBuffer(jsn))
+	if err != nil {
+		return nil, err
+	}
+
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
@@ -44,5 +51,9 @@ func (e Encoder) Encode(payload string, id string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", b)
 	}
 
-	return b, nil
+	var jse []byte
+	if err := json.Unmarshal(b, &jse); err != nil {
+		return nil, err
+	}
+	return jse, nil
 }
