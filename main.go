@@ -110,9 +110,9 @@ func setupDB() {
 			Keys: bson.NewDocument(
 				bson.EC.Int32("things.id", 1),
 			),
-			Options: bson.NewDocument(
+			/*Options: bson.NewDocument(
 				bson.EC.Boolean("unique", true),
-			),
+			),*/
 		},
 	); err != nil {
 		log.Fatalf("Create index %v", err)
