@@ -247,7 +247,7 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 				},
 			},
 			"count": bson.M{"$sum": 1},
-			"last":  bson.M{"$last": "$data"},
+			"data":  bson.M{"$last": "$data"},
 		}},
 		{"$sort": bson.M{"timestamp": -1}},
 	})
