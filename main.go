@@ -28,6 +28,8 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/core/options"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -41,6 +43,25 @@ var Config = struct {
 // ISRC database
 var isrcDB *mgo.Database
 
+// prometheus monitoring
+var (
+	numberOfCreatedProjects = prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: "pm",
+		Name:      "project_created_total",
+		Help:      "Number of created projects.",
+	})
+
+	requestsDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Namespace: "pm",
+			Name:      "request_duration_seconds",
+			Help:      "A histogram of latencies for requests.",
+			Buckets:   []float64{.25, .5, 1, 2.5, 5, 10},
+		},
+		[]string{"path", "method", "code"},
+	)
+)
+
 // init initiates global variables
 func init() {
 	gin.SetMode(gin.ReleaseMode)
@@ -52,6 +73,9 @@ func init() {
 	if err := configor.Load(&Config, "config.yml"); err != nil {
 		panic(err)
 	}
+
+	// Prometheus
+	prometheus.MustRegister(numberOfCreatedProjects, requestsDuration)
 }
 
 // handle registers apis and create http handler
@@ -62,7 +86,12 @@ func handle() http.Handler {
 		c.JSON(http.StatusNotFound, gin.H{"error": "404 Not Found"})
 	})
 
-	r.Use(gin.ErrorLogger())
+	r.Use(gin.ErrorLogger(), func(c *gin.Context) {
+		gin.WrapH(promhttp.InstrumentHandlerDuration(
+			requestsDuration.MustCurryWith(prometheus.Labels{"path": c.Request.URL.Path}),
+			http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) { c.Next() }),
+		))(c)
+	})
 
 	api := r.Group("/api")
 	{
@@ -83,6 +112,7 @@ func handle() http.Handler {
 		api.DELETE("/things/:name", thingRemoveHandler)
 		api.GET("/things", thingListHandler)
 	}
+	r.Any("/metrics", gin.WrapH(promhttp.Handler()))
 
 	return r
 }
@@ -179,6 +209,8 @@ func projectNewHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	numberOfCreatedProjects.Inc()
 
 	c.JSON(http.StatusOK, p)
 }
