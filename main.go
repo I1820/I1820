@@ -28,6 +28,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/core/options"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -83,6 +84,7 @@ func handle() http.Handler {
 		api.DELETE("/things/:name", thingRemoveHandler)
 		api.GET("/things", thingListHandler)
 	}
+	r.Any("/metrics", gin.WrapH(promhttp.Handler()))
 
 	return r
 }
