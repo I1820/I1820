@@ -214,17 +214,25 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 	var results []bson.M
 
 	var json struct {
-		ThingIDs []string `json:"thing_ids"`
-		Since    int64
-		Until    int64
+		ThingIDs      []string `json:"thing_ids"`
+		Since         int64
+		Until         int64
+		ClusterNumber int64 `json:"cn"`
 	}
-
 	if err := c.BindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	mod := (json.Until - json.Since) / 200
+	if json.ClusterNumber == 0 {
+		json.ClusterNumber = 200
+	}
+
+	// cluster size
+	cs := (json.Until - json.Since) / json.ClusterNumber
+	if cs == 0 {
+		cs++
+	}
 
 	pipe := isrcDB.C("data").Pipe([]bson.M{
 		{"$match": bson.M{
@@ -238,15 +246,26 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 		}},
 		{"$group": bson.M{
 			"_id": bson.M{
-				"thingid":  "$thingid",
-				"interval": bson.M{"$mod": []interface{}{bson.M{"$second": "$timestamp"}, mod}},
+				"thingid": "$thingid",
+				"cluster": bson.M{"$floor": bson.M{"$divide": []interface{}{
+					bson.M{
+						"$subtract": []interface{}{
+							"$timestamp",
+							time.Unix(0, 0),
+						},
+					},
+					cs,
+				}}},
 			},
 			"count": bson.M{"$sum": 1},
 			// "data":  bson.M{"$push": bson.M{"$cond": []interface{}{bson.M{"$ne": []interface{}{"$data", nil}}, "$data", "$noval"}}},
-			"data":      bson.M{"$last": "$data"},
-			"timestamp": bson.M{"$last": "$timestamp"},
+			"data": bson.M{"$last": "$data"},
 		}},
-		{"$sort": bson.M{"timestamp": -1}},
+		{"$addFields": bson.M{
+			"since": bson.M{"$add": []interface{}{time.Unix(0, 0), bson.M{"$multiply": []interface{}{"$_id.cluster", cs}}}},
+			"until": bson.M{"$add": []interface{}{time.Unix(0, 0), cs, bson.M{"$multiply": []interface{}{"$_id.cluster", cs}}}},
+		}},
+		{"$sort": bson.M{"since": -1}},
 	})
 	if err := pipe.All(&results); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
