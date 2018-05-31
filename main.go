@@ -224,6 +224,8 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 		return
 	}
 
+	mod := (json.Until - json.Since) / 200
+
 	pipe := isrcDB.C("data").Pipe([]bson.M{
 		{"$match": bson.M{
 			"thingid": bson.M{
@@ -236,18 +238,13 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 		}},
 		{"$group": bson.M{
 			"_id": bson.M{
-				"thingid":   "$thingid",
-				"dayOfYear": bson.M{"$dayOfYear": "$timestamp"},
-				"hour":      bson.M{"$hour": "$timestamp"},
-				"interval": bson.M{
-					"$subtract": []bson.M{
-						bson.M{"$minute": "$timestamp"},
-						bson.M{"$mod": []interface{}{bson.M{"$minute": "$timestamp"}, 15}},
-					},
-				},
+				"thingid":  "$thingid",
+				"interval": bson.M{"$mod": []interface{}{bson.M{"$second": "$timestamp"}, mod}},
 			},
 			"count": bson.M{"$sum": 1},
-			"data":  bson.M{"$last": "$data"},
+			// "data":  bson.M{"$push": bson.M{"$cond": []interface{}{bson.M{"$ne": []interface{}{"$data", nil}}, "$data", "$noval"}}},
+			"data":      bson.M{"$last": "$data"},
+			"timestamp": bson.M{"$last": "$timestamp"},
 		}},
 		{"$sort": bson.M{"timestamp": -1}},
 	})
