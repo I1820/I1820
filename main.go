@@ -11,7 +11,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -46,6 +48,13 @@ var Config = struct {
 var pm pmclient.PM
 var cli *client.Client
 
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+	gin.DefaultWriter = log.WithFields(log.Fields{
+		"component": "downlink",
+	}).Writer()
+}
+
 // handle registers apis and create http handler
 func handle() http.Handler {
 	r := gin.Default()
@@ -61,6 +70,7 @@ func handle() http.Handler {
 		api.GET("/about", aboutHandler)
 
 		api.POST("/send", sendHandler)
+		api.POST("/raw", sendRawHandler)
 	}
 
 	return r
@@ -182,26 +192,46 @@ func sendRawHandler(c *gin.Context) {
 		return
 	}
 
-	raw, ok := r.Data.([]byte)
+	b64, ok := r.Data.(string)
 	if !ok {
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Invalid byte stream"))
+		return
 	}
-
-	b, err := json.Marshal(lora.TxMessage{
-		FPort:     r.FPort,
-		Data:      raw,
-		Confirmed: r.Confirmed,
-	})
+	raw, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	if err := cli.Publish(&client.PublishOptions{
-		QoS:       mqtt.QoS0,
-		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", r, r.ThingID)),
-		Message:   b,
-	}); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
+
+	buffer := bytes.NewBuffer(raw)
+
+	for raw := buffer.Next(r.SegmentSize); len(raw) != 0; raw = buffer.Next(r.SegmentSize) {
+		log.Infof("Segment %v", raw)
+
+		b, err := json.Marshal(lora.TxMessage{
+			Reference: "abcd1234",
+			FPort:     r.FPort,
+			Data:      raw,
+			Confirmed: r.Confirmed,
+		})
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		for i := 0; i < r.RepeatNumber; i++ {
+			if err := cli.Publish(&client.PublishOptions{
+				QoS:       mqtt.QoS0,
+				TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", r.ApplicationID, r.ThingID)),
+				Message:   b,
+			}); err != nil {
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+			log.Infof("MQTT Packet %s [%d]", b, i)
+
+			time.Sleep(time.Duration(r.Sleep) * time.Second)
+		}
 	}
 
 	c.JSON(http.StatusOK, raw)
