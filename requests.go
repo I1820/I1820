@@ -16,4 +16,8 @@ type sendReq struct {
 	ApplicationID string      `json:"application_id" binding:"required"` // The ApplicationID can be retrieved using the API or from the web-interface, this is not the AppEUI!
 	FPort         int         `json:"fport"`
 	Confirmed     bool        `json:"confirmed"`
+
+	SegmentSize  int   `json:"ss"`
+	RepeatNumber int   `json:"rn"`
+	Sleep        int64 `json:"sleep"` // Sleep interval between sends in seconds
 }
