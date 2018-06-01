@@ -67,7 +67,6 @@ func handle() http.Handler {
 		api.GET("/things/:thingid", thingDataHandler)
 		api.POST("/things/w", thingsDataHandlerWindowing)
 		api.POST("/things", thingsDataHandler)
-		api.GET("/things/:thingid/key/:key", thingKeyDataHandler)
 
 		api.GET("/gateway/:gatewayid/enable", gatewayLogEnable)
 		api.GET("/gateway/:gatewayid", gatewayLogFetch)
@@ -167,46 +166,6 @@ func thingsHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, results)
-}
-
-func thingKeyDataHandler(c *gin.Context) {
-	var results []bson.M
-
-	key := c.Param("key")
-	id := c.Param("thingid")
-
-	since, err := strconv.ParseInt(c.Query("since"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	until, err := strconv.ParseInt(c.Query("until"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := isrcDB.C("data").Find(bson.M{
-		fmt.Sprintf("data.%s", key): bson.M{
-			"$exists": true,
-		},
-		"thingid": id,
-		"timestamp": bson.M{
-			"$gt": time.Unix(since, 0),
-			"$lt": time.Unix(until, 0),
-		},
-	}).Select(bson.M{
-		"_id": false,
-		fmt.Sprintf("data.%s", key): true,
-		"timestamp":                 true,
-		"thingid":                   true,
-		"rxinfo":                    true,
-	}).All(&results); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	}
-
 	c.JSON(http.StatusOK, results)
 }
 
