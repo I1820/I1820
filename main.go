@@ -84,7 +84,7 @@ func main() {
 
 	// Data collection
 	cd := session.Database("isrc").Collection("data")
-	if _, err := cd.Indexes().CreateMany(
+	indx, err := cd.Indexes().CreateMany(
 		context.Background(),
 		mgo.IndexModel{
 			Keys: bson.NewDocument(
@@ -93,12 +93,20 @@ func main() {
 		},
 		mgo.IndexModel{
 			Keys: bson.NewDocument(
+				bson.EC.Int32("thingid", 1),
+				bson.EC.Int32("timestamp", 1),
+			),
+		},
+		mgo.IndexModel{
+			Keys: bson.NewDocument(
 				bson.EC.String("data._location", "2dsphere"),
 			),
 		},
-	); err != nil {
+	)
+	if err != nil {
 		log.Fatalf("Create index %v", err)
 	}
+	fmt.Printf("MongoDB \"data\" collection indexes: %v\n", indx)
 
 	// Subscribe to topics
 	err = cli.Subscribe(&client.SubscribeOptions{
