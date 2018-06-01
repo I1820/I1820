@@ -171,3 +171,36 @@ func sendHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, raw)
 }
+
+func sendRawHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
+	var r sendReq
+	if err := c.BindJSON(&r); err != nil {
+		return
+	}
+
+	raw, ok := r.Data.([]byte)
+	if !ok {
+	}
+
+	b, err := json.Marshal(lora.TxMessage{
+		FPort:     r.FPort,
+		Data:      raw,
+		Confirmed: r.Confirmed,
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	if err := cli.Publish(&client.PublishOptions{
+		QoS:       mqtt.QoS0,
+		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", r, r.ThingID)),
+		Message:   b,
+	}); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, raw)
+}
