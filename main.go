@@ -152,6 +152,7 @@ func sendHandler(c *gin.Context) {
 	}
 
 	b, err := json.Marshal(lora.TxMessage{
+		Reference: "abcd1234",
 		FPort:     r.FPort,
 		Data:      raw,
 		Confirmed: r.Confirmed,
@@ -160,9 +161,10 @@ func sendHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
 	if err := cli.Publish(&client.PublishOptions{
 		QoS:       mqtt.QoS0,
-		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", p.Name, r.ThingID)),
+		TopicName: []byte(fmt.Sprintf("application/%s/node/%s/tx", r.ApplicationID, r.ThingID)),
 		Message:   b,
 	}); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
