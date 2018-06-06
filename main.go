@@ -326,6 +326,7 @@ func thingsDataHandler(c *gin.Context) {
 					"$lt": time.Unix(json.Until, 0),
 				},
 			}},
+			{"$limit": json.Limit},
 			{"$sort": bson.M{"timestamp": -1}},
 		})
 		if err := pipe.All(&results); err != nil {
