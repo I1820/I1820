@@ -13,6 +13,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
 	"os/signal"
@@ -277,11 +278,20 @@ func thingsDataHandler(c *gin.Context) {
 		ThingIDs []string `json:"thing_ids"`
 		Since    int64
 		Until    int64
+		Limit    int64
 	}
 
 	if err := c.BindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	if json.Until == 0 {
+		json.Until = time.Now().Unix()
+	}
+
+	if json.Limit == 0 {
+		json.Limit = math.MaxInt64
 	}
 
 	if len(json.ThingIDs) > 0 {
@@ -298,6 +308,7 @@ func thingsDataHandler(c *gin.Context) {
 					"$lt": time.Unix(json.Until, 0),
 				},
 			}},
+			{"$limit": json.Limit},
 			{"$sort": bson.M{"timestamp": -1}},
 		})
 		if err := pipe.All(&results); err != nil {
