@@ -102,7 +102,7 @@ func handle() http.Handler {
 		api.DELETE("/project/:name", projectRemoveHandler)
 		api.POST("/project/:project/things", thingAddHandler)
 		api.GET("/project/:project/logs", projectLogHandler)
-		api.GET("/project/:project/", projectDetailHandler)
+		api.GET("/project/:project", projectDetailHandler)
 		api.GET("/project/:project/activate", projectActivateHandler)
 		api.GET("/project/:project/deactivate", projectDeactivateHandler)
 
