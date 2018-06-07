@@ -66,6 +66,7 @@ func handle() http.Handler {
 
 		api.GET("/things", thingsHandler)
 		api.GET("/things/:thingid", thingDataHandler)
+		api.GET("/things/:thingid/p", thingLastParsedHandler)
 		api.POST("/things/w", thingsDataHandlerWindowing)
 		api.POST("/things", thingsDataHandler)
 
@@ -271,6 +272,28 @@ func thingDataHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, results)
+}
+
+func thingLastParsedHandler(c *gin.Context) {
+	var results []bson.M
+
+	id := c.Param("thingid")
+
+	pipe := isrcDB.C("data").Pipe([]bson.M{
+		{"$match": bson.M{
+			"thingid": id,
+			"data":    bson.M{"$ne": nil},
+		}},
+		{"$project": bson.M{"timestamp": true}},
+		{"$sort": bson.M{"timestamp": -1}},
+		{"$limit": 1},
+	})
+	if err := pipe.All(&results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, results[0]["timestamp"])
 }
 
 func thingsDataHandler(c *gin.Context) {
