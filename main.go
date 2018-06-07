@@ -190,9 +190,11 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 
 	// cluster size
 	cs := (json.Until - json.Since) / json.ClusterNumber
+	cs *= 1000
 	if cs == 0 {
 		cs++
 	}
+	fmt.Println(cs)
 
 	pipe := isrcDB.C("data").Pipe([]bson.M{
 		{"$match": bson.M{
