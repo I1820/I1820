@@ -195,7 +195,6 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 	if cs == 0 {
 		cs++
 	}
-	fmt.Println(cs)
 
 	pipe := isrcDB.C("data").Pipe([]bson.M{
 		{"$match": bson.M{
@@ -304,6 +303,7 @@ func thingsDataHandler(c *gin.Context) {
 		Since    int64
 		Until    int64
 		Limit    int64
+		Offset   int64
 	}
 
 	if err := c.BindJSON(&json); err != nil {
@@ -333,6 +333,7 @@ func thingsDataHandler(c *gin.Context) {
 					"$lt": time.Unix(json.Until, 0),
 				},
 			}},
+			{"$skip": json.Offset},
 			{"$limit": json.Limit},
 			{"$sort": bson.M{"timestamp": -1}},
 		})
@@ -351,6 +352,7 @@ func thingsDataHandler(c *gin.Context) {
 					"$lt": time.Unix(json.Until, 0),
 				},
 			}},
+			{"$skip": json.Offset},
 			{"$limit": json.Limit},
 			{"$sort": bson.M{"timestamp": -1}},
 		})
