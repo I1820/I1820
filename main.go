@@ -201,6 +201,9 @@ func thingsDataHandlerWindowing(c *gin.Context) {
 			"thingid": bson.M{
 				"$in": json.ThingIDs,
 			},
+			"data": bson.M{
+				"$ne": nil,
+			},
 			"timestamp": bson.M{
 				"$gt": time.Unix(json.Since, 0),
 				"$lt": time.Unix(json.Until, 0),
