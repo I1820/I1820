@@ -294,8 +294,11 @@ func thingLastParsedHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, results[0]["timestamp"])
+	if len(results) > 0 {
+		c.JSON(http.StatusOK, results[0]["timestamp"])
+	} else {
+		c.JSON(http.StatusOK, gin.H{"timestamp": 0})
+	}
 }
 
 func thingsDataHandler(c *gin.Context) {
