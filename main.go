@@ -297,7 +297,7 @@ func thingLastParsedHandler(c *gin.Context) {
 	if len(results) > 0 {
 		c.JSON(http.StatusOK, results[0]["timestamp"])
 	} else {
-		c.JSON(http.StatusOK, gin.H{"timestamp": 0})
+		c.JSON(http.StatusOK, "0")
 	}
 }
 
