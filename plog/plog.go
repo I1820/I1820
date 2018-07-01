@@ -22,3 +22,12 @@ type ProjectLog struct {
 	Component string    `bson:"component"`
 	Level     int       `bson:"Level"`
 }
+
+// LoraLog represents lora errors
+type LoraLog struct {
+	Timestamp time.Time
+	Error     string
+	Type      string
+	Project   string
+	FCnt      int
+}
