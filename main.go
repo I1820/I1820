@@ -82,6 +82,9 @@ func main() {
 	// PM
 	pm := pmclient.New(Config.PM.URL)
 
+	// LoRa error collection
+	ce := session.Database("isrc").Collection("lora")
+
 	// Data collection
 	cd := session.Database("isrc").Collection("data")
 	indx, err := cd.Indexes().CreateMany(
@@ -116,7 +119,35 @@ func main() {
 				TopicFilter: []byte("application/+/node/+/error"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
-					fmt.Println(string(message))
+					var m lora.ErrorMessage
+					if err := json.Unmarshal(message, &m); err != nil {
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("JSON Unmarshal: %s", err)
+						return
+					}
+					log.WithFields(log.Fields{
+						"component": "uplink",
+					}).Info(m)
+					if _, err := ce.InsertOne(context.Background(), &struct {
+						Error     string
+						Timestamp time.Time
+						Type      string
+						Project   string
+						FCnt      int
+					}{
+						Error:     m.Error,
+						Timestamp: time.Now(),
+						Project:   m.ApplicationName,
+						Type:      m.Type,
+						FCnt:      m.FCnt,
+					}); err != nil {
+						log.WithFields(log.Fields{
+							"component": "uplink",
+						}).Errorf("Mongo insert: %s\n", err)
+						return
+					}
+
 				},
 			},
 			&client.SubReq{
