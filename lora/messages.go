@@ -2,6 +2,16 @@ package lora
 
 import "time"
 
+// ErrorMessage contains lora errors
+type ErrorMessage struct {
+	ApplicationID   string
+	ApplicationName string
+	DeviceName      string
+	Type            string
+	Error           string
+	FCnt            int
+}
+
 // RxMessage contains payloads received from your nodes
 type RxMessage struct {
 	ApplicationID   string
