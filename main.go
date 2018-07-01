@@ -102,6 +102,7 @@ func handle() http.Handler {
 		api.DELETE("/project/:name", projectRemoveHandler)
 		api.POST("/project/:project/things", thingAddHandler)
 		api.GET("/project/:project/logs", projectLogHandler)
+		api.GET("/project/:project/lora", projectLoRaHandler)
 		api.GET("/project/:project", projectDetailHandler)
 		api.GET("/project/:project/activate", projectActivateHandler)
 		api.GET("/project/:project/deactivate", projectDeactivateHandler)
@@ -511,6 +512,53 @@ func projectLogHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, pls)
+}
+
+func projectLoRaHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
+	var lls = make([]plog.LoraLog, 0)
+
+	id := c.Param("project")
+
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	cur, err := isrcDB.Collection("lora").Aggregate(context.Background(), bson.NewArray(
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.Int32("$limit", int32(limit)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$sort", bson.EC.Int32("Time", -1)),
+		),
+	))
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	for cur.Next(context.Background()) {
+		var ll plog.LoraLog
+
+		if err := cur.Decode(&ll); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		lls = append(lls, ll)
+	}
+	if err := cur.Close(context.Background()); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, lls)
 }
 
 func thingRemoveHandler(c *gin.Context) {
