@@ -1,7 +1,7 @@
 package actions
 
 func (as *ActionSuite) Test_HomeHandler() {
-	res := as.JSON("/").Get()
+	res := as.JSON("/about").Get()
 	as.Equal(200, res.Code)
-	as.Contains(res.Body.String(), "Welcome to Buffalo")
+	as.Contains(res.Body.String(), "18.20 is leaving us")
 }
