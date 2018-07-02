@@ -43,7 +43,7 @@ func App() *buffalo.App {
 		app.Use(middleware.SetContentType("application/json"))
 
 		// Create mongodb connection
-		url := envy.Get("DB_URL", "mongodb://127.0.0.1")
+		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
 		client, err := mgo.NewClient(url)
 		if err != nil {
 			buffalo.NewLogger("fatal").Fatalf("DB new client error: %s", err)
