@@ -51,7 +51,7 @@ func App() *buffalo.App {
 		if err := client.Connect(context.Background()); err != nil {
 			buffalo.NewLogger("fatal").Fatalf("DB connection error: %s", err)
 		}
-		db = client.Database("lanserver")
+		db = client.Database("isrc")
 
 		if ENV == "development" {
 			app.Use(middleware.ParameterLogger)
@@ -60,7 +60,9 @@ func App() *buffalo.App {
 		app.GET("/about", AboutHandler)
 		api := app.Group("/api")
 		{
-			api.POST("/project", projectNewHandler)
+			pr := ProjectsResource{}
+			api.POST("/projects", pr.create)
+			api.GET("/projects/{project_id}", pr.show)
 		}
 	}
 
