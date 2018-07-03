@@ -61,8 +61,7 @@ func App() *buffalo.App {
 		api := app.Group("/api")
 		{
 			pr := ProjectsResource{}
-			api.POST("/projects", pr.create)
-			api.GET("/projects/{project_id}", pr.show)
+			api.Resource("/projects", pr)
 		}
 	}
 
