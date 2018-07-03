@@ -11,13 +11,21 @@
 package actions
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/aiotrc/pm/project"
 	"github.com/aiotrc/pm/runner"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
+	"github.com/mongodb/mongo-go-driver/bson"
+	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
+
+// ProjectsResource manages existing projects
+type ProjectsResource struct {
+}
 
 // project request payload
 type projectReq struct {
@@ -25,7 +33,7 @@ type projectReq struct {
 	// TODO adds docker constraints and envs
 }
 
-func projectNewHandler(c buffalo.Context) error {
+func (v ProjectsResource) create(c buffalo.Context) error {
 	var rq projectReq
 	if err := c.Bind(&rq); err != nil {
 		return c.Error(http.StatusBadRequest, err)
@@ -45,6 +53,25 @@ func projectNewHandler(c buffalo.Context) error {
 	}
 
 	// numberOfCreatedProjects.Inc()
+
+	return c.Render(http.StatusOK, r.JSON(p))
+}
+
+func (v ProjectsResource) show(c buffalo.Context) error {
+	name := c.Param("project_id")
+
+	var p project.Project
+
+	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+		bson.EC.String("name", name),
+	))
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
 
 	return c.Render(http.StatusOK, r.JSON(p))
 }
