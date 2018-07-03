@@ -21,6 +21,8 @@ import (
 	"github.com/gobuffalo/envy"
 	"github.com/mongodb/mongo-go-driver/bson"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/mongo/findopt"
+	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 )
 
 // ProjectsResource manages existing projects
@@ -132,6 +134,29 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 	if _, err := db.Collection("pm").DeleteOne(c, bson.NewDocument(
 		bson.EC.String("name", name),
 	)); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(p))
+}
+
+// Activation activates/deactivates project. This function is mapped
+// to the path GET /projects/{project_id}/{t:(?:activate|deactivate)}
+func (v ProjectsResource) Activation(c buffalo.Context) error {
+	name := c.Param("project_id")
+
+	dr := db.Collection("pm").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.String("name", name),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", false)),
+	), findopt.ReturnDocument(mongoopt.After))
+
+	var p project.Project
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
+		}
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
