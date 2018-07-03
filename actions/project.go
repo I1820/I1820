@@ -145,10 +145,16 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 func (v ProjectsResource) Activation(c buffalo.Context) error {
 	name := c.Param("project_id")
 
+	t := c.Param("t")
+	status := false
+	if t == "activate" {
+		status = true
+	}
+
 	dr := db.Collection("pm").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("name", name),
 	), bson.NewDocument(
-		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", false)),
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", status)),
 	), findopt.ReturnDocument(mongoopt.After))
 
 	var p project.Project
