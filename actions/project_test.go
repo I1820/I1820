@@ -10,14 +10,36 @@
 
 package actions
 
-import "github.com/aiotrc/pm/project"
+import (
+	"context"
 
-func (as *ActionSuite) Test_ProjectNewHandler() {
-	var p *project.Project
+	"github.com/aiotrc/pm/project"
+	"github.com/mongodb/mongo-go-driver/bson"
+)
 
-	res := as.JSON("/api/project").Post(projectReq{Name: "Her"})
-	as.Equal(200, res.Code)
-	res.Bind(p)
+const pName = "Her"
 
-	as.Info(p)
+func (as *ActionSuite) Test_ProjectsResource_Create() {
+	var pr project.Project
+
+	res := as.JSON("/api/projects").Post(projectReq{Name: pName})
+	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
+	res.Bind(&pr)
+
+	var pd project.Project
+	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+		bson.EC.String("name", pName),
+	))
+
+	as.NoError(dr.Decode(&pd))
+
+	as.Equal(pd, pr)
+}
+
+func (as *ActionSuite) Test_ProjectsResource_Show() {
+	var p project.Project
+
+	res := as.JSON("/api/projects/%s", pName).Get()
+	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
+	res.Bind(&p)
 }
