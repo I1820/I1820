@@ -3,7 +3,7 @@ package grifts
 import (
 	"log"
 
-	"github.com/aiotrc/pm/project"
+	"github.com/aiotrc/pm/models"
 	"github.com/gobuffalo/envy"
 	grift "github.com/markbates/grift/grift"
 	"github.com/mongodb/mongo-go-driver/bson"
@@ -26,7 +26,7 @@ var _ = grift.Add("cleanup", func(c *grift.Context) error {
 	db := client.Database("isrc")
 
 	// Get all project
-	ps := make([]project.Project, 0)
+	ps := make([]models.Project, 0)
 
 	cur, err := db.Collection("pm").Find(c, bson.NewDocument())
 	if err != nil {
@@ -34,7 +34,7 @@ var _ = grift.Add("cleanup", func(c *grift.Context) error {
 	}
 
 	for cur.Next(c) {
-		var p project.Project
+		var p models.Project
 
 		if err := cur.Decode(&p); err != nil {
 			return err
