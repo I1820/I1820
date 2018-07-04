@@ -17,13 +17,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aiotrc/pm/project"
+	"github.com/aiotrc/pm/models"
 )
 
 var cache map[string]entry
 
 type entry struct {
-	pr project.Project
+	pr models.Project
 	ti time.Time
 }
 
@@ -45,7 +45,7 @@ func New(url string) PM {
 }
 
 // GetThingProject gets project contains given thing from pm using http request
-func (p PM) GetThingProject(name string) (project.Project, error) {
+func (p PM) GetThingProject(name string) (models.Project, error) {
 	for _, e := range cache {
 		for _, t := range e.pr.Things {
 			if t.ID == name {
@@ -56,7 +56,7 @@ func (p PM) GetThingProject(name string) (project.Project, error) {
 		}
 	}
 
-	var pr project.Project
+	var pr models.Project
 
 	resp, err := http.Get(fmt.Sprintf("%s/api/things/%s", p.URL, name))
 	if err != nil {
