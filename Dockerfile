@@ -8,6 +8,7 @@ WORKDIR $GOPATH/src/github.com/aiotrc/pm
 ADD . .
 RUN dep ensure
 RUN buffalo build --static -o /bin/app
+RUN buffalo task mongo
 
 FROM alpine
 RUN apk add --no-cache bash
