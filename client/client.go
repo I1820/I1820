@@ -18,9 +18,10 @@ import (
 	"time"
 
 	"github.com/aiotrc/pm/models"
+	"github.com/patrickmn/go-cache"
 )
 
-var cache map[string]entry
+var c *cache.Cache
 
 type entry struct {
 	pr models.Project
@@ -28,7 +29,7 @@ type entry struct {
 }
 
 func init() {
-	cache = make(map[string]entry)
+	c = cache.New(5*time.Minute, 10*time.Minute)
 }
 
 // PM is way for connecting to PM :joy:
@@ -46,14 +47,8 @@ func New(url string) PM {
 
 // GetThingProject gets project contains given thing from pm using http request
 func (p PM) GetThingProject(name string) (models.Project, error) {
-	for _, e := range cache {
-		for _, t := range e.pr.Things {
-			if t.ID == name {
-				if time.Now().Sub(e.ti) < time.Second {
-					return e.pr, nil
-				}
-			}
-		}
+	if pr, found := c.Get(name); found {
+		return pr.(models.Project), nil
 	}
 
 	var pr models.Project
@@ -87,10 +82,18 @@ func (p PM) GetThingProject(name string) (models.Project, error) {
 		return pr, err
 	}
 
-	cache[name] = entry{
-		pr: pr,
-		ti: time.Now(),
+	status := false
+	for _, t := range pr.Things {
+		if t.Status {
+			c.Set(t.ID, pr, cache.DefaultExpiration)
+			if t.ID == name {
+				status = true
+			}
+		}
 	}
 
-	return pr, nil
+	if status {
+		return pr, nil
+	}
+	return pr, fmt.Errorf("Thing (%s) is not activated", name)
 }
