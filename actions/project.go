@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/aiotrc/pm/project"
+	"github.com/aiotrc/pm/models"
 	"github.com/aiotrc/pm/runner"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
@@ -39,7 +39,7 @@ type projectReq struct {
 // List gets all projects. This function is mapped to the path
 // GET /projects
 func (v ProjectsResource) List(c buffalo.Context) error {
-	ps := make([]project.Project, 0)
+	ps := make([]models.Project, 0)
 
 	cur, err := db.Collection("pm").Find(c, bson.NewDocument())
 	if err != nil {
@@ -47,7 +47,7 @@ func (v ProjectsResource) List(c buffalo.Context) error {
 	}
 
 	for cur.Next(context.Background()) {
-		var p project.Project
+		var p models.Project
 
 		if err := cur.Decode(&p); err != nil {
 			return c.Error(http.StatusInternalServerError, err)
@@ -72,7 +72,7 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 
 	name := rq.Name
 
-	p, err := project.New(name, []runner.Env{
+	p, err := models.NewProject(name, []runner.Env{
 		{Name: "MONGO_URL", Value: envy.Get("DB_URL", "mongodb://172.18.0.1:27017")},
 	})
 	if err != nil {
@@ -93,7 +93,7 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 func (v ProjectsResource) Show(c buffalo.Context) error {
 	name := c.Param("project_id")
 
-	var p project.Project
+	var p models.Project
 
 	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", name),
@@ -114,7 +114,7 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 func (v ProjectsResource) Destroy(c buffalo.Context) error {
 	name := c.Param("project_id")
 
-	var p project.Project
+	var p models.Project
 
 	dr := db.Collection("pm").FindOne(c, bson.NewDocument(
 		bson.EC.String("name", name),
@@ -157,7 +157,7 @@ func (v ProjectsResource) Activation(c buffalo.Context) error {
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", status)),
 	), findopt.ReturnDocument(mongoopt.After))
 
-	var p project.Project
+	var p models.Project
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
