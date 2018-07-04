@@ -35,19 +35,11 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/jinzhu/configor"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
   name = "github.com/phayes/freeport"
   version = "1.0.2"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/sirupsen/logrus"
 
 [[constraint]]
   name = "github.com/gobuffalo/buffalo"
