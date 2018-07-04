@@ -13,20 +13,20 @@ package actions
 import (
 	"context"
 
-	"github.com/aiotrc/pm/project"
+	"github.com/aiotrc/pm/models"
 	"github.com/mongodb/mongo-go-driver/bson"
 )
 
 const pName = "Her"
 
 func (as *ActionSuite) Test_ProjectsResource_Create() {
-	var pr project.Project
+	var pr models.Project
 
 	res := as.JSON("/api/projects").Post(projectReq{Name: pName})
 	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
 	res.Bind(&pr)
 
-	var pd project.Project
+	var pd models.Project
 	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", pName),
 	))
@@ -37,7 +37,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create() {
 }
 
 func (as *ActionSuite) Test_ProjectsResource_Show() {
-	var p project.Project
+	var p models.Project
 
 	res := as.JSON("/api/projects/%s", pName).Get()
 	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
