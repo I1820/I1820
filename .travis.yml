@@ -24,6 +24,9 @@ install:
   - docker pull redis:alpine
   - docker network create isrc
 
+before_script:
+  - buffalo task mongo
+
 script:
   - go vet -v $PKGS                   # go vet is the official Go static analyzer
   - errcheck -verbose $PKGS           # Check for unchecked errors
