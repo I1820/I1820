@@ -8,23 +8,22 @@
  * +===============================================
  */
 
-package project
+package models
 
 import (
 	"github.com/aiotrc/pm/runner"
-	"github.com/aiotrc/pm/thing"
 )
 
 // Project represents structure of ISRC projects
 type Project struct {
 	Name   string        `json:"name" bson:"name"`
 	Runner runner.Runner `json:"runner" bson:"runner"`
-	Things []thing.Thing `json:"things" bson:"things"`
+	Things []Thing       `json:"things" bson:"things"`
 	Status bool          `json:"status" bson:"status"` // active/inactive
 }
 
-// New creates new project with given name
-func New(name string, envs []runner.Env) (*Project, error) {
+// NewProject creates new project with given name
+func NewProject(name string, envs []runner.Env) (*Project, error) {
 	r, err := runner.New(name, envs)
 
 	if err != nil {
@@ -34,7 +33,7 @@ func New(name string, envs []runner.Env) (*Project, error) {
 	return &Project{
 		Name:   name,
 		Runner: r,
-		Things: make([]thing.Thing, 0),
+		Things: make([]Thing, 0),
 		Status: true,
 	}, nil
 }
