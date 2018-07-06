@@ -14,6 +14,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/aiotrc/pm/models"
 	"github.com/aiotrc/pm/runner"
@@ -167,4 +168,47 @@ func (v ProjectsResource) Activation(c buffalo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, r.JSON(p))
+}
+
+// Error returns project execution and lora errors. This function is mapped
+// to the path GET /projects/{project_id}/errors/{t:(?:lora|project)}
+func (v ProjectsResource) Error(c buffalo.Context) error {
+	var pls = make([]models.ProjectLog, 0)
+
+	id := c.Param("project_id")
+
+	limit, err := strconv.Atoi(c.Param("limit"))
+	if err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	cur, err := db.Collection("errors").Aggregate(context.Background(), bson.NewArray(
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.Int32("$limit", int32(limit)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$sort", bson.EC.Int32("Time", -1)),
+		),
+	))
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	for cur.Next(context.Background()) {
+		var pl models.ProjectLog
+
+		if err := cur.Decode(&pl); err != nil {
+			return c.Error(http.StatusInternalServerError, err)
+		}
+
+		pls = append(pls, pl)
+	}
+	if err := cur.Close(context.Background()); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(pls))
 }
