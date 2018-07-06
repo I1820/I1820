@@ -182,7 +182,7 @@ func (v ProjectsResource) Error(c buffalo.Context) error {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	cur, err := db.Collection("errors").Aggregate(context.Background(), bson.NewArray(
+	cur, err := db.Collection("errors").Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
 		),
@@ -197,7 +197,7 @@ func (v ProjectsResource) Error(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	for cur.Next(context.Background()) {
+	for cur.Next(c) {
 		var pl models.ProjectLog
 
 		if err := cur.Decode(&pl); err != nil {
@@ -206,7 +206,7 @@ func (v ProjectsResource) Error(c buffalo.Context) error {
 
 		pls = append(pls, pl)
 	}
-	if err := cur.Close(context.Background()); err != nil {
+	if err := cur.Close(c); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
