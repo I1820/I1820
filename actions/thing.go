@@ -145,3 +145,34 @@ func (v ThingsResource) Destroy(c buffalo.Context) error {
 
 	return c.Render(http.StatusOK, r.JSON(p))
 }
+
+// Activation activates/deactivates thing. This function is mapped
+// to the path GET /things/{thing_id}/{t:(?:activate|deactivate)}
+func (v ThingsResource) Activation(c buffalo.Context) error {
+	name := c.Param("thing_id")
+
+	t := c.Param("t")
+	status := false
+	if t == "activate" {
+		status = true
+	}
+
+	dr := db.Collection("pm").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements(
+			"$elemMatch", bson.EC.String("id", name),
+		)),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("things.$.status", status)),
+	), findopt.ReturnDocument(mongoopt.After))
+
+	var p models.Project
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(p))
+}
