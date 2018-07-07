@@ -64,6 +64,9 @@ func App() *buffalo.App {
 			api.Resource("/projects", pr)
 			api.GET("/projects/{project_id}/{t:(?:activate|deactivate)}", pr.Activation)
 			api.GET("/projects/{project_id}/errors/{t:(?:lora|project)}", pr.Error)
+
+			tr := ThingsResource{}
+			api.Resource("/things", tr)
 		}
 	}
 
