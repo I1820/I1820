@@ -169,7 +169,7 @@ func (v ThingsResource) Activation(c buffalo.Context) error {
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
+			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
 		}
 		return c.Error(http.StatusInternalServerError, err)
 	}
