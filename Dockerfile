@@ -8,7 +8,6 @@ WORKDIR $GOPATH/src/github.com/aiotrc/pm
 ADD . .
 RUN dep ensure
 RUN buffalo build --static -o /bin/app
-RUN buffalo task mongo
 
 FROM alpine
 RUN apk add --no-cache bash
@@ -28,4 +27,4 @@ EXPOSE 3000
 
 # Comment out to run the migrations before running the binary:
 # CMD /bin/app migrate; /bin/app
-CMD exec /bin/app
+CMD buffalo task mongo; /bin/app
