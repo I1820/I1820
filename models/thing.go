@@ -8,9 +8,9 @@
  * +===============================================
  */
 
-package thing
+package models
 
-// Thing contains identification and parent project
+// Thing contains identification and parent project of a thing
 type Thing struct {
 	ID     string `json:"id" bson:"id"`         // DevEUI
 	Status bool   `json:"status" bson:"status"` // active/inactive

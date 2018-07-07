@@ -34,15 +34,7 @@
   version = "0.3.0"
 
 [[constraint]]
-  name = "github.com/gin-gonic/gin"
   branch = "master"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/jinzhu/configor"
-
-[[constraint]]
-  version = "0.0.4"
   name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
@@ -50,13 +42,33 @@
   version = "1.0.2"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/sirupsen/logrus"
+  name = "github.com/gobuffalo/buffalo"
+  version = "0.12.3"
 
-[prune]
-  go-tests = true
-  unused-packages = true
+[[constraint]]
+  name = "github.com/gobuffalo/envy"
+  version = "1.6.3"
+
+[[constraint]]
+  name = "github.com/gobuffalo/suite"
+  version = "2.1.2"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gobuffalo/x"
+
+[[constraint]]
+  name = "github.com/rs/cors"
+  version = "1.4.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/unrolled/secure"
 
 [[constraint]]
   name = "github.com/prometheus/client_golang"
   branch = "master"
+
+[prune]
+  go-tests = true
+  unused-packages = true

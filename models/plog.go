@@ -8,7 +8,7 @@
  * +===============================================
  */
 
-package plog
+package models
 
 import "time"
 
