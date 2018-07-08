@@ -96,7 +96,6 @@ func App() *buffalo.App {
 
 		// Routes
 		app.GET("/about", AboutHandler)
-		app.Mount("/", promhttp.Handler())
 		api := app.Group("/api")
 		{
 			pr := ProjectsResource{}
@@ -108,6 +107,7 @@ func App() *buffalo.App {
 			api.Resource("/things", tr)
 			api.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
 		}
+		app.Mount("/", promhttp.Handler())
 	}
 
 	return app
