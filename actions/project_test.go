@@ -19,13 +19,15 @@ import (
 
 const pName = "Her"
 
-func (as *ActionSuite) Test_ProjectsResource_Create() {
+func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	var pr models.Project
 
-	res := as.JSON("/api/projects").Post(projectReq{Name: pName})
-	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
-	res.Bind(&pr)
+	// Create
+	resc := as.JSON("/api/projects").Post(projectReq{Name: pName})
+	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
+	resc.Bind(&pr)
 
+	// Database
 	var pd models.Project
 	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", pName),
@@ -34,12 +36,18 @@ func (as *ActionSuite) Test_ProjectsResource_Create() {
 	as.NoError(dr.Decode(&pd))
 
 	as.Equal(pd, pr)
-}
 
-func (as *ActionSuite) Test_ProjectsResource_Show() {
-	var p models.Project
+	// Show
+	ress := as.JSON("/api/projects/%s", pName).Get()
+	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
+	ress.Bind(&pr)
 
-	res := as.JSON("/api/projects/%s", pName).Get()
-	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
-	res.Bind(&p)
+	as.Equal(pd, pr)
+
+	// Destroy
+	resd := as.JSON("/api/projects/%s", pName).Delete()
+	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
+	resd.Bind(&pr)
+
+	as.Equal(pd, pr)
 }
