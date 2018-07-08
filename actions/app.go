@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
@@ -9,6 +10,9 @@ import (
 	"github.com/gobuffalo/envy"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/unrolled/secure"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/gobuffalo/x/sessions"
 	"github.com/rs/cors"
@@ -57,7 +61,30 @@ func App() *buffalo.App {
 			app.Use(middleware.ParameterLogger)
 		}
 
+		// Collectors
+		prometheus.Register(prometheus.NewGoCollector())
+
+		rds := prometheus.NewHistogramVec(
+			prometheus.HistogramOpts{
+				Namespace: "pm",
+				Name:      "request_duration_seconds",
+				Help:      "A histogram of latencies for requests.",
+			},
+			[]string{"path", "method", "code"},
+		)
+		prometheus.Register(rds)
+		app.Use(func(h buffalo.Handler) buffalo.Handler {
+			return func(c buffalo.Context) error {
+				return buffalo.WrapHandler(promhttp.InstrumentHandlerDuration(
+					rds.MustCurryWith(prometheus.Labels{"path": c.Value("current_path").(string)}),
+					http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) { h(c) }),
+				))(c)
+			}
+		})
+
+		// Routes
 		app.GET("/about", AboutHandler)
+		app.Mount("/", promhttp.Handler())
 		api := app.Group("/api")
 		{
 			pr := ProjectsResource{}
