@@ -63,8 +63,6 @@ func App() *buffalo.App {
 		}
 
 		// Collectors
-		prometheus.MustRegister(prometheus.NewGoCollector())
-
 		rds := prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
 				Namespace: "pm",
@@ -73,7 +71,10 @@ func App() *buffalo.App {
 			},
 			[]string{"path", "method", "code"},
 		)
+
+		prometheus.NewGoCollector()
 		prometheus.MustRegister(rds)
+
 		app.Use(func(next buffalo.Handler) buffalo.Handler {
 			return func(c buffalo.Context) error {
 				now := time.Now()
