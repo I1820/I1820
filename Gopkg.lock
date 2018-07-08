@@ -51,9 +51,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/bradfitz/gomemcache"
-  packages = ["memcache"]
-  revision = "7886924cd2b307eb286bd679327a834be7bc5579"
+  name = "github.com/beorn7/perks"
+  packages = ["quantile"]
+  revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
   branch = "master"
@@ -120,15 +120,6 @@
   packages = ["."]
   revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
   version = "v1.4.7"
-
-[[projects]]
-  name = "github.com/garyburd/redigo"
-  packages = [
-    "internal",
-    "redis"
-  ]
-  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
-  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -258,6 +249,12 @@
   version = "v0.4"
 
 [[projects]]
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/golang/snappy"
   packages = ["."]
@@ -301,22 +298,6 @@
   packages = ["."]
   revision = "a79fa1e548e2c689c241d10173efd51e5d689d5b"
   version = "v1.2.0"
-
-[[projects]]
-  name = "github.com/klauspost/compress"
-  packages = [
-    "flate",
-    "gzip",
-    "zlib"
-  ]
-  revision = "5fb1f31b0a61e9858f12f39266e059848a5f1cea"
-  version = "v1.3.0"
-
-[[projects]]
-  name = "github.com/klauspost/cpuid"
-  packages = ["."]
-  revision = "ae7887de9fa5d2db4eaa8174a7eff2c1ac00f2da"
-  version = "v1.1"
 
 [[projects]]
   branch = "master"
@@ -393,6 +374,12 @@
   packages = ["."]
   revision = "25ecb14adfc7543176f7d85291ec7dba82c6f7e4"
   version = "v1.9.0"
+
+[[projects]]
+  name = "github.com/matttproud/golang_protobuf_extensions"
+  packages = ["pbutil"]
+  revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
@@ -501,32 +488,40 @@
   version = "v1.0.0"
 
 [[projects]]
-  name = "github.com/revel/config"
-  packages = ["."]
-  revision = "662332b741dd464a886ab0901379c02b9bc5dc30"
-  version = "v0.19.0"
-
-[[projects]]
-  name = "github.com/revel/log15"
-  packages = ["."]
-  revision = "b105bd37f74e5d9dc7b6ad7806715c7a2b83fd3f"
-  version = "v2.11"
+  branch = "master"
+  name = "github.com/prometheus/client_golang"
+  packages = [
+    "prometheus",
+    "prometheus/promhttp"
+  ]
+  revision = "d6a9817c4afc94d51115e4a30d449056a3fbf547"
 
 [[projects]]
   branch = "master"
-  name = "github.com/revel/pathtree"
-  packages = ["."]
-  revision = "41257a1839e945fce74afd070e02bab2ea2c776a"
+  name = "github.com/prometheus/client_model"
+  packages = ["go"]
+  revision = "99fa1f4be8e564e8a6b613da7fa6f46c9edafc6c"
 
 [[projects]]
-  name = "github.com/revel/revel"
+  branch = "master"
+  name = "github.com/prometheus/common"
+  packages = [
+    "expfmt",
+    "internal/bitbucket.org/ww/goautoneg",
+    "model"
+  ]
+  revision = "7600349dcfe1abd18d72d3a1770870d9800a7801"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/prometheus/procfs"
   packages = [
     ".",
-    "cache",
-    "logger"
+    "internal/util",
+    "nfs",
+    "xfs"
   ]
-  revision = "248166bf840eab87a88d1c18309f8e174e8327ff"
-  version = "v0.19.1"
+  revision = "ae68e2d4c00fed4943b5f6698d504a5fe083da8a"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -640,12 +635,6 @@
   revision = "8287f3899c8e3d490748e18fe7d438629132914e"
 
 [[projects]]
-  name = "github.com/xeonx/timeago"
-  packages = ["."]
-  revision = "49df971d6c5d5b073f921e8c580fbb6a0bb629c1"
-  version = "v1.0.0-rc2"
-
-[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
@@ -665,8 +654,7 @@
     "html",
     "html/atom",
     "internal/socks",
-    "proxy",
-    "websocket"
+    "proxy"
   ]
   revision = "ed29d75add3d7c4bf7ca65aac0c6df3d1420216f"
 
@@ -695,33 +683,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "gopkg.in/fsnotify/fsnotify.v1"
-  packages = ["."]
-  revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
-  version = "v1.4.7"
-
-[[projects]]
-  name = "gopkg.in/inconshreveable/log15.v2"
-  packages = [
-    "stack",
-    "term"
-  ]
-  revision = "b105bd37f74e5d9dc7b6ad7806715c7a2b83fd3f"
-  version = "v2.11"
-
-[[projects]]
-  name = "gopkg.in/natefinch/lumberjack.v2"
-  packages = ["."]
-  revision = "a96e63847dc3c67d17befa69c303767e2f84e54f"
-  version = "v2.1"
-
-[[projects]]
-  branch = "v0"
-  name = "gopkg.in/stack.v0"
-  packages = ["."]
-  revision = "9b43fcefddd0178abdabf4d484ab0d695d0011db"
-
-[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
@@ -730,6 +691,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "749f129eb3b0e58d208218afb71c8965579f87e955735091a8113f28ee104bea"
+  inputs-digest = "098e454017291e3d8677c054dff1769cfb0f70f03a8843fa78620922e702ee8c"
   solver-name = "gps-cdcl"
   solver-version = 1
