@@ -2,7 +2,8 @@ package actions
 
 import (
 	"context"
-	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
@@ -73,12 +74,22 @@ func App() *buffalo.App {
 			[]string{"path", "method", "code"},
 		)
 		prometheus.Register(rds)
-		app.Use(func(h buffalo.Handler) buffalo.Handler {
+		app.Use(func(next buffalo.Handler) buffalo.Handler {
 			return func(c buffalo.Context) error {
-				return buffalo.WrapHandler(promhttp.InstrumentHandlerDuration(
-					rds.MustCurryWith(prometheus.Labels{"path": c.Value("current_path").(string)}),
-					http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) { h(c) }),
-				))(c)
+				now := time.Now()
+
+				defer func() {
+					ws := c.Response().(*buffalo.Response)
+					req := c.Request()
+
+					rds.With(prometheus.Labels{
+						"path":   req.URL.String(),
+						"code":   strconv.Itoa(ws.Status),
+						"method": req.Method,
+					}).Observe(time.Since(now).Seconds())
+				}()
+
+				return next(c)
 			}
 		})
 
