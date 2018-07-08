@@ -51,3 +51,11 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 
 	as.Equal(pd, pr)
 }
+
+func (as *ActionSuite) Test_ProjectsResource_List() {
+	var ps []models.Project
+
+	res := as.JSON("/api/projects").Get()
+	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
+	res.Bind(&ps)
+}
