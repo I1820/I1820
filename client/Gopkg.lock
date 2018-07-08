@@ -32,13 +32,13 @@
   version = "v0.4.8"
 
 [[projects]]
-  branch = "buffalo"
+  branch = "master"
   name = "github.com/aiotrc/pm"
   packages = [
     "models",
     "runner"
   ]
-  revision = "1941a94f7436461ff5bec93b9f976ec63ca8fc65"
+  revision = "4263003f74b293225a42124f0807406126d5f7af"
 
 [[projects]]
   name = "github.com/docker/distribution"
@@ -123,6 +123,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0aefc1751285c6bf367670d8ff38b6d2ae668563a440245e434879c8b9719e7e"
+  inputs-digest = "7b5271354cacce6096f3c3f9b24142244e9b626f741b93316d4fcd6773b4ed28"
   solver-name = "gps-cdcl"
   solver-version = 1
