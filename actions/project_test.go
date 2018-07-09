@@ -44,6 +44,11 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 
 	as.Equal(pd, pr)
 
+	// Deactivate
+	resa := as.JSON("/api/projects/%s/deactivate", pName).Get()
+	as.Equalf(200, resa.Code, "Error: %s", resa.Body.String())
+	resa.Bind(&pd)
+
 	// Destroy
 	resd := as.JSON("/api/projects/%s", pName).Delete()
 	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
