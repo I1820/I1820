@@ -10,20 +10,18 @@
 
 package runner
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestBasic(t *testing.T) {
 	r, err := New("Eli", nil)
 
-	if err != nil {
-		t.Fatalf("Runner creation error: %s", err)
-	}
+	assert.NoError(t, err)
 
 	t.Log(r.ID)
 
-	err = r.Remove()
-
-	if err != nil {
-		t.Fatalf("Runner remove error: %s", err)
-	}
+	assert.NoError(t, r.Remove())
 }
