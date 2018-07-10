@@ -69,12 +69,6 @@ func Data(topicName, message []byte) {
 		}).Errorf("PM GetThingProject: %s", err)
 		return
 	}
-	// TODO: thing activation
-	/*
-		if !t.Status {
-			return
-		}
-	*/
 
 	defer func() {
 		log.WithFields(log.Fields{

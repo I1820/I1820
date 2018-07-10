@@ -34,19 +34,24 @@
 [[projects]]
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
-  revision = "7da180ee92d8bd8bb8c37fc560e673e6557c392f"
-  version = "v0.4.7"
+  revision = "67921128fb397dd80339870d2193d6b1e6856fd4"
+  version = "v0.4.8"
 
 [[projects]]
   branch = "master"
   name = "github.com/aiotrc/pm"
   packages = [
     "client",
-    "project",
-    "runner",
-    "thing"
+    "models",
+    "runner"
   ]
-  revision = "ec5c49668df6a2ccefe64d04f94a459e7873eae7"
+  revision = "7086ac411550f2e7b9dbe6cba1c5c8298439932f"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/buger/jsonparser"
+  packages = ["."]
+  revision = "2cac668e8456b4284edb0715e17e2af02d3ec993"
 
 [[projects]]
   name = "github.com/docker/distribution"
@@ -86,11 +91,18 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/jinzhu/configor"
+  name = "github.com/golang/snappy"
   packages = ["."]
-  revision = "ec34f328956f53dfbd06e9f5306e37e6943443c3"
+  revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jinzhu/configor"
+  packages = ["."]
+  revision = "4edaf76fe18865e36de734d887f4c01bd05707af"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mongodb/mongo-go-driver"
   packages = [
     "bson",
@@ -98,15 +110,18 @@
     "bson/decimal",
     "bson/elements",
     "bson/objectid",
-    "core/addr",
+    "bson/parser",
+    "bson/parser/ast",
+    "core/address",
     "core/auth",
     "core/auth/internal/gssapi",
     "core/command",
+    "core/compressor",
     "core/connection",
     "core/connstring",
     "core/description",
     "core/dispatch",
-    "core/options",
+    "core/option",
     "core/readconcern",
     "core/readpref",
     "core/result",
@@ -116,10 +131,24 @@
     "core/wiremessage",
     "core/writeconcern",
     "internal",
-    "mongo"
+    "mongo",
+    "mongo/aggregateopt",
+    "mongo/changestreamopt",
+    "mongo/clientopt",
+    "mongo/collectionopt",
+    "mongo/countopt",
+    "mongo/dbopt",
+    "mongo/deleteopt",
+    "mongo/distinctopt",
+    "mongo/findopt",
+    "mongo/indexopt",
+    "mongo/insertopt",
+    "mongo/mongoopt",
+    "mongo/replaceopt",
+    "mongo/runcmdopt",
+    "mongo/updateopt"
   ]
-  revision = "ff5ad991913ea56c4609391ff190eaf83edf339b"
-  version = "v0.0.4"
+  revision = "88e57ff579da3574564a9edcccdb6278cc32ce25"
 
 [[projects]]
   name = "github.com/opencontainers/go-digest"
@@ -137,6 +166,12 @@
   version = "v1.0.1"
 
 [[projects]]
+  name = "github.com/patrickmn/go-cache"
+  packages = ["."]
+  revision = "a3647f8e31d79543b2d0f0ae2fe5c379d72cedc0"
+  version = "v2.1.0"
+
+[[projects]]
   name = "github.com/phayes/freeport"
   packages = ["."]
   revision = "b8543db493a5ed890c5499e935e2cad7504f3a04"
@@ -152,11 +187,15 @@
   branch = "master"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "bde08903c767a7f835dfbe69f769f4b3225f8b1b"
+  revision = "e54a77765aca7bbdd8e56c1c54f60579968b2dc9"
 
 [[projects]]
   name = "github.com/yosssi/gmq"
-  packages = ["mqtt"]
+  packages = [
+    "mqtt",
+    "mqtt/client",
+    "mqtt/packet"
+  ]
   revision = "31fa037b1019e383aa033aee1e4d04e106c88ed2"
   version = "v0.0.1"
 
@@ -167,7 +206,7 @@
     "pbkdf2",
     "ssh/terminal"
   ]
-  revision = "1a580b3eff7814fc9b40602fd35256c63b50f491"
+  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
 
 [[projects]]
   branch = "master"
@@ -178,7 +217,7 @@
     "internal/socks",
     "proxy"
   ]
-  revision = "2491c5de3490fced2f6cff376127c667efeed857"
+  revision = "292b43bbf7cb8d35ddf40f8d5100ef3837cced3f"
 
 [[projects]]
   branch = "master"
@@ -193,7 +232,7 @@
     "unix",
     "windows"
   ]
-  revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
+  revision = "1b2967e3c290b7c545b3db0deeda16e9be4f98a2"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
@@ -204,6 +243,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "67808f21afa41c73fa944d73b1657862c614ea6b68f58b9872ebe2cc66a5cf34"
+  inputs-digest = "53a341e6335e52793352cb040d21b8a213cfd0db24b007c1d79a1d88ffaa7f10"
   solver-name = "gps-cdcl"
   solver-version = 1
