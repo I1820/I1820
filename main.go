@@ -14,9 +14,12 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+
+	"github.com/aiotrc/uplink/actions"
 )
 
 func main() {
+	actions.App()
 
 	// Set up channel on which to send signal notifications.
 	sigc := make(chan os.Signal, 1)
