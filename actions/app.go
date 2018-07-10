@@ -2,17 +2,13 @@ package actions
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"math/rand"
-	"time"
 
 	"github.com/mongodb/mongo-go-driver/bson"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 
 	pmclient "github.com/aiotrc/pm/client"
-	"github.com/aiotrc/uplink/decoder"
-	"github.com/aiotrc/uplink/lora"
 	"github.com/jinzhu/configor"
 	log "github.com/sirupsen/logrus"
 	"github.com/yosssi/gmq/mqtt"
@@ -34,6 +30,9 @@ var Config = struct {
 		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
 	}
 }{}
+
+var db *mgo.Database
+var pm pmclient.PM
 
 // App creates configured mqtt application
 func App() {
@@ -69,30 +68,31 @@ func App() {
 	fmt.Printf("MQTT session %s has been created\n", Config.Broker.URL)
 
 	// PM
-	pm := pmclient.New(Config.PM.URL)
+	pm = pmclient.New(Config.PM.URL)
 
-	// LoRa error collection
-	ce := session.Database("isrc").Collection("lora")
+	// ISRC database
+	db = session.Database("isrc")
 
 	// Data collection
-	cd := session.Database("isrc").Collection("data")
-	indx, err := cd.Indexes().CreateMany(
+	indx, err := db.Collection("data").Indexes().CreateMany(
 		context.Background(),
-		mgo.IndexModel{
-			Keys: bson.NewDocument(
-				bson.EC.Int32("timestamp", 1),
-			),
-		},
-		mgo.IndexModel{
-			Keys: bson.NewDocument(
-				bson.EC.Int32("thingid", 1),
-				bson.EC.Int32("timestamp", 1),
-			),
-		},
-		mgo.IndexModel{
-			Keys: bson.NewDocument(
-				bson.EC.String("data._location", "2dsphere"),
-			),
+		[]mgo.IndexModel{
+			mgo.IndexModel{
+				Keys: bson.NewDocument(
+					bson.EC.Int32("timestamp", 1),
+				),
+			},
+			mgo.IndexModel{
+				Keys: bson.NewDocument(
+					bson.EC.Int32("thingid", 1),
+					bson.EC.Int32("timestamp", 1),
+				),
+			},
+			mgo.IndexModel{
+				Keys: bson.NewDocument(
+					bson.EC.String("data._location", "2dsphere"),
+				),
+			},
 		},
 	)
 	if err != nil {
@@ -108,116 +108,12 @@ func App() {
 				TopicFilter: []byte("application/+/node/+/error"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
-					var m lora.ErrorMessage
-					if err := json.Unmarshal(message, &m); err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("JSON Unmarshal: %s", err)
-						return
-					}
-					log.WithFields(log.Fields{
-						"component": "uplink",
-					}).Info(m)
-					if _, err := ce.InsertOne(context.Background(), &struct {
-						Error     string
-						Timestamp time.Time
-						Type      string
-						Project   string
-						FCnt      int
-					}{
-						Error:     m.Error,
-						Timestamp: time.Now(),
-						Project:   m.ApplicationName,
-						Type:      m.Type,
-						FCnt:      m.FCnt,
-					}); err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("Mongo insert: %s\n", err)
-						return
-					}
-
 				},
 			},
 			&client.SubReq{
 				TopicFilter: []byte("application/+/node/+/rx"),
 				QoS:         mqtt.QoS0,
 				Handler: func(topicName, message []byte) {
-					var m lora.RxMessage
-					if err := json.Unmarshal(message, &m); err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("JSON Unmarshal: %s", err)
-						return
-					}
-					log.WithFields(log.Fields{
-						"component": "uplink",
-					}).Info(m)
-
-					var bdoc interface{}
-
-					// Find thing
-					p, err := pm.GetThingProject(m.DevEUI)
-					if err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("PM GetThingProject: %s", err)
-						return
-					}
-					// TODO: thing activation
-					/*
-						if !t.Status {
-							return
-						}
-					*/
-
-					defer func() {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Info("Insert into databse")
-
-						if _, err := cd.InsertOne(context.Background(), &struct {
-							Raw       []byte
-							Data      interface{}
-							Timestamp time.Time
-							ThingID   string
-							RxInfo    []lora.RxInfo
-							TxInfo    lora.TxInfo
-							Project   string
-						}{
-							Raw:       m.Data,
-							Data:      bdoc,
-							Timestamp: time.Now(),
-							ThingID:   m.DevEUI,
-							RxInfo:    m.RxInfo,
-							TxInfo:    m.TxInfo,
-							Project:   p.Name,
-						}); err != nil {
-							log.WithFields(log.Fields{
-								"component": "uplink",
-							}).Errorf("Mongo insert: %s\n", err)
-							return
-						}
-					}()
-
-					// Create decoder
-					decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, p.Runner.Port))
-
-					// Decode
-					parsed, err := decoder.Decode(m.Data, m.DevEUI)
-					if err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("Decode: %s", err)
-						return
-					}
-
-					if err := json.Unmarshal([]byte(parsed), &bdoc); err != nil {
-						log.WithFields(log.Fields{
-							"component": "uplink",
-						}).Errorf("Unmarshal JSON: %s\n %q", err, parsed)
-						return
-					}
 				},
 			},
 		},
