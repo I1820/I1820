@@ -73,7 +73,7 @@ func Data(topicName, message []byte) {
 	defer func() {
 		log.WithFields(log.Fields{
 			"component": "uplink",
-		}).Info("Insert into databse")
+		}).Info("Insert into database")
 
 		if _, err := db.Collection("data").InsertOne(context.Background(), &struct {
 			Raw       []byte

@@ -107,14 +107,12 @@ func App() {
 			&client.SubReq{
 				TopicFilter: []byte("application/+/node/+/error"),
 				QoS:         mqtt.QoS0,
-				Handler: func(topicName, message []byte) {
-				},
+				Handler:     Error,
 			},
 			&client.SubReq{
 				TopicFilter: []byte("application/+/node/+/rx"),
 				QoS:         mqtt.QoS0,
-				Handler: func(topicName, message []byte) {
-				},
+				Handler:     Data,
 			},
 		},
 	})
