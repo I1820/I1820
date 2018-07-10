@@ -45,6 +45,10 @@
   branch = "master"
   name = "github.com/sirupsen/logrus"
 
+[[constraint]]
+  branch = "master"
+  name = "github.com/go-redis/redis"
+
 [prune]
   go-tests = true
   unused-packages = true
