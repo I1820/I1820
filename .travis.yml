@@ -14,8 +14,8 @@ go_import_path: github.com/aiotrc/pm
 before_install:
   - PKGS=$(go list ./... ) # All the import paths
   - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh # go dep
-  - go get -u github.com/golang/lint/golint # linter
-  - go get -u github.com/kisielk/errcheck   # errcheck checks that you checked errors.
+  - go get -u github.com/golang/x/lint/golint # linter
+  - go get -u github.com/kisielk/errcheck     # errcheck checks that you checked errors.
 
 install:
   - go get github.com/gobuffalo/buffalo/buffalo
