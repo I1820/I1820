@@ -12,7 +12,7 @@ before_install:
   - PKGS=$(go list ./... )             # All the import paths
 
   # Setup dependency management tool
-  - go get -u github.com/golang/dep/cmd/dep
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
   # Install linters
   - go get -u github.com/golang/lint/golint              # Linter
