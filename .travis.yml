@@ -15,8 +15,8 @@ before_install:
   - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
   # Install linters
-  - go get -u github.com/golang/x/lint/golint              # Linter
-  - go get -u github.com/kisielk/errcheck                # errcheck checks that you checked errors.
+  - go get -u golang.org/x/lint/golint            # Linter
+  - go get -u github.com/kisielk/errcheck         # errcheck checks that you checked errors.
 
 install:
   - dep ensure
