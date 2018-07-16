@@ -56,16 +56,14 @@ func init() {
 // New creates runner docker with given user name
 // mgu represents mongo url that is used in runners
 // for collecting errors and access to thing data
-func New(name string, envs []Env) (Runner, error) {
-	ctx := context.Background()
-
-	rid, err := createRedis(name)
+func New(ctx context.Context, name string, envs []Env) (Runner, error) {
+	rid, err := createRedis(ctx, name)
 
 	if err != nil {
 		return Runner{}, err
 	}
 
-	gid, eport, err := createRunner(name, envs)
+	gid, eport, err := createRunner(ctx, name, envs)
 
 	if err != nil {
 		// Removes redis container
@@ -85,9 +83,7 @@ func New(name string, envs []Env) (Runner, error) {
 	}, nil
 }
 
-func createRedis(name string) (string, error) {
-	ctx := context.Background()
-
+func createRedis(ctx context.Context, name string) (string, error) {
 	imageName := "redis:alpine"
 
 	lport, _ := nat.NewPort("tcp", "6379")
@@ -118,9 +114,7 @@ func createRedis(name string) (string, error) {
 	return resp.ID, nil
 }
 
-func createRunner(name string, envs []Env) (string, string, error) {
-	ctx := context.Background()
-
+func createRunner(ctx context.Context, name string, envs []Env) (string, string, error) {
 	imageName := "aiotrc/gorunner"
 
 	lport, _ := nat.NewPort("tcp", "8080")

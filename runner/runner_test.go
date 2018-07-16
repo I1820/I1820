@@ -11,13 +11,14 @@
 package runner
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBasic(t *testing.T) {
-	r, err := New("Eli", nil)
+	r, err := New(context.Background(), "Eli", nil)
 
 	assert.NoError(t, err)
 

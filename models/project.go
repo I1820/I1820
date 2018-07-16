@@ -11,6 +11,8 @@
 package models
 
 import (
+	"context"
+
 	"github.com/aiotrc/pm/runner"
 )
 
@@ -23,8 +25,8 @@ type Project struct {
 }
 
 // NewProject creates new project with given name
-func NewProject(name string, envs []runner.Env) (*Project, error) {
-	r, err := runner.New(name, envs)
+func NewProject(ctx context.Context, name string, envs []runner.Env) (*Project, error) {
+	r, err := runner.New(ctx, name, envs)
 
 	if err != nil {
 		return nil, err
