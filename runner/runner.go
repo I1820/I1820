@@ -144,6 +144,10 @@ func createRunner(ctx context.Context, name string, envs []Env) (string, string,
 			Env: dockerEnvs,
 		},
 		&container.HostConfig{
+			Resources: container.Resources{
+				Memory:   2 * 1000 * 1000,
+				NanoCPUs: 1000 * 1000,
+			},
 			NetworkMode: "isrc",
 			PortBindings: nat.PortMap{
 				lport: []nat.PortBinding{
