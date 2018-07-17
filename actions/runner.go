@@ -26,8 +26,8 @@ import (
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
 
-// RunnerHandler sends request to specific GoRunner
-func RunnerHandler(c buffalo.Context) error {
+// RunnersHandler sends request to specific GoRunner
+func RunnersHandler(c buffalo.Context) error {
 	name := c.Param("project_id")
 	path := c.Param("path")
 
