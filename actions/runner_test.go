@@ -21,7 +21,7 @@ func (as *ActionSuite) Test_RunnersHandler() {
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
 
 	// wait for GoRunner
-	time.Sleep(1 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	// GoRunner About
 	res := as.JSON("/api/runners/%s/about", pName).Get()
