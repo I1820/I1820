@@ -24,6 +24,8 @@ func (as *ActionSuite) Test_RunnersHandler() {
 	as.Contains(res.Body.String(), "18.20 is leaving us")
 
 	// Destroy
-	resd := as.JSON("/api/projects/%s", pName).Delete()
-	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
+	/*
+		resd := as.JSON("/api/projects/%s", pName).Delete()
+		as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
+	*/
 }
