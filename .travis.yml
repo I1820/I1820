@@ -32,4 +32,3 @@ script:
   - errcheck -verbose $PKGS           # Check for unchecked errors
   - golint -set_exit_status $PKGS     # One last linter
   - buffalo test
-  - docker ps -a
