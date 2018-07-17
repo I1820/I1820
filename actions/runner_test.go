@@ -13,10 +13,15 @@
 
 package actions
 
+import "time"
+
 func (as *ActionSuite) Test_RunnersHandler() {
 	// Create
 	resc := as.JSON("/api/projects").Post(projectReq{Name: pName})
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
+
+	// wait for GoRunner
+	time.Sleep(1 * time.Second)
 
 	// GoRunner About
 	res := as.JSON("/api/runners/%s/about", pName).Get()
@@ -24,8 +29,6 @@ func (as *ActionSuite) Test_RunnersHandler() {
 	as.Contains(res.Body.String(), "18.20 is leaving us")
 
 	// Destroy
-	/*
-		resd := as.JSON("/api/projects/%s", pName).Delete()
-		as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
-	*/
+	resd := as.JSON("/api/projects/%s", pName).Delete()
+	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
 }
