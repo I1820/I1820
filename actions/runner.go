@@ -22,6 +22,7 @@ import (
 
 	"github.com/aiotrc/pm/models"
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/envy"
 	"github.com/mongodb/mongo-go-driver/bson"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
@@ -44,7 +45,7 @@ func RunnersHandler(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	url, err := url.Parse(fmt.Sprintf("http://127.0.0.1:%s/api", p.Runner.Port))
+	url, err := url.Parse(fmt.Sprintf("http://%s:%s/api", envy.Get("D_HOST", "172.17.0.1"), p.Runner.Port))
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
