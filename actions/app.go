@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -106,8 +107,15 @@ func App() *buffalo.App {
 			tr := ThingsResource{}
 			api.Resource("/things", tr)
 			api.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
+
+			api.ANY("/runners/{project_id}/{path:.+}", func(c buffalo.Context) error {
+				fmt.Println(c.Param("project_id"))
+				fmt.Println(c.Param("path"))
+				fmt.Println("Hello")
+				return nil
+			})
 		}
-		app.Mount("/", promhttp.Handler())
+		app.GET("/metrics", buffalo.WrapHandler(promhttp.Handler()))
 	}
 
 	return app
