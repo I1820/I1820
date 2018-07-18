@@ -170,9 +170,9 @@ func (v ProjectsResource) Activation(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(p))
 }
 
-// Error returns project execution and lora errors. This function is mapped
-// to the path GET /projects/{project_id}/errors/{t:(?:lora|project)}
-func (v ProjectsResource) Error(c buffalo.Context) error {
+// ErrorProject returns project execution errors. This function is mapped
+// to the path GET /projects/{project_id}/errors/project
+func (v ProjectsResource) ErrorProject(c buffalo.Context) error {
 	var pls = make([]models.ProjectLog, 0)
 
 	id := c.Param("project_id")
@@ -211,4 +211,47 @@ func (v ProjectsResource) Error(c buffalo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, r.JSON(pls))
+}
+
+// ErrorLora returns lora errors. This function is mapped
+// to the path GET /projects/{project_id}/errors/lora
+func (v ProjectsResource) ErrorLora(c buffalo.Context) error {
+	var lls = make([]models.LoraLog, 0)
+
+	id := c.Param("project")
+
+	limit, err := strconv.Atoi(c.Param("limit"))
+	if err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	cur, err := db.Collection("lora").Aggregate(context.Background(), bson.NewArray(
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.Int32("$limit", int32(limit)),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$sort", bson.EC.Int32("Time", -1)),
+		),
+	))
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	for cur.Next(context.Background()) {
+		var ll models.LoraLog
+
+		if err := cur.Decode(&ll); err != nil {
+			return c.Error(http.StatusInternalServerError, err)
+		}
+
+		lls = append(lls, ll)
+	}
+	if err := cur.Close(context.Background()); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(lls))
 }
