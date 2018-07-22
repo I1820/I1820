@@ -11,13 +11,12 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/aiotrc/pm/models"
+	"github.com/go-resty/resty"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -28,58 +27,142 @@ type entry struct {
 	ti time.Time
 }
 
+// Error represents pm errors
+type Error struct {
+	Err  string `json:"error"`
+	Code int    `json:"code"`
+}
+
+func (e Error) Error() string {
+	return fmt.Sprintf("(%d): %s", e.Code, e.Err)
+}
+
 func init() {
 	c = cache.New(5*time.Minute, 10*time.Minute)
 }
 
 // PM is way for connecting to PM :joy:
 type PM struct {
-	URL string
+	cli *resty.Client
 }
 
 // New creates new instance of PM but connection establishment
 // does not happen here.
 func New(url string) PM {
+	cli := resty.New().
+		SetHostURL(url).
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Accept", "application/json").
+		SetError(Error{}).
+		SetCloseConnection(true)
+
 	return PM{
-		URL: url,
+		cli: cli,
 	}
 }
 
-// GetThingProject gets project contains given thing from pm using http request
-func (p PM) GetThingProject(name string) (models.Project, error) {
+// ProjectsCreate creates new project
+func (p PM) ProjectsCreate(name string) (models.Project, error) {
+	var pr models.Project
+
+	resp, err := p.cli.R().
+		SetBody(map[string]string{"name": name}).
+		SetResult(&pr).
+		Post("/api/projects")
+	if err != nil {
+		return pr, err
+	}
+
+	if resp.StatusCode() != http.StatusOK {
+		return pr, resp.Error().(Error)
+	}
+
+	return pr, nil
+}
+
+// ProjectsList lists existing projects
+func (p PM) ProjectsList() ([]models.Project, error) {
+	var pr []models.Project
+
+	resp, err := p.cli.R().
+		SetResult(&pr).
+		Get("/api/projects")
+	if err != nil {
+		return pr, err
+	}
+
+	if resp.StatusCode() != http.StatusOK {
+		return pr, resp.Error().(Error)
+	}
+
+	return pr, nil
+
+}
+
+// ProjectsShow shows project information by name
+func (p PM) ProjectsShow(name string) (models.Project, error) {
+	var pr models.Project
+
+	resp, err := p.cli.R().
+		SetResult(&pr).
+		SetPathParams(map[string]string{
+			"projectId": name,
+		}).
+		Get("/api/projects/{projectId}")
+	if err != nil {
+		return pr, err
+	}
+
+	if resp.StatusCode() != http.StatusOK {
+		return pr, resp.Error().(Error)
+	}
+
+	return pr, nil
+
+}
+
+// ProjectsDelete deletes project by name
+func (p PM) ProjectsDelete(name string) (models.Project, error) {
+	var pr models.Project
+
+	resp, err := p.cli.R().
+		SetResult(&pr).
+		SetPathParams(map[string]string{
+			"projectId": name,
+		}).
+		Delete("/api/projects/{projectId}")
+	if err != nil {
+		return pr, err
+	}
+
+	if resp.StatusCode() != http.StatusOK {
+		return pr, resp.Error().(Error)
+	}
+
+	return pr, nil
+
+}
+
+// ThingsShow shows project that contains given thing
+func (p PM) ThingsShow(name string) (models.Project, error) {
 	if pr, found := c.Get(name); found {
 		return pr.(models.Project), nil
 	}
 
 	var pr models.Project
 
-	resp, err := http.Get(fmt.Sprintf("%s/api/things/%s", p.URL, name))
+	resp, err := p.cli.R().
+		SetResult(&pr).
+		SetPathParams(map[string]string{
+			"thingId": name,
+		}).
+		Get("/api/things/{thingId}")
 	if err != nil {
 		return pr, err
 	}
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return pr, err
-	}
-	if err := resp.Body.Close(); err != nil {
-		return pr, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		var e struct {
-			Error string
-		}
-
-		if err := json.Unmarshal(data, &e); err != nil {
-			return pr, fmt.Errorf("%s", data)
-		}
-
-		return pr, fmt.Errorf("%s", e.Error)
-	}
-
-	if err := json.Unmarshal(data, &pr); err != nil {
-		return pr, err
+	if resp.StatusCode() != http.StatusOK {
+		return pr, resp.Error().(Error)
 	}
 
 	status := false
@@ -95,5 +178,6 @@ func (p PM) GetThingProject(name string) (models.Project, error) {
 	if status {
 		return pr, nil
 	}
+
 	return pr, fmt.Errorf("Thing (%s) is not activated", name)
 }
