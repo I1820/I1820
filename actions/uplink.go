@@ -62,7 +62,7 @@ func Data(topicName, message []byte) {
 	var bdoc interface{}
 
 	// Find thing
-	p, err := pm.GetThingProject(m.DevEUI)
+	p, err := pm.ThingsShow(m.DevEUI)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"component": "uplink",
