@@ -46,6 +46,15 @@ func App() *buffalo.App {
 
 		// Set the request content type to JSON
 		app.Use(middleware.SetContentType("application/json"))
+		app.Use(func(next buffalo.Handler) buffalo.Handler {
+			return func(c buffalo.Context) error {
+				defer func() {
+					c.Response().Header().Set("Content-Type", "application/json")
+				}()
+
+				return next(c)
+			}
+		})
 
 		// Create mongodb connection
 		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
