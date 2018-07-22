@@ -29,6 +29,9 @@ var Config = struct {
 	PM struct {
 		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
 	}
+	Redis struct {
+		Addr string
+	}
 }{}
 
 var db *mgo.Database
