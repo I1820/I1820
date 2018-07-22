@@ -74,7 +74,7 @@ func (p PM) ProjectsCreate(name string) (models.Project, error) {
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return pr, resp.Error().(Error)
+		return pr, resp.Error().(*Error)
 	}
 
 	return pr, nil
@@ -92,7 +92,7 @@ func (p PM) ProjectsList() ([]models.Project, error) {
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return pr, resp.Error().(Error)
+		return pr, resp.Error().(*Error)
 	}
 
 	return pr, nil
@@ -114,7 +114,7 @@ func (p PM) ProjectsShow(name string) (models.Project, error) {
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return pr, resp.Error().(Error)
+		return pr, resp.Error().(*Error)
 	}
 
 	return pr, nil
@@ -136,7 +136,7 @@ func (p PM) ProjectsDelete(name string) (models.Project, error) {
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return pr, resp.Error().(Error)
+		return pr, resp.Error().(*Error)
 	}
 
 	return pr, nil
@@ -162,7 +162,7 @@ func (p PM) ThingsShow(name string) (models.Project, error) {
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return pr, resp.Error().(Error)
+		return pr, resp.Error().(*Error)
 	}
 
 	status := false
