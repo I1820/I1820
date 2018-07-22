@@ -108,12 +108,12 @@ func App() {
 		SubReqs: []*client.SubReq{
 			// https://docs.loraserver.io/use/getting-started/
 			&client.SubReq{
-				TopicFilter: []byte("application/+/node/+/error"),
+				TopicFilter: []byte("application/+/device/+/error"),
 				QoS:         mqtt.QoS0,
 				Handler:     Error,
 			},
 			&client.SubReq{
-				TopicFilter: []byte("application/+/node/+/rx"),
+				TopicFilter: []byte("application/+/device/+/rx"),
 				QoS:         mqtt.QoS0,
 				Handler:     Data,
 			},
