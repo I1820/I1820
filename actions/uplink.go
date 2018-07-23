@@ -3,10 +3,8 @@ package actions
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
-	"github.com/aiotrc/uplink/decoder"
 	"github.com/aiotrc/uplink/lora"
 	log "github.com/sirupsen/logrus"
 )
@@ -99,23 +97,12 @@ func Data(topicName, message []byte) {
 		}
 	}()
 
-	// Create decoder
-	decoder := decoder.New(fmt.Sprintf("http://%s:%s", Config.Decoder.Host, p.Runner.Port))
-
 	// Decode
-	parsed, err := decoder.Decode(m.Data, m.DevEUI)
+	bdoc, err = pm.RunnersDecode(m.Data, p.Name, m.DevEUI)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"component": "uplink",
 		}).Errorf("Decode: %s", err)
 		return
 	}
-
-	if err := json.Unmarshal([]byte(parsed), &bdoc); err != nil {
-		log.WithFields(log.Fields{
-			"component": "uplink",
-		}).Errorf("Unmarshal JSON: %s\n %q", err, parsed)
-		return
-	}
-
 }
