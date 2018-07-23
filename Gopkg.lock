@@ -28,14 +28,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:282acb7fe0ca456de4ea5c3174c2691a2bd74008462e966b69094ad0b2c23e6e"
-  name = "github.com/BurntSushi/toml"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
-  version = "v0.3.0"
-
-[[projects]]
   digest = "1:d4484d5ea343882677abd9f42b100954f53e500c31e2e8945003ef84280c52a5"
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
@@ -45,7 +37,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:569c93d6f380d9c97c0121afa838ec575b3446142c9f693362f9ef5a367bdb51"
+  digest = "1:b6550378cfa06e9c001dd8bdaca376df90f62f7faf0e4e0a5388742e7dbb6414"
   name = "github.com/aiotrc/pm"
   packages = [
     "client",
@@ -53,7 +45,7 @@
     "runner",
   ]
   pruneopts = "UT"
-  revision = "ca33da5b871b5fec77ff5952b54b5da4dada1b36"
+  revision = "d776a041a84972bd2e85db8b225b72ab1ac12aa7"
 
 [[projects]]
   branch = "master"
@@ -135,6 +127,14 @@
   version = "v1.7.0"
 
 [[projects]]
+  digest = "1:3b38d215aa4fb6c4d10f44bed053cea84eacf901042e43b8fdfb68b33276b791"
+  name = "github.com/gobuffalo/envy"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2d0f467653f3d961ce9ada4d32a230bdcb3bfe11"
+  version = "v1.6.3"
+
+[[projects]]
   digest = "1:701239373bbf22998c5a36c76d2ff4ee309b3980e39b7a66d72cabd3aab748fa"
   name = "github.com/gogo/protobuf"
   packages = ["proto"]
@@ -159,12 +159,12 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
-  branch = "master"
-  digest = "1:0f65b10afa740ebce239838198b7647ca95c6395738bbaec5748aceece17b07c"
-  name = "github.com/jinzhu/configor"
+  digest = "1:70e697d67ccaec45e16bac3a32380ebcd9e7e071079c60d0171d42cf1cf9748a"
+  name = "github.com/joho/godotenv"
   packages = ["."]
   pruneopts = "UT"
-  revision = "4edaf76fe18865e36de734d887f4c01bd05707af"
+  revision = "a79fa1e548e2c689c241d10173efd51e5d689d5b"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
@@ -394,21 +394,13 @@
   revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
   version = "v1.1.0"
 
-[[projects]]
-  digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
-  version = "v2.2.1"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/aiotrc/pm/client",
     "github.com/go-redis/redis",
-    "github.com/jinzhu/configor",
+    "github.com/gobuffalo/envy",
     "github.com/mongodb/mongo-go-driver/bson",
     "github.com/mongodb/mongo-go-driver/mongo",
     "github.com/sirupsen/logrus",
