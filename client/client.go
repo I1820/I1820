@@ -181,3 +181,23 @@ func (p PM) ThingsShow(name string) (models.Project, error) {
 
 	return pr, fmt.Errorf("Thing (%s) is not activated", name)
 }
+
+// RunnerDecode decodes given data on given runner
+func (p PM) RunnerDecode(payload []byte, project string, device string) (string, error) {
+	resp, err := p.cli.R().
+		SetBody(payload).
+		SetPathParams(map[string]string{
+			"projectId": project,
+			"thingId":   device,
+		}).
+		Post("/api/runners/{projectId}/decode/{thingId}")
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode() != http.StatusOK {
+		return "", fmt.Errorf("%s", resp.String())
+	}
+
+	return resp.String(), nil
+}
