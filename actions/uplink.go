@@ -9,6 +9,35 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type decodeReq struct {
+	data    []byte
+	project string
+	device  string
+
+	resp chan decodeRes
+}
+
+type decodeRes struct {
+	data interface{}
+	err  error
+}
+
+var decodeChan chan decodeReq
+
+func init() {
+	decodeChan = make(chan decodeReq, 1024)
+
+	for i := 0; i < 5; i++ {
+		go func() {
+			for req := range decodeChan {
+				res := decodeRes{}
+				res.data, res.err = pm.RunnersDecode(req.data, req.project, req.device)
+				req.resp <- res
+			}
+		}()
+	}
+}
+
 // Error handles errors
 func Error(topicName, message []byte) {
 	var m lora.ErrorMessage
@@ -98,11 +127,22 @@ func Data(topicName, message []byte) {
 	}()
 
 	// Decode
-	bdoc, err = pm.RunnersDecode(m.Data, p.Name, m.DevEUI)
-	if err != nil {
+	respChan := make(chan decodeRes)
+	decodeChan <- decodeReq{
+		data:    m.Data,
+		project: p.Name,
+		device:  m.DevEUI,
+
+		resp: respChan,
+	}
+	resp := <-respChan
+	close(respChan)
+
+	bdoc = resp.data
+	if resp.err != nil {
 		log.WithFields(log.Fields{
 			"component": "uplink",
-		}).Errorf("Decode: %s", err)
+		}).Errorf("Decode: %s", resp.err)
 		return
 	}
 }
