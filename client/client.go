@@ -11,6 +11,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -186,8 +187,13 @@ func (p PM) ThingsShow(name string) (models.Project, error) {
 func (p PM) RunnersDecode(payload []byte, project string, device string) (interface{}, error) {
 	var result interface{}
 
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := p.cli.R().
-		SetBody(payload).
+		SetBody(body).
 		SetResult(&result).
 		SetPathParams(map[string]string{
 			"projectId": project,
