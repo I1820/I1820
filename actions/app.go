@@ -5,49 +5,29 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/gobuffalo/envy"
 	"github.com/mongodb/mongo-go-driver/bson"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 
 	pmclient "github.com/aiotrc/pm/client"
-	"github.com/jinzhu/configor"
 	log "github.com/sirupsen/logrus"
 	"github.com/yosssi/gmq/mqtt"
 	"github.com/yosssi/gmq/mqtt/client"
 )
-
-// Config represents main configuration
-var Config = struct {
-	DB struct {
-		URL string `default:"mongodb://127.0.0.1" env:"db_url"`
-	}
-	Broker struct {
-		URL string `default:"127.0.0.1:1883" env:"broker_url"`
-	}
-	Decoder struct {
-		Host string `default:"127.0.0.1" env:"decoder_host"`
-	}
-	PM struct {
-		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
-	}
-	Redis struct {
-		Addr string
-	}
-}{}
 
 var db *mgo.Database
 var pm pmclient.PM
 
 // App creates configured mqtt application
 func App() {
-	// Load configuration
-	if err := configor.Load(&Config, "config.yml"); err != nil {
-		panic(err)
-	}
-
-	// Create a Mongo Session
-	session, err := mgo.Connect(context.Background(), Config.DB.URL, nil)
+	// Create mongodb connection
+	url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
+	session, err := mgo.NewClient(url)
 	if err != nil {
-		log.Fatalf("Mongo session %s: %v", Config.DB.URL, err)
+		log.Fatalf("DB new client error: %s", err)
+	}
+	if err := session.Connect(context.Background()); err != nil {
+		log.Fatalf("DB connection error: %s", err)
 	}
 
 	// Create an MQTT client
@@ -63,15 +43,14 @@ func App() {
 	// Connect to the MQTT Server.
 	if err := cli.Connect(&client.ConnectOptions{
 		Network:  "tcp",
-		Address:  Config.Broker.URL,
+		Address:  envy.Get("BROKER_URL", "127.0.0.1:1883"),
 		ClientID: []byte(fmt.Sprintf("isrc-uplink-%d", rand.Int63())),
 	}); err != nil {
-		log.Fatalf("MQTT session %s: %s", Config.Broker.URL, err)
+		log.Fatalf("MQTT session error: %s", err)
 	}
-	fmt.Printf("MQTT session %s has been created\n", Config.Broker.URL)
 
 	// PM
-	pm = pmclient.New(Config.PM.URL)
+	pm = pmclient.New(envy.Get("PM_URL", "http://127.0.0.1:8080"))
 
 	// ISRC database
 	db = session.Database("isrc")
