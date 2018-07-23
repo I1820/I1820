@@ -8,11 +8,18 @@
 PM is project manager for ISRC platform. It creates projects and corresponding runners (containers) for users.
 
 ## Installation
+
 1. Non-Root user access for docker
 ```sh
 sudo usermod -aG docker $USER
 ```
+
 2. Create ISRC network
 ```sh
 docker network create isrc
+```
+
+3. Change open file limit when there is high load on system
+```sh
+ulimit -n 65536
 ```
