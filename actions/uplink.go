@@ -50,6 +50,7 @@ func Error(topicName, message []byte) {
 
 	log.WithFields(log.Fields{
 		"component": "uplink",
+		"topic":     string(topicName),
 	}).Info(m)
 
 	if _, err := db.Collection("lora").InsertOne(context.Background(), &struct {
@@ -84,6 +85,7 @@ func Data(topicName, message []byte) {
 	}
 	log.WithFields(log.Fields{
 		"component": "uplink",
+		"topic":     string(topicName),
 	}).Info(m)
 
 	var bdoc interface{}
