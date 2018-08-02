@@ -1,10 +1,11 @@
 sudo: required
 
 services:
-  - redis
+  - mongo
+  - docker
 
 language: go
-go: 1.9
+go: "1.10"
 
 before_install:
   # Setup some env variables
@@ -17,6 +18,9 @@ before_install:
   # Install linters
   - go get -u github.com/golang/lint/golint     # Linter
   - go get -u github.com/kisielk/errcheck       # errcheck checks that you checked errors.
+
+  # docker services
+  - docker run -d -p 1883:1883 eclipse-mosquitto
 
 install:
   - dep ensure
