@@ -30,10 +30,6 @@
   name = "github.com/aiotrc/pm"
 
 [[constraint]]
-  name = "github.com/yosssi/gmq"
-  version = "0.0.1"
-
-[[constraint]]
   branch = "master"
   name = "github.com/mongodb/mongo-go-driver"
 
@@ -56,3 +52,7 @@
 [[constraint]]
   name = "github.com/gobuffalo/envy"
   version = "1.6.3"
+
+[[constraint]]
+  name = "github.com/eclipse/paho.mqtt.golang"
+  branch = "master"

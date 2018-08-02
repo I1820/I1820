@@ -45,7 +45,7 @@
     "runner",
   ]
   pruneopts = "UT"
-  revision = "d776a041a84972bd2e85db8b225b72ab1ac12aa7"
+  revision = "e33970440a99ce06f996800f59e15f811d857e50"
 
 [[projects]]
   branch = "master"
@@ -95,7 +95,18 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a60671b336e39a577e0ef3728a47cab53297fe833e1c64521c13b02e5bcc15f3"
+  digest = "1:c0d489963930f60431bcf79034a290421b0a34ee186908f5dd59a34d85a94817"
+  name = "github.com/eclipse/paho.mqtt.golang"
+  packages = [
+    ".",
+    "packets",
+  ]
+  pruneopts = "UT"
+  revision = "88c4622b8e24c52f64a0caaa28e40b91629bb6e6"
+
+[[projects]]
+  branch = "master"
+  digest = "1:68e13e95b04cbbf3aee9ef339d32ac130c333c9c4953ed2ac5ba4723ea68b9c8"
   name = "github.com/go-redis/redis"
   packages = [
     ".",
@@ -108,7 +119,7 @@
     "internal/util",
   ]
   pruneopts = "UT"
-  revision = "3143c672b64e5edbf92410f2e14cdc893428cfbf"
+  revision = "ad7024da36c335474dc6c260bc6e5dbb76b1b403"
 
 [[projects]]
   digest = "1:2ff22b45e9aa8f80ea4a4687f6f9d714a31f1b6c074a223671ae7ce837d4389c"
@@ -168,7 +179,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a2bac4ab013dfd271b589ccdabd674c9db1fbc67f3dbdf470fe2a8ea585c3f18"
+  digest = "1:13b14ce44956b8c801c1315cd43002c210721c8ec60546eb51b3a56c15e37558"
   name = "github.com/mongodb/mongo-go-driver"
   packages = [
     "bson",
@@ -192,8 +203,10 @@
     "core/readconcern",
     "core/readpref",
     "core/result",
+    "core/session",
     "core/tag",
     "core/topology",
+    "core/uuid",
     "core/version",
     "core/wiremessage",
     "core/writeconcern",
@@ -207,16 +220,20 @@
     "mongo/dbopt",
     "mongo/deleteopt",
     "mongo/distinctopt",
+    "mongo/dropcollopt",
     "mongo/findopt",
     "mongo/indexopt",
     "mongo/insertopt",
+    "mongo/listcollectionopt",
+    "mongo/listdbopt",
     "mongo/mongoopt",
     "mongo/replaceopt",
     "mongo/runcmdopt",
+    "mongo/sessionopt",
     "mongo/updateopt",
   ]
   pruneopts = "UT"
-  revision = "ecbcd69c62499ff2d0f50b64fe7f9b8a7eeec727"
+  revision = "3e6d3658ee034629a57b48c87664a37cbcb0a66b"
 
 [[projects]]
   digest = "1:ee4d4af67d93cc7644157882329023ce9a7bcfce956a079069a9405521c7cc8d"
@@ -271,11 +288,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d867dfa6751c8d7a435821ad3b736310c2ed68945d05b50fb9d23aee0540c8cc"
+  digest = "1:68ae7a24476fe166c77ab60dace5945a0cd0c97bf714f27dd5cb66e5bde7fb82"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = "UT"
-  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
+  revision = "d329d24db4313262a3b0a24d8aeb1dc4bd294fb0"
 
 [[projects]]
   digest = "1:18752d0b95816a1b777505a97f71c7467a8445b8ffb55631a7bf779f6ba4fa83"
@@ -297,18 +314,6 @@
   version = "v3.3.3"
 
 [[projects]]
-  digest = "1:30ddcd181cd9b5a9c8acaa1c1c39a8af1a61caceca052c834994d87c6c648e74"
-  name = "github.com/yosssi/gmq"
-  packages = [
-    "mqtt",
-    "mqtt/client",
-    "mqtt/packet",
-  ]
-  pruneopts = "UT"
-  revision = "31fa037b1019e383aa033aee1e4d04e106c88ed2"
-  version = "v0.0.1"
-
-[[projects]]
   branch = "master"
   digest = "1:53078c9e741e588d7cbf480c07c7b5099b3099a607f6c4b5ba3ac7821af9a267"
   name = "golang.org/x/crypto"
@@ -317,11 +322,11 @@
     "ssh/terminal",
   ]
   pruneopts = "UT"
-  revision = "a2144134853fc9a27a7b1e3eb4f19f1a76df13c9"
+  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
 [[projects]]
   branch = "master"
-  digest = "1:ad82c4e1e6bb4b593e054a7b91e1ed52bd9700b355f7f8cec6936df0cec09356"
+  digest = "1:dc606d373152eda673548727a2cf85875137a8c5b102299dd706c22016f9baaf"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -330,9 +335,10 @@
     "internal/socks",
     "proxy",
     "publicsuffix",
+    "websocket",
   ]
   pruneopts = "UT"
-  revision = "a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1"
+  revision = "f4c29de78a2a91c00474a2e689954305c350adf9"
 
 [[projects]]
   branch = "master"
@@ -344,14 +350,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:72d6244a51be9611f08994aca19677fcc31676b3e7b742c37e129e6ece4ad8fc"
+  digest = "1:1fc10d19ed0f295d8a8275e4f7a2f85a39a26be0796503f1a1fb3cd0ffacbdc5"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
+  revision = "0ffbfd41fbef8ffcf9b62b0b0aa3a5873ed7a4fe"
 
 [[projects]]
   digest = "1:7509ba4347d1f8de6ae9be8818b0cd1abc3deeffe28aeaf4be6d4b6b5178d9ca"
@@ -399,6 +405,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/aiotrc/pm/client",
+    "github.com/eclipse/paho.mqtt.golang",
     "github.com/go-redis/redis",
     "github.com/gobuffalo/envy",
     "github.com/mongodb/mongo-go-driver/bson",
@@ -406,8 +413,6 @@
     "github.com/sirupsen/logrus",
     "github.com/stretchr/testify/assert",
     "github.com/vmihailenco/msgpack",
-    "github.com/yosssi/gmq/mqtt",
-    "github.com/yosssi/gmq/mqtt/client",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
