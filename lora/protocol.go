@@ -24,11 +24,15 @@ import (
 type Protocol struct {
 }
 
-func Topic() []byte {
+// Topic returns lora message topic
+// https://www.loraserver.io/lora-app-server/integrate/sending-receiving/mqtt/
+func (p Protocol) Topic() []byte {
 	return []byte("application/+/device/+/rx")
 }
 
-func Marshal(message []byte) (app.Data, error) {
+// Marshal marshals given lora byte message (in json format) into platform data structure
+// https://www.loraserver.io/lora-app-server/integrate/sending-receiving/mqtt/
+func (p Protocol) Marshal(message []byte) (app.Data, error) {
 	var m RxMessage
 
 	if err := json.Unmarshal(message, &m); err != nil {
