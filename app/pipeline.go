@@ -1,0 +1,65 @@
+/*
+ *
+ * In The Name of God
+ *
+ * +===============================================
+ * | Author:        Parham Alvani <parham.alvani@gmail.com>
+ * |
+ * | Creation Date: 02-08-2018
+ * |
+ * | File Name:     pipeline.go
+ * +===============================================
+ */
+
+package app
+
+import (
+	"context"
+
+	"github.com/sirupsen/logrus"
+)
+
+func (a Application) project() {
+	for d := range a.projectStream {
+		// Find thing project in aiotrc/pm
+		p, err := a.pm.ThingsShow(d.ThingID)
+		if err != nil {
+			a.Logger.WithFields(logrus.Fields{
+				"component": "uplink",
+			}).Errorf("PM ThingsShow: %s", err)
+		} else {
+			d.Project = p.Name
+		}
+		a.decodeStream <- d
+	}
+}
+
+func (a Application) decode() {
+	for d := range a.decodeStream {
+		if d.Project != "" {
+			data, err := a.pm.RunnersDecode(d.Raw, d.Project, d.ThingID)
+			if err != nil {
+				a.Logger.WithFields(logrus.Fields{
+					"component": "uplink",
+				}).Errorf("PM RunnersDecode: %s", err)
+			} else {
+				d.Data = data
+			}
+		}
+		a.insertStream <- d
+	}
+}
+
+func (a Application) insert() {
+	for d := range a.insertStream {
+		if _, err := a.db.Collection("data").InsertOne(context.Background(), d); err != nil {
+			a.Logger.WithFields(logrus.Fields{
+				"component": "uplink",
+			}).Errorf("Mongo Insert: %s", err)
+		} else {
+			a.Logger.WithFields(logrus.Fields{
+				"component": "uplink",
+			}).Infof("Insert into database: %#v", d)
+		}
+	}
+}
