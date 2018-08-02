@@ -15,24 +15,21 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"math/rand"
 	"runtime"
 	"time"
 
 	pmclient "github.com/aiotrc/pm/client"
+	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gobuffalo/envy"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/sirupsen/logrus"
-	"github.com/yosssi/gmq/mqtt"
-	"github.com/yosssi/gmq/mqtt/client"
 )
 
 // Application is a main component of uplink that consists of
 // uplink protocols and mqtt client
 type Application struct {
-	cli *client.Client
+	cli paho.Client
 
 	Logger *logrus.Logger
 
@@ -51,7 +48,7 @@ type Application struct {
 
 // Protocol is a uplink protocol
 type Protocol interface {
-	Topic() []byte
+	Topic() string
 	Marshal([]byte) (Data, error)
 }
 
@@ -75,13 +72,18 @@ func New() *Application {
 	a.protocols = make([]Protocol, 0)
 
 	// Create an MQTT client
-	a.cli = client.New(&client.Options{
-		ErrorHandler: func(err error) {
-			a.Logger.WithFields(logrus.Fields{
-				"component": "uplink",
-			}).Errorf("MQTT Client %s", err)
-		},
-	})
+	/*
+		Port: 1883
+		CleanSession: True
+		Order: True
+		KeepAlive: 30 (seconds)
+		ConnectTimeout: 30 (seconds)
+		MaxReconnectInterval 10 (minutes)
+		AutoReconnect: True
+	*/
+	opts := paho.NewClientOptions()
+	opts.AddBroker(envy.Get("BROKER_URL", "tcp://127.0.0.1:1883"))
+	a.cli = paho.NewClient(opts)
 
 	a.pm = pmclient.New(envy.Get("PM_URL", "http://127.0.0.1:8080"))
 
@@ -109,12 +111,8 @@ func (a *Application) Register(p Protocol) {
 // Run runs application. this function connects mqtt client and then register its topic
 func (a *Application) Run() {
 	// Connect to the MQTT Server.
-	if err := a.cli.Connect(&client.ConnectOptions{
-		Network:  "tcp",
-		Address:  envy.Get("BROKER_URL", "127.0.0.1:1883"),
-		ClientID: []byte(fmt.Sprintf("aiotrc-uplink-%d", rand.Int63())),
-	}); err != nil {
-		a.Logger.Fatalf("MQTT session error: %s", err)
+	if t := a.cli.Connect(); t.Error() != nil {
+		a.Logger.Fatalf("MQTT session error: %s", t.Error())
 	}
 
 	// Connect to the mongodb
@@ -126,17 +124,8 @@ func (a *Application) Run() {
 
 	// Subscribe to protocols topics
 	for _, p := range a.protocols {
-		fmt.Printf("%#v\n", p)
-		if err := a.cli.Subscribe(&client.SubscribeOptions{
-			SubReqs: []*client.SubReq{
-				&client.SubReq{
-					TopicFilter: p.Topic(),
-					QoS:         mqtt.QoS0,
-					Handler:     a.mqttHandler(p),
-				},
-			},
-		}); err != nil {
-			a.Logger.Fatalf("MQTT subscribe error: %s", err)
+		if t := a.cli.Subscribe(p.Topic(), 0, a.mqttHandler(p)); t.Error() != nil {
+			a.Logger.Fatalf("MQTT subscribe error: %s", t.Error())
 		}
 	}
 
