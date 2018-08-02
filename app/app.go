@@ -86,7 +86,7 @@ func New() *Application {
 	a.pm = pmclient.New(envy.Get("PM_URL", "http://127.0.0.1:8080"))
 
 	// Create a mongodb connection
-	url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
+	url := envy.Get("DB_URL", "mongodb://127.0.0.1:27017")
 	session, err := mgo.NewClient(url)
 	if err != nil {
 		a.Logger.Fatalf("DB new client error: %s", err)
