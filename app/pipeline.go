@@ -19,7 +19,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (a Application) project() {
+func (a *Application) project() {
+	a.Logger.WithFields(logrus.Fields{
+		"component": "uplink",
+	}).Info("Project pipeline stage")
+
 	for d := range a.projectStream {
 		// Find thing project in aiotrc/pm
 		p, err := a.pm.ThingsShow(d.ThingID)
@@ -34,7 +38,11 @@ func (a Application) project() {
 	}
 }
 
-func (a Application) decode() {
+func (a *Application) decode() {
+	a.Logger.WithFields(logrus.Fields{
+		"component": "uplink",
+	}).Info("Decode pipeline stage")
+
 	for d := range a.decodeStream {
 		if d.Project != "" {
 			data, err := a.pm.RunnersDecode(d.Raw, d.Project, d.ThingID)
@@ -50,7 +58,11 @@ func (a Application) decode() {
 	}
 }
 
-func (a Application) insert() {
+func (a *Application) insert() {
+	a.Logger.WithFields(logrus.Fields{
+		"component": "uplink",
+	}).Info("Insert pipeline stage")
+
 	for d := range a.insertStream {
 		if _, err := a.db.Collection("data").InsertOne(context.Background(), d); err != nil {
 			a.Logger.WithFields(logrus.Fields{
