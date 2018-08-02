@@ -14,24 +14,25 @@
 package app
 
 import (
+	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"
 )
 
-func (a *Application) mqttHandler(p Protocol) func(topicName, message []byte) {
+func (a *Application) mqttHandler(p Protocol) paho.MessageHandler {
 	marshaler := p.Marshal
 
-	return func(topicName, message []byte) {
-		d, err := marshaler(message)
+	return func(client paho.Client, message paho.Message) {
+		d, err := marshaler(message.Payload())
 		if err != nil {
 			a.Logger.WithFields(logrus.Fields{
 				"component": "uplink",
-				"topic":     string(topicName),
+				"topic":     message.Topic(),
 			}).Errorf("Marshal error %s", err)
 			return
 		}
 		a.Logger.WithFields(logrus.Fields{
 			"component": "uplink",
-			"topic":     string(topicName),
+			"topic":     message.Topic(),
 		}).Infof("Marshal on %v", d)
 		a.projectStream <- d
 	}
