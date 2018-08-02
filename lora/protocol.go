@@ -26,8 +26,8 @@ type Protocol struct {
 
 // Topic returns lora message topic
 // https://www.loraserver.io/lora-app-server/integrate/sending-receiving/mqtt/
-func (p Protocol) Topic() []byte {
-	return []byte("application/+/device/+/rx")
+func (p Protocol) Topic() string {
+	return "application/+/device/+/rx"
 }
 
 // Marshal marshals given lora byte message (in json format) into platform data structure
