@@ -15,11 +15,15 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/aiotrc/uplink/actions"
+	"github.com/aiotrc/uplink/app"
+	"github.com/aiotrc/uplink/lora"
 )
 
 func main() {
-	actions.App()
+	app := app.New()
+	app.Register(lora.Protocol{})
+	app.Run()
+	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
 	// Set up channel on which to send signal notifications.
 	sigc := make(chan os.Signal, 1)
