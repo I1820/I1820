@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"runtime"
 	"time"
 
 	pmclient "github.com/aiotrc/pm/client"
@@ -66,7 +67,7 @@ type Data struct {
 }
 
 // New creates new application. this function creates mqtt client
-func New() Application {
+func New() *Application {
 	a := Application{}
 
 	a.Logger = logrus.New()
@@ -97,23 +98,21 @@ func New() Application {
 	a.decodeStream = make(chan Data)
 	a.insertStream = make(chan Data)
 
-	return a
+	return &a
 }
 
 // Register registers protocol p on application a
-func (a Application) Register(p Protocol) {
+func (a *Application) Register(p Protocol) {
 	a.protocols = append(a.protocols, p)
 }
 
 // Run runs application. this function connects mqtt client and then register its topic
-func (a Application) Run() {
-	// defer cli.Terminate()
-
+func (a *Application) Run() {
 	// Connect to the MQTT Server.
 	if err := a.cli.Connect(&client.ConnectOptions{
 		Network:  "tcp",
 		Address:  envy.Get("BROKER_URL", "127.0.0.1:1883"),
-		ClientID: []byte(fmt.Sprintf("isrc-uplink-%d", rand.Int63())),
+		ClientID: []byte(fmt.Sprintf("aiotrc-uplink-%d", rand.Int63())),
 	}); err != nil {
 		a.Logger.Fatalf("MQTT session error: %s", err)
 	}
@@ -127,27 +126,24 @@ func (a Application) Run() {
 
 	// Subscribe to protocols topics
 	for _, p := range a.protocols {
+		fmt.Printf("%#v\n", p)
 		if err := a.cli.Subscribe(&client.SubscribeOptions{
 			SubReqs: []*client.SubReq{
 				&client.SubReq{
 					TopicFilter: p.Topic(),
 					QoS:         mqtt.QoS0,
-					Handler: func(topicName, message []byte) {
-						d, err := p.Marshal(message)
-						if err != nil {
-							a.Logger.WithFields(logrus.Fields{
-								"component": "uplink",
-								"topic":     p.Topic(),
-							}).Errorf("Marshal error %s", err)
-							return
-						}
-						a.projectStream <- d
-					},
+					Handler:     a.mqttHandler(p),
 				},
 			},
 		}); err != nil {
 			a.Logger.Fatalf("MQTT subscribe error: %s", err)
 		}
+	}
 
+	// pipeline stages
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go a.project()
+		go a.decode()
+		go a.insert()
 	}
 }
