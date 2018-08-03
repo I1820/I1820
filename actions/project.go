@@ -128,7 +128,7 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	if err := p.Runner.Remove(); err != nil {
+	if err := p.Runner.Remove(c); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 

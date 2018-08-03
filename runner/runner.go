@@ -41,15 +41,6 @@ func init() {
 		panic(err)
 	}
 
-	// TODO corrects network creation
-	/*
-		if _, err := cli.NetworkCreate(context.Background(), "isrc", types.NetworkCreate{
-			CheckDuplicate: false,
-		}); err != nil {
-			panic(err)
-		}
-	*/
-
 	dockerClient = cli
 }
 
@@ -174,10 +165,13 @@ func createRunner(ctx context.Context, name string, envs []Env) (string, string,
 	return resp.ID, strconv.Itoa(eport), nil
 }
 
-// Remove removes runner docker
-func (r Runner) Remove() error {
-	ctx := context.Background()
+// Stop stops runner docker (not redis)
+func (r Runner) Stop(ctx context.Context) error {
+	return nil
+}
 
+// Remove removes runner and redis dockers
+func (r Runner) Remove(ctx context.Context) error {
 	if err := dockerClient.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
 		Force: true,
 	}); err != nil {
