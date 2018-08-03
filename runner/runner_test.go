@@ -24,5 +24,5 @@ func TestBasic(t *testing.T) {
 
 	t.Log(r.ID)
 
-	assert.NoError(t, r.Remove())
+	assert.NoError(t, r.Remove(context.Background()))
 }
