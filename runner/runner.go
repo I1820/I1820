@@ -14,6 +14,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/docker/go-connections/nat"
 	"github.com/phayes/freeport"
@@ -165,9 +166,10 @@ func createRunner(ctx context.Context, name string, envs []Env) (string, string,
 	return resp.ID, strconv.Itoa(eport), nil
 }
 
-// Stop stops runner docker (not redis)
-func (r Runner) Stop(ctx context.Context) error {
-	return nil
+// Restart restarts runner docker (not redis)
+func (r Runner) Restart(ctx context.Context) error {
+	td := 1 * time.Second
+	return dockerClient.ContainerRestart(ctx, r.ID, &td)
 }
 
 // Show returns detail information about runner and redis dockers
