@@ -50,7 +50,7 @@ var _ = grift.Add("cleanup", func(c *grift.Context) error {
 
 	// Remove all projects
 	for _, p := range ps {
-		if err := p.Runner.Remove(); err != nil {
+		if err := p.Runner.Remove(c); err != nil {
 			return err
 		}
 
