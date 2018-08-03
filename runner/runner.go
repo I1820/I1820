@@ -170,6 +170,25 @@ func (r Runner) Stop(ctx context.Context) error {
 	return nil
 }
 
+// Show returns detail information about runner and redis dockers
+func (r Runner) Show(ctx context.Context) ([2]types.ContainerJSON, error) {
+	var inspects [2]types.ContainerJSON
+
+	ui, err := dockerClient.ContainerInspect(ctx, r.ID)
+	if err != nil {
+		return inspects, err
+	}
+	inspects[0] = ui
+
+	ri, err := dockerClient.ContainerInspect(ctx, r.RedisID)
+	if err != nil {
+		return inspects, err
+	}
+	inspects[1] = ri
+
+	return inspects, nil
+}
+
 // Remove removes runner and redis dockers
 func (r Runner) Remove(ctx context.Context) error {
 	if err := dockerClient.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
