@@ -107,6 +107,12 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
+	ins, err := p.Runner.Show(c)
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+	p.Inspects = ins
+
 	return c.Render(http.StatusOK, r.JSON(p))
 }
 
