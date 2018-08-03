@@ -41,6 +41,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	ress := as.JSON("/api/projects/%s", pName).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&pr)
+	pr.Inspects = nil
 
 	as.Equal(pd, pr)
 
