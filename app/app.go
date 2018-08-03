@@ -83,6 +83,10 @@ func New() *Application {
 	*/
 	opts := paho.NewClientOptions()
 	opts.AddBroker(envy.Get("BROKER_URL", "tcp://127.0.0.1:1883"))
+	opts.SetConnectionLostHandler(func(client paho.Client, err error) {
+		a.Logger.Errorf("mqtt connection lost error: %s", err)
+	})
+	opts.SetOrderMatters(false)
 	a.cli = paho.NewClient(opts)
 
 	a.pm = pmclient.New(envy.Get("PM_URL", "http://127.0.0.1:8080"))
