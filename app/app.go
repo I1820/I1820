@@ -111,7 +111,7 @@ func (a *Application) Register(p Protocol) {
 // Run runs application. this function connects mqtt client and then register its topic
 func (a *Application) Run() {
 	// Connect to the MQTT Server.
-	if t := a.cli.Connect(); t.Error() != nil {
+	if t := a.cli.Connect(); t.Wait() && t.Error() != nil {
 		a.Logger.Fatalf("MQTT session error: %s", t.Error())
 	}
 
