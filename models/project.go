@@ -22,6 +22,8 @@ type Project struct {
 	Runner runner.Runner `json:"runner" bson:"runner"`
 	Things []Thing       `json:"things" bson:"things"`
 	Status bool          `json:"status" bson:"status"` // active/inactive
+
+	Inspects interface{} `json:"inspects,omitempty" bson:"_"`
 }
 
 // NewProject creates new project with given name
