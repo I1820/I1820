@@ -11,7 +11,7 @@
  * +===============================================
  */
 
-package lora
+package lan
 
 import (
 	"encoding/json"
