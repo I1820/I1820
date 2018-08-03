@@ -16,12 +16,14 @@ import (
 	"os/signal"
 
 	"github.com/aiotrc/uplink/app"
+	"github.com/aiotrc/uplink/lan"
 	"github.com/aiotrc/uplink/lora"
 )
 
 func main() {
 	app := app.New()
 	app.Register(lora.Protocol{})
+	app.Register(lan.Protocol{})
 	app.Run()
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
