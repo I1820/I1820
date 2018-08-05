@@ -33,7 +33,8 @@ type ProjectsResource struct {
 
 // project request payload
 type projectReq struct {
-	Name string `json:"name" binding:"required"`
+	Name string            `json:"name" binding:"required"`
+	Envs map[string]string `json:"envs"`
 	// TODO adds docker constraints and envs
 }
 
