@@ -74,9 +74,15 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 
 	name := rq.Name
 
-	p, err := models.NewProject(c, name, []runner.Env{
+	envs := []runner.Env{
 		{Name: "MONGO_URL", Value: envy.Get("DB_URL", "mongodb://172.18.0.1:27017")},
-	})
+	}
+
+	for envKey, envVal := range rq.Envs {
+		envs = append(envs, runner.Env{Name: envKey, Value: envVal})
+	}
+
+	p, err := models.NewProject(c, name, envs)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
