@@ -18,7 +18,7 @@ import (
 
 	"github.com/I1820/pm/models"
 	"github.com/go-resty/resty"
-	_ "github.com/patrickmn/go-cache"
+	"github.com/patrickmn/go-cache"
 )
 
 var c *cache.Cache
