@@ -1,5 +1,5 @@
 # Project Manager
-[![Travis branch](https://img.shields.io/travis/aiotrc/pm/master.svg?style=flat-square)](https://travis-ci.org/aiotrc/pm)
+[![Travis branch](https://img.shields.io/travis/I1820/pm/master.svg?style=flat-square)](https://travis-ci.org/I1820/pm)
 [![Codacy grade](https://img.shields.io/codacy/grade/f536424b14cc4df5998f4ca0b356b661.svg?style=flat-square)](https://www.codacy.com/app/1995parham/pm?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=aiotrc/pm&amp;utm_campaign=Badge_Grade)
 [![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
 
