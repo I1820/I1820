@@ -24,6 +24,11 @@ import (
 	"docker.io/go-docker/api/types/container"
 )
 
+const (
+	runnerImage string = "i1820/gorunner"
+	redisImage  string = "redis:alpine"
+)
+
 var dockerClient *client.Client
 
 // Runner represents runner docker information
@@ -76,13 +81,11 @@ func New(ctx context.Context, name string, envs []Env) (Runner, error) {
 }
 
 func createRedis(ctx context.Context, name string) (string, error) {
-	imageName := "redis:alpine"
-
 	lport, _ := nat.NewPort("tcp", "6379")
 
 	resp, err := dockerClient.ContainerCreate(ctx,
 		&container.Config{
-			Image: imageName,
+			Image: redisImage,
 			ExposedPorts: nat.PortSet{
 				lport: struct{}{},
 			},
@@ -107,8 +110,6 @@ func createRedis(ctx context.Context, name string) (string, error) {
 }
 
 func createRunner(ctx context.Context, name string, envs []Env) (string, string, error) {
-	imageName := "aiotrc/gorunner"
-
 	lport, _ := nat.NewPort("tcp", "8080")
 	eport, err := freeport.GetFreePort()
 	if err != nil {
@@ -129,7 +130,7 @@ func createRunner(ctx context.Context, name string, envs []Env) (string, string,
 
 	resp, err := dockerClient.ContainerCreate(ctx,
 		&container.Config{
-			Image: imageName,
+			Image: runnerImage,
 			ExposedPorts: nat.PortSet{
 				lport: struct{}{},
 			},
