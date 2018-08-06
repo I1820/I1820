@@ -1,7 +1,7 @@
 package grifts
 
 import (
-	"github.com/aiotrc/pm/actions"
+	"github.com/I1820/pm/actions"
 	"github.com/gobuffalo/buffalo"
 )
 

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/aiotrc/pm/actions"
+	"github.com/I1820/pm/actions"
 )
 
 func main() {

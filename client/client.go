@@ -16,9 +16,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aiotrc/pm/models"
+	"github.com/I1820/pm/models"
 	"github.com/go-resty/resty"
-	"github.com/patrickmn/go-cache"
+	_ "github.com/patrickmn/go-cache"
 )
 
 var c *cache.Cache

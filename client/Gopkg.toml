@@ -27,7 +27,7 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/aiotrc/pm"
+  name = "github.com/I1820/pm"
 
 [[constraint]]
   branch = "master"

@@ -20,7 +20,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/aiotrc/pm/models"
+	"github.com/I1820/pm/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	"github.com/mongodb/mongo-go-driver/bson"

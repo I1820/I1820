@@ -13,7 +13,7 @@ package models
 import (
 	"context"
 
-	"github.com/aiotrc/pm/runner"
+	"github.com/I1820/pm/runner"
 )
 
 // Project represents structure of ISRC projects

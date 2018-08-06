@@ -3,7 +3,7 @@ package grifts
 import (
 	"log"
 
-	"github.com/aiotrc/pm/models"
+	"github.com/I1820/pm/models"
 	"github.com/gobuffalo/envy"
 	grift "github.com/markbates/grift/grift"
 	"github.com/mongodb/mongo-go-driver/bson"
