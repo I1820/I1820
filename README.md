@@ -5,7 +5,8 @@
 
 
 ## Introduction
-PM is project manager for ISRC platform. It creates projects and corresponding runners (containers) for users.
+PM is a project manager component of the I1820 platform.
+it builds projects and their dockers. docker provides a sandbox for user scripts that are in python.
 
 ## Installation
 
@@ -19,7 +20,13 @@ sudo usermod -aG docker $USER
 docker network create isrc
 ```
 
-3. Change open file limit when there is high load on system
+3. Pull required images
+```sh
+docker pull i1820/gorunner
+docker pull redis:alpine
+```
+
+4. Change open file limit when there is high load on system
 ```sh
 ulimit -n 65536
 ```
