@@ -27,4 +27,4 @@ EXPOSE 3000
 
 # Comment out to run the migrations before running the binary:
 # CMD /bin/app migrate; /bin/app
-CMD buffalo task mongo; /bin/app
+CMD /bin/app
