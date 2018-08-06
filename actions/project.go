@@ -238,7 +238,7 @@ func (v ProjectsResource) ErrorLora(c buffalo.Context) error {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	cur, err := db.Collection("lora").Aggregate(context.Background(), bson.NewArray(
+	cur, err := db.Collection("lora").Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
 		),
@@ -253,7 +253,7 @@ func (v ProjectsResource) ErrorLora(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	for cur.Next(context.Background()) {
+	for cur.Next(c) {
 		var ll models.LoraLog
 
 		if err := cur.Decode(&ll); err != nil {
@@ -262,7 +262,7 @@ func (v ProjectsResource) ErrorLora(c buffalo.Context) error {
 
 		lls = append(lls, ll)
 	}
-	if err := cur.Close(context.Background()); err != nil {
+	if err := cur.Close(c); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
