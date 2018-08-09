@@ -2,8 +2,8 @@
 # https://docs.docker.com/engine/userguide/eng-image/multistage-build/
 FROM gobuffalo/buffalo:v0.11.1 as builder
 
-RUN mkdir -p $GOPATH/src/github.com/aiotrc/pm
-WORKDIR $GOPATH/src/github.com/aiotrc/pm
+RUN mkdir -p $GOPATH/src/github.com/I1820/pm
+WORKDIR $GOPATH/src/github.com/I1820/pm
 
 ADD . .
 RUN dep ensure
