@@ -23,7 +23,7 @@ COPY --from=builder /bin/app .
 # Bind the app to 0.0.0.0 so it can be seen from outside the container
 ENV ADDR=0.0.0.0
 
-EXPOSE 3000
+EXPOSE 8080
 
 # Comment out to run the migrations before running the binary:
 # CMD /bin/app migrate; /bin/app
