@@ -43,6 +43,9 @@ var Config = struct {
 	PM struct {
 		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
 	}
+	LanServer struct {
+		URL string `default:"http://127.0.0.1:4000 env="lanserver_url""`
+	}
 }{}
 
 var pm pmclient.PM
@@ -178,6 +181,26 @@ func sendHandler(c *gin.Context) {
 		Message:   b,
 	}); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	lan, err := json.Marshal(struct {
+		Data []byte
+	}{
+		Data: b,
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	resp, err := http.Post(fmt.Sprintf("%s/devices/%s/push", Config.LanServer.URL, r.ThingID), "application/json", bytes.NewReader(lan))
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	if resp.StatusCode != 200 {
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Invalid lan server response"))
 		return
 	}
 
