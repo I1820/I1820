@@ -1,12 +1,11 @@
 # This is a multi-stage Dockerfile and requires >= Docker 17.05
 # https://docs.docker.com/engine/userguide/eng-image/multistage-build/
-LABEL
 FROM gobuffalo/buffalo:v0.11.1 as builder
 
-RUN mkdir -p $GOPATH/src/github.com/I1820/pm
+RUN mkdir -p "$GOPATH/src/github.com/I1820/pm"
 WORKDIR $GOPATH/src/github.com/I1820/pm
 
-ADD . .
+COPY . .
 RUN dep ensure
 RUN buffalo build --static -o /bin/app
 
@@ -34,4 +33,4 @@ LABEL org.i1820.build-commit-msg=$BUILD_COMMIT_MSG
 
 # Comment out to run the migrations before running the binary:
 # CMD /bin/app migrate; /bin/app
-CMD /bin/app
+CMD ["/bin/app"]
