@@ -28,7 +28,9 @@ EXPOSE 8080
 
 # Metadata
 LABEL maintainer="Parham Alvani <parham.alvani@gmail.com>"
-LABEL org.i1820.build-data=$BUILD_DATE
+LABEL org.i1820.build-date=$BUILD_DATE
+LABEL org.i1820.build-commit-sha=$BUILD_COMMIT
+LABEL org.i1820.build-commit-msg=$BUILD_COMMIT_MSG
 
 # Comment out to run the migrations before running the binary:
 # CMD /bin/app migrate; /bin/app
