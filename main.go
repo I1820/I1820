@@ -44,7 +44,7 @@ var Config = struct {
 		URL string `default:"http://127.0.0.1:8080" env:"pm_url"`
 	}
 	LanServer struct {
-		URL string `default:"http://127.0.0.1:4000 env="lanserver_url""`
+		URL string `default:"http://127.0.0.1:4000" env="lanserver_url"`
 	}
 }{}
 
@@ -194,15 +194,28 @@ func sendHandler(c *gin.Context) {
 		return
 	}
 
-	resp, err := http.Post(fmt.Sprintf("%s/devices/%s/push", Config.LanServer.URL, r.ThingID), "application/json", bytes.NewReader(lan))
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-	if resp.StatusCode != 200 {
-		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Invalid lan server response"))
-		return
-	}
+	go func() {
+
+		req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/devices/%s/push", Config.LanServer.URL, r.ThingID), bytes.NewReader(lan))
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		req.Header.Add("Content-Type", "application/json")
+		req.Header.Add("Authorization", "aabbccddee11223344")
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		if resp.StatusCode != 200 {
+			c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Invalid lan server response"))
+			return
+		}
+	}()
 
 	c.JSON(http.StatusOK, raw)
 }
