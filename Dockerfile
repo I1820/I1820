@@ -9,9 +9,7 @@ COPY . .
 RUN dep ensure
 RUN buffalo build --static -o /bin/app
 
-FROM alpine
-RUN apk add --no-cache bash
-RUN apk add --no-cache ca-certificates
+FROM alpine:latest
 
 WORKDIR /bin/
 
