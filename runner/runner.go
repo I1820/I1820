@@ -25,8 +25,9 @@ import (
 )
 
 const (
-	runnerImage string = "i1820/gorunner"
-	redisImage  string = "redis:alpine"
+	runnerImage string                = "i1820/elrunner"
+	redisImage  string                = "redis:alpine"
+	network     container.NetworkMode = "i1820"
 )
 
 var dockerClient *client.Client
@@ -91,7 +92,7 @@ func createRedis(ctx context.Context, name string) (string, error) {
 			},
 		},
 		&container.HostConfig{
-			NetworkMode: "isrc",
+			NetworkMode: network,
 		}, nil, fmt.Sprintf("rd_%s", name))
 	if err != nil {
 		return "", err
@@ -141,7 +142,7 @@ func createRunner(ctx context.Context, name string, envs []Env) (string, string,
 				Memory:   2 * 1000 * 1000 * 1000,
 				NanoCPUs: 1000 * 1000 * 1000,
 			},
-			NetworkMode: "isrc",
+			NetworkMode: network,
 			PortBindings: nat.PortMap{
 				lport: []nat.PortBinding{
 					nat.PortBinding{
