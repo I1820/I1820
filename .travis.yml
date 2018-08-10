@@ -20,9 +20,9 @@ before_install:
 install:
   - go get github.com/gobuffalo/buffalo/buffalo
   - dep ensure
-  - docker pull i1820/gorunner
+  - docker pull i1820/elrunner
   - docker pull redis:alpine
-  - docker network create isrc
+  - docker network create i1820
 
 before_script:
   - buffalo task mongo
