@@ -29,7 +29,7 @@ func (as *ActionSuite) Test_ThingsResource_Create() {
 	var ts models.Thing
 	ress := as.JSON("/api/things/%s", tName).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
-	rest.Bind(&ts)
+	ress.Bind(&ts)
 
 	as.Equal(ts, tc)
 
