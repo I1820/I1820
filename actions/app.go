@@ -65,7 +65,7 @@ func App() *buffalo.App {
 		if err := client.Connect(context.Background()); err != nil {
 			buffalo.NewLogger("fatal").Fatalf("DB connection error: %s", err)
 		}
-		db = client.Database("isrc")
+		db = client.Database("i1820")
 
 		if ENV == "development" {
 			app.Use(middleware.ParameterLogger)
