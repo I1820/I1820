@@ -9,7 +9,7 @@ services:
   - mongodb
   - docker
 
-go_import_path: github.com/aiotrc/pm
+go_import_path: github.com/I1820/pm
 
 before_install:
   - PKGS=$(go list ./... ) # All the import paths
