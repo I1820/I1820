@@ -34,7 +34,7 @@ func RunnersHandler(c buffalo.Context) error {
 
 	var p models.Project
 
-	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", name),
 	))
 

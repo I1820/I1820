@@ -29,7 +29,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 
 	// Database
 	var pd models.Project
-	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", pName),
 	))
 

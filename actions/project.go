@@ -35,7 +35,7 @@ type ProjectsResource struct {
 type projectReq struct {
 	Name string            `json:"name" binding:"required"`
 	Envs map[string]string `json:"envs"`
-	// TODO adds docker constraints and envs
+	// TODO adds docker constraints
 }
 
 // List gets all projects. This function is mapped to the path
@@ -43,7 +43,7 @@ type projectReq struct {
 func (v ProjectsResource) List(c buffalo.Context) error {
 	ps := make([]models.Project, 0)
 
-	cur, err := db.Collection("pm").Find(c, bson.NewDocument())
+	cur, err := db.Collection("projects").Find(c, bson.NewDocument())
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
@@ -87,7 +87,7 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	if _, err := db.Collection("pm").InsertOne(c, p); err != nil {
+	if _, err := db.Collection("projects").InsertOne(c, p); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
@@ -103,7 +103,7 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 
 	var p models.Project
 
-	dr := db.Collection("pm").FindOne(context.Background(), bson.NewDocument(
+	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", name),
 	))
 
@@ -130,7 +130,7 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 
 	var p models.Project
 
-	dr := db.Collection("pm").FindOne(c, bson.NewDocument(
+	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
 		bson.EC.String("name", name),
 	))
 
@@ -145,7 +145,7 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	if _, err := db.Collection("pm").DeleteOne(c, bson.NewDocument(
+	if _, err := db.Collection("projects").DeleteOne(c, bson.NewDocument(
 		bson.EC.String("name", name),
 	)); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
@@ -165,7 +165,7 @@ func (v ProjectsResource) Activation(c buffalo.Context) error {
 		status = true
 	}
 
-	dr := db.Collection("pm").FindOneAndUpdate(c, bson.NewDocument(
+	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("name", name),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", status)),
@@ -195,7 +195,7 @@ func (v ProjectsResource) ErrorProject(c buffalo.Context) error {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	cur, err := db.Collection("errors").Aggregate(c, bson.NewArray(
+	cur, err := db.Collection("projects.errors").Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
 		),
@@ -228,6 +228,7 @@ func (v ProjectsResource) ErrorProject(c buffalo.Context) error {
 
 // ErrorLora returns lora errors. This function is mapped
 // to the path GET /projects/{project_id}/errors/lora
+// TODO: move this api to dm
 func (v ProjectsResource) ErrorLora(c buffalo.Context) error {
 	var lls = make([]models.LoraLog, 0)
 

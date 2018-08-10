@@ -38,7 +38,7 @@ type thingReq struct {
 func (v ThingsResource) List(c buffalo.Context) error {
 	results := make([]models.Thing, 0)
 
-	cur, err := db.Collection("pm").Aggregate(c, bson.NewArray(
+	cur, err := db.Collection("projects").Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.String("$unwind", "$things"),
 		),
@@ -81,7 +81,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		Status: true,
 	}
 
-	dr := db.Collection("pm").FindOneAndUpdate(c, bson.NewDocument(
+	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("name", project),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$addToSet", bson.EC.Interface("things", t)),
@@ -106,7 +106,7 @@ func (v ThingsResource) Show(c buffalo.Context) error {
 
 	var p models.Project
 
-	dr := db.Collection("pm").FindOne(c, bson.NewDocument(
+	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
 		bson.EC.Boolean("status", true),
 		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements("$elemMatch",
 			bson.EC.String("id", name),
@@ -128,7 +128,7 @@ func (v ThingsResource) Show(c buffalo.Context) error {
 func (v ThingsResource) Destroy(c buffalo.Context) error {
 	name := c.Param("thing_id")
 
-	dr := db.Collection("pm").FindOneAndUpdate(c, bson.NewDocument(), bson.NewDocument(
+	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$pull", bson.EC.SubDocumentFromElements(
 			"things", bson.EC.String("id", name)),
 		),
@@ -157,7 +157,7 @@ func (v ThingsResource) Activation(c buffalo.Context) error {
 		status = true
 	}
 
-	dr := db.Collection("pm").FindOneAndUpdate(c, bson.NewDocument(
+	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements(
 			"$elemMatch", bson.EC.String("id", name),
 		)),
