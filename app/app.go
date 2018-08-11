@@ -48,7 +48,11 @@ type Application struct {
 
 // Protocol is a uplink/downlink protocol like lan or lora
 type Protocol interface {
-	Topic() string
+	TxTopic() string
+	RxTopic() string
+
+	Name() string
+
 	Marshal([]byte) (Data, error)
 }
 
@@ -133,7 +137,7 @@ func (a *Application) Run() {
 
 	// Subscribe to protocols topics
 	for _, p := range a.protocols {
-		if t := a.cli.Subscribe(p.Topic(), 0, a.mqttHandler(p)); t.Error() != nil {
+		if t := a.cli.Subscribe(p.RxTopic(), 0, a.mqttHandler(p)); t.Error() != nil {
 			a.Logger.Fatalf("MQTT subscribe error: %s", t.Error())
 		}
 	}
