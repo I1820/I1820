@@ -46,10 +46,16 @@ type Application struct {
 	insertStream  chan Data
 }
 
-// Protocol is a uplink protocol
+// Protocol is a uplink/downlink protocol like lan or lora
 type Protocol interface {
 	Topic() string
 	Marshal([]byte) (Data, error)
+}
+
+// Model is a decoder/encoder interface like generic (based on user scripts) or citado
+type Model interface {
+	Decode([]byte) interface{}
+	Encode(interface{}) []byte
 }
 
 // Data represents uplink data and metadata
@@ -123,8 +129,7 @@ func (a *Application) Run() {
 	if err := a.session.Connect(context.Background()); err != nil {
 		log.Fatalf("DB connection error: %s", err)
 	}
-	// TODO db name must be configurable
-	a.db = a.session.Database("isrc")
+	a.db = a.session.Database("i1820")
 
 	// Subscribe to protocols topics
 	for _, p := range a.protocols {

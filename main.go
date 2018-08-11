@@ -12,27 +12,23 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"os/signal"
+	"log"
 
+	"github.com/I1820/link/actions"
 	"github.com/I1820/link/app"
 	"github.com/I1820/link/lan"
 	"github.com/I1820/link/lora"
 )
 
 func main() {
-	app := app.New()
-	app.Register(lora.Protocol{})
-	app.Register(lan.Protocol{})
-	app.Run()
+	linkApp := app.New()
+	linkApp.Register(lora.Protocol{})
+	linkApp.Register(lan.Protocol{})
+	linkApp.Run()
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
-	// Set up channel on which to send signal notifications.
-	sigc := make(chan os.Signal, 1)
-	signal.Notify(sigc, os.Interrupt, os.Kill)
-
-	// Wait for receiving a signal.
-	<-sigc
-
-	fmt.Println("18.20 As always ... left me alone")
+	buffaloApp := actions.App()
+	if err := buffaloApp.Serve(); err != nil {
+		log.Fatal(err)
+	}
 }

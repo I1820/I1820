@@ -33,6 +33,6 @@ install:
 
 script:
   - go vet -v $PKGS                   # go vet is the official Go static analyzer
-  - errcheck -exclude errcheck_excludes.txt -verbose $PKGS           # Check for unchecked errors
+  - errcheck -verbose $PKGS           # Check for unchecked errors
   - golint -set_exit_status $PKGS     # One last linter
   - buffalo test
