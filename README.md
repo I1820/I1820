@@ -1,20 +1,10 @@
-# ISRC Uplink
+# Link
 [![Travis branch](https://img.shields.io/travis/I1820/link/master.svg?style=flat-square)](https://travis-ci.org/I1820/link)
 
 ## Introduction
-Uplink service of ISRC platfrom. This service collects
-raw data from bottom layer, stores them into mongo database
-and decodes them using decoder on runner platform.
 
-## Running
-MongoDB
-
-```sh
-docker run -ti --rm -p 27017:27017 mongo
-```
-
-Vernemq
-
-```sh
-docker run -e "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on" --rm -ti -p 1883:1883 --name vernemq1 erlio/docker-vernemq
-```
+Link component of I1820 platfrom. This service collects
+raw data from bottom layer (protocols), stores them into mongo database
+and decodes them using user selected decoder.
+This service also sends data into bottom layer (protocols) after
+encoding them using user selected encoder.

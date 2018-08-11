@@ -1,6 +1,10 @@
 # Gopkg.toml example
 #
+<<<<<<< HEAD
 # Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+=======
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
+>>>>>>> downlink/master
 # for detailed Gopkg.toml documentation.
 #
 # required = ["github.com/user/thing/cmd/thing"]
@@ -27,7 +31,7 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/aiotrc/pm"
+  name = "github.com/I1820/pm"
 
 [[constraint]]
   branch = "master"
@@ -40,6 +44,14 @@
 [[constraint]]
   branch = "master"
   name = "github.com/go-redis/redis"
+
+[[constraint]]
+  name = "github.com/gin-gonic/gin"
+  version = "1.2.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jinzhu/configor"
 
 [prune]
   go-tests = true
