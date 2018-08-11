@@ -24,10 +24,21 @@ import (
 type Protocol struct {
 }
 
-// Topic returns lora message topic
+// RxTopic returns lora rx message topic
 // https://www.loraserver.io/lora-app-server/integrate/sending-receiving/mqtt/
-func (p Protocol) Topic() string {
+func (p Protocol) RxTopic() string {
 	return "application/+/device/+/rx"
+}
+
+// TxTopic returns lora tx message topic for each downlink message
+// https://www.loraserver.io/lora-app-server/integrate/sending-receiving/mqtt/
+func (p Protocol) TxTopic() string {
+	return "application/+/device/+/tx"
+}
+
+// Name returns protocol unique name
+func (p Protocol) Name() string {
+	return "lora"
 }
 
 // Marshal marshals given lora byte message (in json format) into platform data structure
