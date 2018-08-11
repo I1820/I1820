@@ -30,6 +30,7 @@ func (a *Application) mqttHandler(p Protocol) paho.MessageHandler {
 			}).Errorf("Marshal error %s", err)
 			return
 		}
+		d.Protocol = p.Name()
 		a.Logger.WithFields(logrus.Fields{
 			"component": "uplink",
 			"topic":     message.Topic(),

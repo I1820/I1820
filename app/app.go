@@ -60,6 +60,8 @@ type Protocol interface {
 type Model interface {
 	Decode([]byte) interface{}
 	Encode(interface{}) []byte
+
+	Name() string
 }
 
 // Data represents uplink data and metadata
@@ -71,6 +73,7 @@ type Data struct {
 	RxInfo    interface{}
 	TxInfo    interface{}
 	Project   string // thing project identification
+	Protocol  string // uplink protocol
 }
 
 // New creates new application. this function creates mqtt client
