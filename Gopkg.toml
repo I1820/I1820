@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 # Gopkg.toml example
 #
-<<<<<<< HEAD
-# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
-=======
 # Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
->>>>>>> downlink/master
 # for detailed Gopkg.toml documentation.
 #
 # required = ["github.com/user/thing/cmd/thing"]
@@ -29,6 +24,37 @@
 #   go-tests = true
 #   unused-packages = true
 
+[[constraint]]
+  branch = "master"
+  name = "github.com/mongodb/mongo-go-driver"
+
+[[constraint]]
+  name = "github.com/gobuffalo/buffalo"
+  version = "0.12.4"
+
+[[constraint]]
+  name = "github.com/gobuffalo/envy"
+  version = "1.6.3"
+
+[[constraint]]
+  name = "github.com/gobuffalo/suite"
+  version = "2.1.2"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gobuffalo/x"
+
+[[constraint]]
+  name = "github.com/rs/cors"
+  version = "1.4.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/unrolled/secure"
+
+[[constraint]]
+  name = "github.com/prometheus/client_golang"
+  branch = "master"
 
 [[constraint]]
   branch = "master"
@@ -36,53 +62,12 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/mongodb/mongo-go-driver"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/sirupsen/logrus"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/go-redis/redis"
-
-[[constraint]]
-  name = "github.com/gin-gonic/gin"
-  version = "1.2.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/jinzhu/configor"
-
-=======
-
-
->>>>>>> origin/buffalo
-[prune]
-  go-tests = true
-  unused-packages = true
-
-<<<<<<< HEAD
-[[constraint]]
-  name = "github.com/stretchr/testify"
-  version = "1.2.2"
-
-[[constraint]]
-  name = "github.com/gobuffalo/envy"
-  version = "1.6.3"
 
 [[constraint]]
   name = "github.com/eclipse/paho.mqtt.golang"
   branch = "master"
-=======
 
-  # DO NOT DELETE
-  [[prune.project]] # buffalo
-    name = "github.com/gobuffalo/buffalo"
-    unused-packages = false
-
-  # DO NOT DELETE
-  [[prune.project]] # pop
-    name = "github.com/gobuffalo/pop"
-    unused-packages = false
->>>>>>> origin/buffalo
+[prune]
+  go-tests = true
+  unused-packages = true
