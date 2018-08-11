@@ -1,13 +1,14 @@
 # Build stage
 FROM golang:alpine AS build-env
-ADD . $GOPATH/src/github.com/aiotrc/uplink
-RUN apk update && apk add git
+COPY . $GOPATH/src/github.com/I1820/link
+RUN apk add --no-cache git
 RUN go get -u github.com/golang/dep/cmd/dep
-RUN cd $GOPATH/src/github.com/aiotrc/uplink/ && dep ensure && go build -v -o /uplink
+WORKDIR $GOPATH/src/github.com/I1820/link/
+RUN dep ensure && go build -v -o /link
 
 # Final stage
-FROM alpine
+FROM alpine:latest
 RUN apk add --no-cache tzdata
 WORKDIR /app
-COPY --from=build-env /uplink /app/
-ENTRYPOINT ["./uplink"]
+COPY --from=build-env /link /app/
+ENTRYPOINT ["./link"]

@@ -15,9 +15,9 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/aiotrc/uplink/app"
-	"github.com/aiotrc/uplink/lan"
-	"github.com/aiotrc/uplink/lora"
+	"github.com/I1820/link/app"
+	"github.com/I1820/link/lan"
+	"github.com/I1820/link/lora"
 )
 
 func main() {

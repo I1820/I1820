@@ -1,5 +1,5 @@
 # ISRC Uplink
-[![Travis branch](https://img.shields.io/travis/aiotrc/uplink/master.svg?style=flat-square)](https://travis-ci.org/aiotrc/uplink)
+[![Travis branch](https://img.shields.io/travis/I1820/link/master.svg?style=flat-square)](https://travis-ci.org/I1820/link)
 
 ## Introduction
 Uplink service of ISRC platfrom. This service collects

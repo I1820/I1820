@@ -17,8 +17,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/aiotrc/lanserver/models"
-	"github.com/aiotrc/uplink/app"
+	"github.com/I1820/lanserver/models"
+	"github.com/I1820/link/app"
 )
 
 // Protocol implements uplink protocol for lora
