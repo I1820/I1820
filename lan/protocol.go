@@ -25,9 +25,19 @@ import (
 type Protocol struct {
 }
 
-// Topic returns lan message topic
-func (p Protocol) Topic() string {
+// RxTopic returns lan rx message topic
+func (p Protocol) RxTopic() string {
 	return "device/+/rx"
+}
+
+// TxTopic returns lan tx message topic
+func (p Protocol) TxTopic() string {
+	return "device/+/tx"
+}
+
+// Name returns protocol unique name
+func (p Protocol) Name() string {
+	return "lan"
 }
 
 // Marshal marshals given lan byte message (in json format) into platform data structure
