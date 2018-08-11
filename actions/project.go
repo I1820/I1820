@@ -11,7 +11,6 @@
 package actions
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -48,7 +47,7 @@ func (v ProjectsResource) List(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	for cur.Next(context.Background()) {
+	for cur.Next(c) {
 		var p models.Project
 
 		if err := cur.Decode(&p); err != nil {
@@ -57,7 +56,7 @@ func (v ProjectsResource) List(c buffalo.Context) error {
 
 		ps = append(ps, p)
 	}
-	if err := cur.Close(context.Background()); err != nil {
+	if err := cur.Close(c); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
@@ -103,7 +102,7 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 
 	var p models.Project
 
-	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
+	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
 		bson.EC.String("name", name),
 	))
 

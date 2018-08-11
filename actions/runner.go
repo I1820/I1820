@@ -14,7 +14,6 @@
 package actions
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"net/http/httputil"
@@ -34,7 +33,7 @@ func RunnersHandler(c buffalo.Context) error {
 
 	var p models.Project
 
-	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
+	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
 		bson.EC.String("name", name),
 	))
 
