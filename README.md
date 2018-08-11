@@ -18,16 +18,11 @@ sudo usermod -aG docker $USER
 
 2. Create ISRC network
 ```sh
-docker network create isrc
+docker network create i1820
 ```
 
 3. Pull required images
 ```sh
-docker pull i1820/gorunner
+docker pull i1820/elrunner
 docker pull redis:alpine
-```
-
-4. Change open file limit when there is high load on system
-```sh
-ulimit -n 65536
 ```
