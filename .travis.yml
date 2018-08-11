@@ -5,6 +5,11 @@ services:
   - redis
   - docker
 
+env:
+  - GO_ENV=test
+
+go_import_path: github.com/I1820/link
+
 language: go
 go: "1.10"
 
@@ -23,10 +28,11 @@ before_install:
   - docker run -d -p 1883:1883 eclipse-mosquitto
 
 install:
+  - go get github.com/gobuffalo/buffalo/buffalo
   - dep ensure
 
 script:
   - go vet -v $PKGS                   # go vet is the official Go static analyzer
   - errcheck -exclude errcheck_excludes.txt -verbose $PKGS           # Check for unchecked errors
   - golint -set_exit_status $PKGS     # One last linter
-  - go test -v $PKGS                  # Run all the tests
+  - buffalo test

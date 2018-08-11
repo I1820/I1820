@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Gopkg.toml example
 #
 <<<<<<< HEAD
@@ -53,10 +54,15 @@
   branch = "master"
   name = "github.com/jinzhu/configor"
 
+=======
+
+
+>>>>>>> origin/buffalo
 [prune]
   go-tests = true
   unused-packages = true
 
+<<<<<<< HEAD
 [[constraint]]
   name = "github.com/stretchr/testify"
   version = "1.2.2"
@@ -68,3 +74,15 @@
 [[constraint]]
   name = "github.com/eclipse/paho.mqtt.golang"
   branch = "master"
+=======
+
+  # DO NOT DELETE
+  [[prune.project]] # buffalo
+    name = "github.com/gobuffalo/buffalo"
+    unused-packages = false
+
+  # DO NOT DELETE
+  [[prune.project]] # pop
+    name = "github.com/gobuffalo/pop"
+    unused-packages = false
+>>>>>>> origin/buffalo
