@@ -29,14 +29,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:beedb18bf425b7a16d6f0585da3d176c351932cce84dc8c33b51726f773f2cf2"
+  digest = "1:5910ee63a70d08df437b53b79b16dd36d267488f7707026fb0538eba5482b13c"
   name = "github.com/I1820/pm"
   packages = [
     "models",
     "runner",
   ]
   pruneopts = "UT"
-  revision = "faaf136c023fbe6863640cb7784c331b0a820fee"
+  revision = "80b215824a74b08d026c5bf2ab6e962f76360b75"
 
 [[projects]]
   digest = "1:adbfc2db750d6fbe0c165ad801ba2d730883a3bc40bc8fe829516eb42ed17771"
@@ -137,7 +137,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0bfd30a30f630c0bdbcf7ec91f52879d6597d4c8e630f93933518ec0722a52ff"
+  digest = "1:094f7bb1f423ae3c6284d70f2c3b305c464b184a5bda684a21e5dc6af8749dc2"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -148,7 +148,7 @@
     "publicsuffix",
   ]
   pruneopts = "UT"
-  revision = "f4c29de78a2a91c00474a2e689954305c350adf9"
+  revision = "c39426892332e1bb5ec0a434a079bf82f5d30c54"
 
 [[projects]]
   branch = "master"
@@ -156,7 +156,7 @@
   name = "golang.org/x/sys"
   packages = ["windows"]
   pruneopts = "UT"
-  revision = "2be389f392cd91df245b41638f818a1c041f0c08"
+  revision = "98c5dad5d1a0e8a73845ecc8897d0bd56586511d"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
