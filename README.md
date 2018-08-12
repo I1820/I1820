@@ -1,5 +1,8 @@
 # Link
 [![Travis branch](https://img.shields.io/travis/I1820/link/master.svg?style=flat-square)](https://travis-ci.org/I1820/link)
+[![Go Report](https://goreportcard.com/badge/github.com/I1820/link?style=flat-square)](https://goreportcard.com/report/github.com/I1820/link)
+[![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
+[![Maintainability](https://api.codeclimate.com/v1/badges/83743166f3b5ff30c429/maintainability)](https://codeclimate.com/github/I1820/link/maintainability)
 
 ## Introduction
 
