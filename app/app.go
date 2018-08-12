@@ -15,6 +15,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"runtime"
 	"time"
@@ -125,7 +126,7 @@ func (a *Application) Run() {
 	opts.SetOnConnectHandler(func(client paho.Client) {
 		// Subscribe to protocols topics
 		for _, p := range a.protocols {
-			if t := a.cli.Subscribe(p.RxTopic(), 0, a.mqttHandler(p)); t.Error() != nil {
+			if t := a.cli.Subscribe(fmt.Sprintf("$share/i1820-link/%s", p.RxTopic()), 0, a.mqttHandler(p)); t.Error() != nil {
 				a.Logger.Fatalf("MQTT subscribe error: %s", t.Error())
 			}
 		}
