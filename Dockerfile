@@ -24,6 +24,9 @@ ENV ADDR=0.0.0.0
 EXPOSE 8080
 
 # Metadata
+ARG BUILD_DATE
+ARG BUILD_COMMIT
+ARG BUILD_COMMIT_MSG
 LABEL maintainer="Parham Alvani <parham.alvani@gmail.com>"
 LABEL org.i1820.build-date=$BUILD_DATE
 LABEL org.i1820.build-commit-sha=$BUILD_COMMIT
