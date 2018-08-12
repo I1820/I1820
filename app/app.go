@@ -84,24 +84,6 @@ func New() *Application {
 
 	a.protocols = make([]Protocol, 0)
 
-	// Create an MQTT client
-	/*
-		Port: 1883
-		CleanSession: True
-		Order: True
-		KeepAlive: 30 (seconds)
-		ConnectTimeout: 30 (seconds)
-		MaxReconnectInterval 10 (minutes)
-		AutoReconnect: True
-	*/
-	opts := paho.NewClientOptions()
-	opts.AddBroker(envy.Get("BROKER_URL", "tcp://127.0.0.1:1883"))
-	opts.SetConnectionLostHandler(func(client paho.Client, err error) {
-		a.Logger.Errorf("mqtt connection lost error: %s", err)
-	})
-	opts.SetOrderMatters(false)
-	a.cli = paho.NewClient(opts)
-
 	a.pm = pmclient.New(envy.Get("PM_URL", "http://127.0.0.1:8080"))
 
 	// Create a mongodb connection
@@ -127,6 +109,29 @@ func (a *Application) Register(p Protocol) {
 
 // Run runs application. this function connects mqtt client and then register its topic
 func (a *Application) Run() {
+	// Create an MQTT client
+	/*
+		Port: 1883
+		CleanSession: True
+		Order: True
+		KeepAlive: 30 (seconds)
+		ConnectTimeout: 30 (seconds)
+		MaxReconnectInterval 10 (minutes)
+		AutoReconnect: True
+	*/
+	opts := paho.NewClientOptions()
+	opts.AddBroker(envy.Get("BROKER_URL", "tcp://127.0.0.1:1883"))
+	opts.SetOrderMatters(false)
+	opts.SetOnConnectHandler(func(client paho.Client) {
+		// Subscribe to protocols topics
+		for _, p := range a.protocols {
+			if t := a.cli.Subscribe(p.RxTopic(), 0, a.mqttHandler(p)); t.Error() != nil {
+				a.Logger.Fatalf("MQTT subscribe error: %s", t.Error())
+			}
+		}
+	})
+	a.cli = paho.NewClient(opts)
+
 	// Connect to the MQTT Server.
 	if t := a.cli.Connect(); t.Wait() && t.Error() != nil {
 		a.Logger.Fatalf("MQTT session error: %s", t.Error())
@@ -137,13 +142,6 @@ func (a *Application) Run() {
 		log.Fatalf("DB connection error: %s", err)
 	}
 	a.db = a.session.Database("i1820")
-
-	// Subscribe to protocols topics
-	for _, p := range a.protocols {
-		if t := a.cli.Subscribe(p.RxTopic(), 0, a.mqttHandler(p)); t.Error() != nil {
-			a.Logger.Fatalf("MQTT subscribe error: %s", t.Error())
-		}
-	}
 
 	// pipeline stages
 	for i := 0; i < runtime.NumCPU(); i++ {
