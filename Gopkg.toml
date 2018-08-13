@@ -26,28 +26,32 @@
 
 
 [[constraint]]
-  name = "github.com/brocaar/lora-app-server"
   branch = "master"
+  name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
-  name = "github.com/gin-gonic/gin"
-  version = "1.2.0"
+  name = "github.com/gobuffalo/buffalo"
+  version = "0.12.4"
+
+[[constraint]]
+  name = "github.com/gobuffalo/envy"
+  version = "1.6.3"
+
+[[constraint]]
+  name = "github.com/gobuffalo/suite"
+  version = "2.1.2"
 
 [[constraint]]
   branch = "master"
-  name = "github.com/jinzhu/configor"
+  name = "github.com/gobuffalo/x"
 
 [[constraint]]
-  name = "github.com/sirupsen/logrus"
-  version = "1.0.5"
+  name = "github.com/rs/cors"
+  version = "1.4.0"
 
 [[constraint]]
   branch = "master"
-  name = "golang.org/x/net"
-
-[[constraint]]
-  branch = "v2"
-  name = "gopkg.in/mgo.v2"
+  name = "github.com/unrolled/secure"
 
 [prune]
   go-tests = true
