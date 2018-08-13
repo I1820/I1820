@@ -1,9 +1,13 @@
 package actions
 
-import "github.com/gobuffalo/buffalo"
+import (
+	"net/http"
 
-// HomeHandler is a default handler to serve up
-// a home page.
-func HomeHandler(c buffalo.Context) error {
-  return c.Render(200, r.JSON(map[string]string{"message": "Welcome to Buffalo!"}))
-  }
+	"github.com/gobuffalo/buffalo"
+)
+
+// AboutHandler is a default handler to serve up
+// memory of 18.20.
+func AboutHandler(c buffalo.Context) error {
+	return c.Render(http.StatusOK, r.JSON("18.20 is leaving us"))
+}

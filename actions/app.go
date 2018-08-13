@@ -1,69 +1,77 @@
 package actions
 
 import (
-  "github.com/gobuffalo/envy"
-  "github.com/gobuffalo/buffalo"
-  "github.com/gobuffalo/buffalo/middleware"
-  "github.com/gobuffalo/buffalo/middleware/ssl"
-  "github.com/unrolled/secure"
+	"context"
 
-  "github.com/rs/cors"
-  "github.com/gobuffalo/x/sessions"
-  )
+	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/buffalo/middleware"
+	"github.com/gobuffalo/buffalo/middleware/ssl"
+	"github.com/gobuffalo/envy"
+	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/unrolled/secure"
+
+	"github.com/gobuffalo/x/sessions"
+	"github.com/rs/cors"
+)
 
 // ENV is used to help switch settings based on where the
 // application is being run. Default is "development".
 var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
-
+var db *mgo.Database
 
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
 // application.
 func App() *buffalo.App {
-  if app == nil {
-    app = buffalo.New(buffalo.Options{
-      Env: ENV,
-      SessionStore: sessions.Null{},
-      PreWares: []buffalo.PreWare{
-        cors.Default().Handler,
-      },
-      SessionName: "_dm_session",
-    })
-    // Automatically redirect to SSL
-    app.Use(forceSSL())
+	if app == nil {
+		app = buffalo.New(buffalo.Options{
+			Env:          ENV,
+			SessionStore: sessions.Null{},
+			PreWares: []buffalo.PreWare{
+				cors.Default().Handler,
+			},
+			SessionName: "_dm_session",
+		})
+		// Automatically redirect to SSL
+		app.Use(ssl.ForceSSL(secure.Options{
+			SSLRedirect:     ENV == "production",
+			SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
+		}))
 
-    // Set the request content type to JSON
-    app.Use(middleware.SetContentType("application/json"))
-    
+		// Set the request content type to JSON
+		app.Use(middleware.SetContentType("application/json"))
+		app.Use(func(next buffalo.Handler) buffalo.Handler {
+			return func(c buffalo.Context) error {
+				defer func() {
+					c.Response().Header().Set("Content-Type", "application/json")
+				}()
 
-    if ENV == "development" {
-      app.Use(middleware.ParameterLogger)
-    }
+				return next(c)
+			}
+		})
 
-    
+		// Create mongodb connection
+		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
+		client, err := mgo.NewClient(url)
+		if err != nil {
+			buffalo.NewLogger("fatal").Fatalf("DB new client error: %s", err)
+		}
+		if err := client.Connect(context.Background()); err != nil {
+			buffalo.NewLogger("fatal").Fatalf("DB connection error: %s", err)
+		}
+		db = client.Database("i1820")
 
-    
+		if ENV == "development" {
+			app.Use(middleware.ParameterLogger)
+		}
 
-    
+		// Routes
+		app.GET("/about", AboutHandler)
+		api := app.Group("/api")
+		{
+		}
+	}
 
-    app.GET("/", HomeHandler)
-
-    }
-
-  return app
-}
-
-
-
-// forceSSL will return a middleware that will redirect an incoming request
-// if it is not HTTPS. "http://example.com" => "https://example.com".
-// This middleware does **not** enable SSL. for your application. To do that
-// we recommend using a proxy: https://gobuffalo.io/en/docs/proxy
-// for more information: https://github.com/unrolled/secure/
-func forceSSL() buffalo.MiddlewareFunc {
-  return ssl.ForceSSL(secure.Options{
-    SSLRedirect:     ENV == "production",
-    SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
-  })
+	return app
 }
