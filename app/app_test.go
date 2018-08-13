@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/I1820/types"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,7 +28,7 @@ func TestPipeline(t *testing.T) {
 	a.Run()
 	ts := time.Now()
 
-	a.projectStream <- Data{
+	a.projectStream <- types.Data{
 		Raw:       []byte("Hello"),
 		Data:      nil,
 		Timestamp: ts,
@@ -38,7 +39,7 @@ func TestPipeline(t *testing.T) {
 	}
 	time.Sleep(1 * time.Second)
 
-	var d Data
+	var d types.Data
 	q := a.db.Collection("data").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.SubDocument("timestamp", bson.NewDocument(
 			bson.EC.Time("$gte", ts),
