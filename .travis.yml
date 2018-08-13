@@ -1,36 +1,31 @@
+language: go
+
+go: "1.10"
+
+env:
+  - GO_ENV=test DB_URL="mongodb://127.0.0.1:27017"
+
 services:
   - mongodb
 
-language: go
-go: 1.9
-env:
-  - DEP_VERSION="0.3.2"
-
+go_import_path: github.com/I1820/dm
 
 before_install:
-  # Setup some env variables
-  - GO_FILES=$(find . -iname '*.go' )  # All the .go files
-  - PKGS=$(go list ./... )             # All the import paths
-
-  # Setup dependency management tool
-  - curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o $GOPATH/bin/dep
-  - chmod +x $GOPATH/bin/dep
-  # To install latest version, use `go get -u github.com/golang/dep/cmd/dep`
-
-  # Install linters
-  - go get -u github.com/golang/lint/golint              # Linter
-  - go get -u github.com/kisielk/errcheck                # errcheck checks that you checked errors.
-
-  # Mongo mock database
-  - mongo isrc init.js
+  - PKGS=$(go list ./... ) # All the import paths
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh # go dep
+  - go get -u github.com/golang/lint/golint   # linter
+  - go get -u github.com/kisielk/errcheck     # errcheck checks that you checked errors.
 
 install:
+  - go get github.com/gobuffalo/buffalo/buffalo
   - dep ensure
+
+before_script:
+  #  - buffalo task mongo
+  - mongo i1820 init.js # mongo mock database
 
 script:
   - go vet -v $PKGS                   # go vet is the official Go static analyzer
   - errcheck -verbose $PKGS           # Check for unchecked errors
   - golint -set_exit_status $PKGS     # One last linter
-
-  # Run all the tests
-  - go test -v $PKGS
+  - buffalo test
