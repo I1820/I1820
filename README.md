@@ -16,7 +16,7 @@ it builds projects and their dockers. docker provides a sandbox for user scripts
 sudo usermod -aG docker $USER
 ```
 
-2. Create ISRC network
+2. Create projects network
 ```sh
 docker network create i1820
 ```
