@@ -2,7 +2,7 @@
 [![Travis branch](https://img.shields.io/travis/com/I1820/dm/master.svg?style=flat-square)](https://travis-ci.com/I1820/dm)
 [![Go Report](https://goreportcard.com/badge/github.com/I1820/dm?style=flat-square)](https://goreportcard.com/report/github.com/I1820/dm)
 [![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
-[![Maintainability](https://api.codeclimate.com/v1/badges/cf30f8b1aa2317c8b44e/maintainability)](https://codeclimate.com/github/I1820/dm/maintainability)
+[![Codacy Badge](https://img.shields.io/codacy/grade/2cda8cad3c7b46879da2544c1057c91f.svg?style=flat-square)](https://www.codacy.com/project/i1820/dm/dashboard)
 
 ## Introduction
 DM queries and returns data from database (mongodb).
