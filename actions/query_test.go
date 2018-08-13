@@ -18,7 +18,7 @@ func (as *ActionSuite) Test_QueriesResource_List() {
 
 	res.Bind(&results)
 
-	as.Equal(len(results), 0)
+	as.NotEqual(len(results), 0)
 
 	for _, r := range results {
 		if r.ID == "0000000000000003" {
