@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"log"
 	"runtime"
-	"time"
 
 	pmclient "github.com/I1820/pm/client"
+	"github.com/I1820/types"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gobuffalo/envy"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
@@ -42,9 +42,9 @@ type Application struct {
 	db      *mgo.Database
 
 	// pipeline channels
-	projectStream chan Data
-	decodeStream  chan Data
-	insertStream  chan Data
+	projectStream chan types.Data
+	decodeStream  chan types.Data
+	insertStream  chan types.Data
 }
 
 // Protocol is a uplink/downlink protocol like lan or lora
@@ -54,7 +54,7 @@ type Protocol interface {
 
 	Name() string
 
-	Marshal([]byte) (Data, error)
+	Marshal([]byte) (types.Data, error)
 }
 
 // Model is a decoder/encoder interface like generic (based on user scripts) or citado
@@ -63,18 +63,6 @@ type Model interface {
 	Encode(interface{}) []byte
 
 	Name() string
-}
-
-// Data represents uplink data and metadata
-type Data struct {
-	Raw       []byte      // data before decode
-	Data      interface{} // data after decode
-	Timestamp time.Time   // when data received in uplink
-	ThingID   string      // deveui
-	RxInfo    interface{}
-	TxInfo    interface{}
-	Project   string // thing project identification
-	Protocol  string // uplink protocol
 }
 
 // New creates new application. this function creates mqtt client
@@ -96,9 +84,9 @@ func New() *Application {
 	a.session = session
 
 	// pipeline channels
-	a.projectStream = make(chan Data)
-	a.decodeStream = make(chan Data)
-	a.insertStream = make(chan Data)
+	a.projectStream = make(chan types.Data)
+	a.decodeStream = make(chan types.Data)
+	a.insertStream = make(chan types.Data)
 
 	return &a
 }

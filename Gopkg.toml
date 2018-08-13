@@ -62,6 +62,10 @@
 
 [[constraint]]
   branch = "master"
+  name = "github.com/I1820/types"
+
+[[constraint]]
+  branch = "master"
   name = "github.com/go-redis/redis"
 
 [[constraint]]

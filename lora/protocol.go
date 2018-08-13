@@ -17,7 +17,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/I1820/link/app"
+	"github.com/I1820/types"
 )
 
 // Protocol implements uplink protocol for lora
@@ -43,14 +43,14 @@ func (p Protocol) Name() string {
 
 // Marshal marshals given lora byte message (in json format) into platform data structure
 // https://www.loraserver.io/lora-app-server/integrate/sending-receiving/mqtt/
-func (p Protocol) Marshal(message []byte) (app.Data, error) {
+func (p Protocol) Marshal(message []byte) (types.Data, error) {
 	var m RxMessage
 
 	if err := json.Unmarshal(message, &m); err != nil {
-		return app.Data{}, err
+		return types.Data{}, err
 	}
 
-	return app.Data{
+	return types.Data{
 		Raw:       m.Data,
 		Data:      nil,
 		Timestamp: time.Now(),

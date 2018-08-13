@@ -64,6 +64,14 @@
   revision = "6b6257a7438b8f527238b9beb892d2209c37ad87"
 
 [[projects]]
+  branch = "master"
+  digest = "1:bc815b3212260e9422a583809804a74a1e03688b6f3014c0459a61781e19ee4e"
+  name = "github.com/I1820/types"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b9c2eeadd0d1da5fd0c80a2ed2e3a4b006f31e55"
+
+[[projects]]
   digest = "1:adbfc2db750d6fbe0c165ad801ba2d730883a3bc40bc8fe829516eb42ed17771"
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
@@ -177,26 +185,6 @@
   version = "v1.4.7"
 
 [[projects]]
-  branch = "master"
-  digest = "1:36fe9527deed01d2a317617e59304eb2c4ce9f8a24115bcc5c2e37b3aee5bae4"
-  name = "github.com/gin-contrib/sse"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
-
-[[projects]]
-  digest = "1:489e108f21464371ebf9cb5c30b1eceb07c6dd772dff073919267493dd9d04ea"
-  name = "github.com/gin-gonic/gin"
-  packages = [
-    ".",
-    "binding",
-    "render",
-  ]
-  pruneopts = "UT"
-  revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
-  version = "v1.2"
-
-[[projects]]
   digest = "1:8039a6237bf71c598b91387304fd8bd270248d7274fe1105783535945196ac14"
   name = "github.com/go-playground/form"
   packages = ["."]
@@ -230,12 +218,12 @@
   version = "v1.8.0"
 
 [[projects]]
-  digest = "1:adea5a94903eb4384abef30f3d878dc9ff6b6b5b0722da25b82e5169216dfb61"
+  digest = "1:850c49ca338a10fec2cb9e78f793043ed23965489d09e30bcc19fe29719da313"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = "UT"
-  revision = "d523deb1b23d913de5bdada721a6071e71283618"
-  version = "v1.4.0"
+  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
+  version = "v1.3.0"
 
 [[projects]]
   digest = "1:c4a2528ccbcabf90f9f3c464a5fc9e302d592861bbfd0b7135a7de8a943d0406"
@@ -441,14 +429,6 @@
   pruneopts = "UT"
   revision = "03b6f63cc43ef9c7240a635a5e22b13180e822b8"
   version = "v1.1.1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:0f65b10afa740ebce239838198b7647ca95c6395738bbaec5748aceece17b07c"
-  name = "github.com/jinzhu/configor"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "4edaf76fe18865e36de734d887f4c01bd05707af"
 
 [[projects]]
   branch = "master"
@@ -890,14 +870,6 @@
   version = "v1.2.2"
 
 [[projects]]
-  digest = "1:03aa6e485e528acb119fb32901cf99582c380225fc7d5a02758e08b180cb56c3"
-  name = "github.com/ugorji/go"
-  packages = ["codec"]
-  pruneopts = "UT"
-  revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
-  version = "v1.1.1"
-
-[[projects]]
   branch = "master"
   digest = "1:9624432019da6390fc19bd6ef16d110efb7bee291f1d9048273ab229fcb2bea1"
   name = "github.com/unrolled/secure"
@@ -906,15 +878,20 @@
   revision = "8287f3899c8e3d490748e18fe7d438629132914e"
 
 [[projects]]
-  digest = "1:8f9017baaaca37682b06d9f48a292bbeb0ea40c7807343628fd81b595f5a1f93"
-  name = "github.com/vmihailenco/msgpack"
-  packages = [
-    ".",
-    "codes",
-  ]
+  digest = "1:7cc3d7933457968b045958d40baecf7646fd79d1df860e52491656f720bfc79d"
+  name = "github.com/vmihailenco/bufio"
+  packages = ["."]
   pruneopts = "UT"
-  revision = "b5e691b1eb52a28c05e67ab9df303626c095c23b"
-  version = "v3.3.3"
+  revision = "567b2bfa514e796916c4747494d6ff5132a1dfce"
+  version = "v1"
+
+[[projects]]
+  digest = "1:c912c5ab9d692df2ff6a7a5d68f1e523c56a0957cd7dc10fd719ff01f59b6976"
+  name = "github.com/vmihailenco/msgpack"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6004e761984b4c5abbb5afe154e523b4a3ad3d40"
+  version = "v2.0"
 
 [[projects]]
   branch = "master"
@@ -931,18 +908,6 @@
   pruneopts = "UT"
   revision = "bd625b8dc1e3b0f57412280ccbcc317f0c69d8db"
   version = "v1.0.0"
-
-[[projects]]
-  digest = "1:354f484e2e0407e47113cabaea24401f1f96d43e6590ff830d5589a7fef7c736"
-  name = "github.com/yosssi/gmq"
-  packages = [
-    "mqtt",
-    "mqtt/client",
-    "mqtt/packet",
-  ]
-  pruneopts = "UT"
-  revision = "31fa037b1019e383aa033aee1e4d04e106c88ed2"
-  version = "v0.0.1"
 
 [[projects]]
   branch = "master"
@@ -1021,33 +986,6 @@
   version = "v0.3.0"
 
 [[projects]]
-  digest = "1:947441a82fc5c4b597268e3efc1e40d5b3e17b1d5cc728e6afde176bbc96bd39"
-  name = "google.golang.org/appengine"
-  packages = [
-    ".",
-    "cloudsql",
-    "datastore",
-    "internal",
-    "internal/app_identity",
-    "internal/base",
-    "internal/datastore",
-    "internal/log",
-    "internal/modules",
-    "internal/remote_api",
-  ]
-  pruneopts = "UT"
-  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
-  version = "v1.1.0"
-
-[[projects]]
-  digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
-  name = "gopkg.in/go-playground/validator.v8"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
-  version = "v8.18.2"
-
-[[projects]]
   digest = "1:8bc629776d035c003c7814d4369521afe67fdb8efc4b5f66540d29343b98cf23"
   name = "gopkg.in/russross/blackfriday.v1"
   packages = ["."]
@@ -1069,8 +1007,8 @@
   input-imports = [
     "github.com/I1820/lanserver/models",
     "github.com/I1820/pm/client",
+    "github.com/I1820/types",
     "github.com/eclipse/paho.mqtt.golang",
-    "github.com/gin-gonic/gin",
     "github.com/go-redis/redis",
     "github.com/gobuffalo/buffalo",
     "github.com/gobuffalo/buffalo/middleware",
@@ -1079,7 +1017,6 @@
     "github.com/gobuffalo/envy",
     "github.com/gobuffalo/suite",
     "github.com/gobuffalo/x/sessions",
-    "github.com/jinzhu/configor",
     "github.com/mongodb/mongo-go-driver/bson",
     "github.com/mongodb/mongo-go-driver/mongo",
     "github.com/prometheus/client_golang/prometheus",
@@ -1089,8 +1026,6 @@
     "github.com/stretchr/testify/assert",
     "github.com/unrolled/secure",
     "github.com/vmihailenco/msgpack",
-    "github.com/yosssi/gmq/mqtt",
-    "github.com/yosssi/gmq/mqtt/client",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
