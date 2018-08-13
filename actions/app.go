@@ -70,6 +70,8 @@ func App() *buffalo.App {
 		app.GET("/about", AboutHandler)
 		api := app.Group("/api")
 		{
+			qr := QueriesResource{}
+			api.GET("/queries/list", qr.List)
 		}
 	}
 
