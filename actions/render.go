@@ -1,11 +1,11 @@
 package actions
 
 import (
-  "github.com/gobuffalo/buffalo/render"
+	"github.com/gobuffalo/buffalo/render"
 )
 
 var r *render.Engine
+
 func init() {
-  r = render.New(render.Options{
-    })
+	r = render.New(render.Options{})
 }
