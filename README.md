@@ -1,6 +1,6 @@
 # Project Manager
 [![Travis branch](https://img.shields.io/travis/com/I1820/pm/master.svg?style=flat-square)](https://travis-ci.com/I1820/pm)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e8583a735941b7d9a505/maintainability)](https://codeclimate.com/github/I1820/pm/maintainability)
+[![Codacy Badge](https://img.shields.io/codacy/grade/f536424b14cc4df5998f4ca0b356b661.svg?style=flat-square)](https://www.codacy.com/project/i1820/pm/dashboard)
 [![Go Report](https://goreportcard.com/badge/github.com/I1820/pm?style=flat-square)](https://goreportcard.com/report/github.com/I1820/pm)
 [![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
 
