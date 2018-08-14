@@ -1,6 +1,6 @@
 # This is a multi-stage Dockerfile and requires >= Docker 17.05
 # https://docs.docker.com/engine/userguide/eng-image/multistage-build/
-FROM gobuffalo/buffalo:v0.11.1 as builder
+FROM gobuffalo/buffalo:v0.12.4 as builder
 
 RUN mkdir -p "$GOPATH/src/github.com/I1820/dm"
 WORKDIR $GOPATH/src/github.com/I1820/dm
