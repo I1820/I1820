@@ -7,6 +7,7 @@
  * | File Name:     init.js
  * +===============================================
  */
+/* eslint-env mongo */
 
 
 db.data.insert({
