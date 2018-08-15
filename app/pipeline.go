@@ -33,6 +33,7 @@ func (a *Application) project() {
 			}).Errorf("PM ThingsShow: %s", err)
 		} else {
 			d.Project = p.Name
+			d.Model = p.Model
 		}
 		a.decodeStream <- d
 	}
