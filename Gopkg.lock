@@ -53,7 +53,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1d74f275f4fe518df5b350becf83ded4495d198c79a162df08a6ae03b071c1db"
+  digest = "1:0050646acc0fa8e8aec29fa4ca62e16b8cdcfe98890a35dc9936cdb8606db890"
   name = "github.com/I1820/pm"
   packages = [
     "client",
@@ -61,15 +61,15 @@
     "runner",
   ]
   pruneopts = "UT"
-  revision = "6b6257a7438b8f527238b9beb892d2209c37ad87"
+  revision = "abbb82989927afc72afbcfb1767d2d2179d67e8a"
 
 [[projects]]
   branch = "master"
-  digest = "1:bc815b3212260e9422a583809804a74a1e03688b6f3014c0459a61781e19ee4e"
+  digest = "1:36b7f8554f460ab6e17843fb03ce31694fcc0675a355ada12ec40ba250ef4b2d"
   name = "github.com/I1820/types"
   packages = ["."]
   pruneopts = "UT"
-  revision = "b9c2eeadd0d1da5fd0c80a2ed2e3a4b006f31e55"
+  revision = "668520e1b514ddb759a2e296b1c17ce181420ae0"
 
 [[projects]]
   digest = "1:adbfc2db750d6fbe0c165ad801ba2d730883a3bc40bc8fe829516eb42ed17771"
