@@ -22,8 +22,11 @@ type Data struct {
 	Data      interface{} // data after decode
 	Timestamp time.Time   // when data received in uplink
 	ThingID   string      // deveui
-	RxInfo    interface{}
-	TxInfo    interface{}
-	Project   string // thing project identification
-	Protocol  string // uplink protocol
+
+	RxInfo interface{}
+	TxInfo interface{}
+
+	Project  string // thing project identification
+	Protocol string // uplink protocol
+	Model    string // way of decode
 }
