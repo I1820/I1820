@@ -57,6 +57,14 @@ func (a *Application) decode() {
 					d.Data = data
 				}
 			} else {
+				m, ok := a.models[d.Model]
+				if !ok {
+					a.Logger.WithFields(logrus.Fields{
+						"component": "uplink",
+					}).Errorf("Model %s not found", d.Model)
+				} else {
+					d.Data = m.Decode(d.Raw)
+				}
 			}
 		}
 		a.insertStream <- d
