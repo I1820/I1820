@@ -23,10 +23,10 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 	}
 	log.Printf("DB url: %s\n", url)
 
-	db := client.Database("isrc")
+	db := client.Database("i1820")
 
 	// pm collection
-	cp := db.Collection("pm")
+	cp := db.Collection("projects")
 	names, err := cp.Indexes().CreateMany(
 		c,
 		[]mgo.IndexModel{

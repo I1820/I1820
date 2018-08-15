@@ -23,12 +23,12 @@ var _ = grift.Add("cleanup", func(c *grift.Context) error {
 	}
 	log.Printf("DB url: %s\n", url)
 
-	db := client.Database("isrc")
+	db := client.Database("i1820")
 
 	// Get all project
 	ps := make([]models.Project, 0)
 
-	cur, err := db.Collection("pm").Find(c, bson.NewDocument())
+	cur, err := db.Collection("projects").Find(c, bson.NewDocument())
 	if err != nil {
 		return err
 	}
