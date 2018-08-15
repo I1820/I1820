@@ -22,12 +22,13 @@ type Project struct {
 	Runner runner.Runner `json:"runner" bson:"runner"`
 	Things []Thing       `json:"things" bson:"things"`
 	Status bool          `json:"status" bson:"status"` // active/inactive
+	Model  string        `json:"model" bson:"model"`   // model describes project decoder
 
 	Inspects interface{} `json:"inspects,omitempty" bson:"-"`
 }
 
 // NewProject creates new project with given name
-func NewProject(ctx context.Context, name string, envs []runner.Env) (*Project, error) {
+func NewProject(ctx context.Context, name string, model string, envs []runner.Env) (*Project, error) {
 	r, err := runner.New(ctx, name, envs)
 
 	if err != nil {
@@ -36,6 +37,7 @@ func NewProject(ctx context.Context, name string, envs []runner.Env) (*Project, 
 
 	return &Project{
 		Name:   name,
+		Model:  model,
 		Runner: r,
 		Things: make([]Thing, 0),
 		Status: true,
