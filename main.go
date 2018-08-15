@@ -22,8 +22,8 @@ import (
 
 func main() {
 	linkApp := app.New()
-	linkApp.Register(lora.Protocol{})
-	linkApp.Register(lan.Protocol{})
+	linkApp.RegisterProtocol(lora.Protocol{})
+	linkApp.RegisterProtocol(lan.Protocol{})
 	linkApp.Run()
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
