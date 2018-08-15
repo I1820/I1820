@@ -35,6 +35,7 @@ type Application struct {
 	Logger *logrus.Logger
 
 	protocols []Protocol
+	models    map[string]Model
 
 	pm pmclient.PM
 
@@ -57,7 +58,7 @@ type Protocol interface {
 	Marshal([]byte) (types.Data, error)
 }
 
-// Model is a decoder/encoder interface like generic (based on user scripts) or citado
+// Model is a decoder/encoder interface like generic (based on user scripts) or aolab
 type Model interface {
 	Decode([]byte) interface{}
 	Encode(interface{}) []byte
@@ -72,6 +73,7 @@ func New() *Application {
 	a.Logger = logrus.New()
 
 	a.protocols = make([]Protocol, 0)
+	a.models = make(map[string]Model)
 
 	a.pm = pmclient.New(envy.Get("PM_URL", "http://127.0.0.1:8080"))
 
@@ -91,9 +93,14 @@ func New() *Application {
 	return &a
 }
 
-// Register registers protocol p on application a
-func (a *Application) Register(p Protocol) {
+// RegisterProtocol registers protocol p on application a
+func (a *Application) RegisterProtocol(p Protocol) {
 	a.protocols = append(a.protocols, p)
+}
+
+// RegisterModel registers model m on application a
+func (a *Application) RegisterModel(m Model) {
+	a.models[m.Name()] = m
 }
 
 // Run runs application. this function connects mqtt client and then register its topic

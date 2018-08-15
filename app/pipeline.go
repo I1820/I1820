@@ -47,13 +47,16 @@ func (a *Application) decode() {
 	for d := range a.decodeStream {
 		// Run decode when data is comming from thing with project and its needs decode
 		if d.Project != "" && d.Data == nil {
-			data, err := a.pm.RunnersDecode(d.Raw, d.Project, d.ThingID)
-			if err != nil {
-				a.Logger.WithFields(logrus.Fields{
-					"component": "uplink",
-				}).Errorf("PM RunnersDecode: %s", err)
+			if d.Model == "generic" {
+				data, err := a.pm.RunnersDecode(d.Raw, d.Project, d.ThingID)
+				if err != nil {
+					a.Logger.WithFields(logrus.Fields{
+						"component": "uplink",
+					}).Errorf("PM RunnersDecode: %s", err)
+				} else {
+					d.Data = data
+				}
 			} else {
-				d.Data = data
 			}
 		}
 		a.insertStream <- d
