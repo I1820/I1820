@@ -3,6 +3,7 @@
 [![Codacy Badge](https://img.shields.io/codacy/grade/7dd562018dbc45f4a069c12c48195add.svg?style=flat-square)](https://www.codacy.com/project/i1820/pm/dashboard)
 [![Go Report](https://goreportcard.com/badge/github.com/I1820/pm?style=flat-square)](https://goreportcard.com/report/github.com/I1820/pm)
 [![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/pm)
 
 
 ## Introduction
