@@ -16,7 +16,7 @@ package types
 import "time"
 
 // Data represents uplink data and metadata
-// this structure create for each uplink data and remain in platform
+// this structure is created and remains in the platform for each data
 type Data struct {
 	Raw       []byte      // data before decode
 	Data      interface{} // data after decode
