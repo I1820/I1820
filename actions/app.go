@@ -71,7 +71,8 @@ func App() *buffalo.App {
 		api := app.Group("/api")
 		{
 			qr := QueriesResource{}
-			api.GET("/queries/list", qr.List)
+			api.GET("/queries/{project_id}/list", qr.List)
+			api.POST("/queries/{project_id}/fetch", qr.Fetch)
 		}
 	}
 
