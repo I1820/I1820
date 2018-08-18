@@ -98,9 +98,33 @@ func (a *Application) RegisterProtocol(p Protocol) {
 	a.protocols = append(a.protocols, p)
 }
 
+// Protocols returns list of registered protocol's names
+func (a *Application) Protocols() []string {
+	names := make([]string, len(a.protocols))
+
+	for i, p := range a.protocols {
+		names[i] = p.Name()
+	}
+
+	return names
+}
+
 // RegisterModel registers model m on application a
 func (a *Application) RegisterModel(m Model) {
 	a.models[m.Name()] = m
+}
+
+// Models returns list of registered model's names
+func (a *Application) Models() []string {
+	names := make([]string, len(a.models))
+
+	i := 0
+	for n := range a.models {
+		names[i] = n
+		i++
+	}
+
+	return names
 }
 
 // Run runs application. this function connects mqtt client and then register its topic
