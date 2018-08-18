@@ -107,12 +107,10 @@ func App() *buffalo.App {
 		app.GET("/about", AboutHandler)
 		api := app.Group("/api")
 		{
+			mr := ModelsResource{}
+			api.Resource("/models", mr)
 			api.POST("/send", SendHandler)
-		}
-		models := app.Group("/models")
-		{
-			m := ModelsResource{}
-			models.GET("/list", m.List)
+
 		}
 		app.GET("/metrics", buffalo.WrapHandler(promhttp.Handler()))
 	}
