@@ -40,5 +40,13 @@ func (m Model) Decode(d []byte) interface{} {
 
 // Encode given object with aolab structure
 func (m Model) Encode(o interface{}) []byte {
-	return nil
+	n, ok := o.(Notification)
+	if !ok {
+		return nil
+	}
+	b, err := json.Marshal(n)
+	if err != nil {
+		return nil
+	}
+	return b
 }
