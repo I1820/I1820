@@ -19,6 +19,9 @@ import (
 	"github.com/gobuffalo/buffalo"
 )
 
+// DownlinkResource represents downlink handling
+type DownlinkResource struct{}
+
 type sendReq struct {
 	Data          interface{} `json:"data" binding:"required"`
 	ThingID       string      `json:"thing_id" binding:"required"`
