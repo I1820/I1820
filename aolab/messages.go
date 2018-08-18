@@ -7,7 +7,7 @@
  * |
  * | Creation Date: 15-08-2018
  * |
- * | File Name:     log.go
+ * | File Name:     messages.go
  * +===============================================
  */
 
