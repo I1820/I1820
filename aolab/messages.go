@@ -21,3 +21,10 @@ type Log struct {
 	Device string
 	States map[string]interface{}
 }
+
+// Notification represents data that is going to aolab nodes
+type Notification struct {
+	Type     string
+	Device   string
+	Settings map[string]interface{}
+}
