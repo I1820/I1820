@@ -13,7 +13,7 @@ package actions
 func (as *ActionSuite) Test_QueriesResource_List() {
 	var results []listResp
 
-	res := as.JSON("/api/queries/list").Get()
+	res := as.JSON("/api/queries/%s/list", "hello").Get()
 	as.Equal(200, res.Code)
 
 	res.Bind(&results)
