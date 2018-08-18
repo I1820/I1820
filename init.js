@@ -53,5 +53,5 @@ db.data.insert({
     adr : true,
     coderate : "4/6"
   },
-  project : ""
+  project : "hello"
 });
