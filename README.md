@@ -3,6 +3,7 @@
 [![Go Report](https://goreportcard.com/badge/github.com/I1820/dm?style=flat-square)](https://goreportcard.com/report/github.com/I1820/dm)
 [![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
 [![Codacy Badge](https://img.shields.io/codacy/grade/2cda8cad3c7b46879da2544c1057c91f.svg?style=flat-square)](https://www.codacy.com/project/i1820/dm/dashboard)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/dm)
 
 ## Introduction
 DM is a Data Manager component of the I1820 platform.
