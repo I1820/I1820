@@ -5,18 +5,19 @@
 [![Codacy Badge](https://img.shields.io/codacy/grade/2cda8cad3c7b46879da2544c1057c91f.svg?style=flat-square)](https://www.codacy.com/project/i1820/dm/dashboard)
 
 ## Introduction
-DM queries and returns data from database (mongodb).
-it has grafana plugin for better data management.
+DM is a Data Manager component of the I1820 platform.
+It has some useful built-in queries that can returns data from the database (MongoDB).
+We plan to create [Grafana](https://grafana.com/) plugin for it.
 
 ## Profiler
 Enable MongoDB buit-in profiler:
 
 ```
-use isrc
+use i1820
 db.setProfileLevel(2)
 ```
 
-The profiling results in a special capped collection called `system.profile`
+The profiling results will be in a special capped collection called `system.profile`
 which is located in the database where you executed the `setProfileLevel` command.
 
 ```
