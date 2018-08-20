@@ -17,7 +17,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"runtime"
+	"time"
 
 	pmclient "github.com/I1820/pm/client"
 	"github.com/I1820/types"
@@ -26,6 +28,10 @@ import (
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/sirupsen/logrus"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 // Application is a main component of uplink that consists of
 // uplink protocols and mqtt client
@@ -141,6 +147,7 @@ func (a *Application) Run() {
 	*/
 	opts := paho.NewClientOptions()
 	opts.AddBroker(envy.Get("BROKER_URL", "tcp://127.0.0.1:1883"))
+	opts.SetClientID(fmt.Sprintf("I1820-link-%d", rand.Intn(1024)))
 	opts.SetOrderMatters(false)
 	opts.SetOnConnectHandler(func(client paho.Client) {
 		// Subscribe to protocols topics
