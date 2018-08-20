@@ -15,6 +15,8 @@ package app
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 )
@@ -45,18 +47,9 @@ func (a *Application) decode() {
 	}).Info("Decode pipeline stage")
 
 	for d := range a.decodeStream {
-		// Run decode when data is comming from thing with project and its needs decode
+		// Run decode when data is comming from thing with project and it needs decode
 		if d.Project != "" && d.Data == nil {
-			if d.Model == "generic" {
-				data, err := a.pm.RunnersDecode(d.Raw, d.Project, d.ThingID)
-				if err != nil {
-					a.Logger.WithFields(logrus.Fields{
-						"component": "uplink",
-					}).Errorf("PM RunnersDecode: %s", err)
-				} else {
-					d.Data = data
-				}
-			} else {
+			if d.Model != "generic" {
 				m, ok := a.models[d.Model]
 				if !ok {
 					a.Logger.WithFields(logrus.Fields{
@@ -66,6 +59,14 @@ func (a *Application) decode() {
 					d.Data = m.Decode(d.Raw)
 				}
 			}
+			b, err := json.Marshal(d)
+			if err != nil {
+				a.Logger.WithFields(logrus.Fields{
+					"component": "uplink",
+				}).Errorf("Publish data into runner: %s", err)
+			}
+			a.cli.Publish(fmt.Sprintf("I1820/project/%d/data", d.Project), 0, true, b)
+
 		}
 		a.insertStream <- d
 	}
