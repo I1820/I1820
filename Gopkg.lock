@@ -193,23 +193,6 @@
   version = "v3.1.3"
 
 [[projects]]
-  branch = "master"
-  digest = "1:22819da3d5eaf726573c6afe7c999cc90aae15676064a08c46913b3d454622c8"
-  name = "github.com/go-redis/redis"
-  packages = [
-    ".",
-    "internal",
-    "internal/consistenthash",
-    "internal/hashtag",
-    "internal/pool",
-    "internal/proto",
-    "internal/singleflight",
-    "internal/util",
-  ]
-  pruneopts = "UT"
-  revision = "a80633d319dee5c0f45a79997ef769b86607be10"
-
-[[projects]]
   digest = "1:cf9c32df6fe209f9b5db1aa91c6e4084d3867baa9063803df07c5b80a37f1f90"
   name = "github.com/go-resty/resty"
   packages = ["."]
@@ -878,22 +861,6 @@
   revision = "8287f3899c8e3d490748e18fe7d438629132914e"
 
 [[projects]]
-  digest = "1:7cc3d7933457968b045958d40baecf7646fd79d1df860e52491656f720bfc79d"
-  name = "github.com/vmihailenco/bufio"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "567b2bfa514e796916c4747494d6ff5132a1dfce"
-  version = "v1"
-
-[[projects]]
-  digest = "1:c912c5ab9d692df2ff6a7a5d68f1e523c56a0957cd7dc10fd719ff01f59b6976"
-  name = "github.com/vmihailenco/msgpack"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "6004e761984b4c5abbb5afe154e523b4a3ad3d40"
-  version = "v2.0"
-
-[[projects]]
   branch = "master"
   digest = "1:f1c52fdadb3f1a775d05105951fffdd6665074b3629ba6bdccfea86254be4313"
   name = "github.com/xdg/scram"
@@ -1009,7 +976,6 @@
     "github.com/I1820/pm/client",
     "github.com/I1820/types",
     "github.com/eclipse/paho.mqtt.golang",
-    "github.com/go-redis/redis",
     "github.com/gobuffalo/buffalo",
     "github.com/gobuffalo/buffalo/middleware",
     "github.com/gobuffalo/buffalo/middleware/ssl",
@@ -1025,7 +991,6 @@
     "github.com/sirupsen/logrus",
     "github.com/stretchr/testify/assert",
     "github.com/unrolled/secure",
-    "github.com/vmihailenco/msgpack",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
