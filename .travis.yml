@@ -2,7 +2,6 @@ sudo: required
 
 services:
   - mongodb
-  - redis
   - docker
 
 env:
