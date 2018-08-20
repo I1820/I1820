@@ -63,10 +63,12 @@ func (a *Application) decode() {
 			if err != nil {
 				a.Logger.WithFields(logrus.Fields{
 					"component": "uplink",
-				}).Errorf("Publish data into runner: %s", err)
+				}).Errorf("Marshal data error: %s", err)
 			}
-			a.cli.Publish(fmt.Sprintf("I1820/project/%d/data", d.Project), 0, true, b)
-
+			a.cli.Publish(fmt.Sprintf("i1820/project/%d/data", d.Project), 0, false, b)
+			a.Logger.WithFields(logrus.Fields{
+				"component": "uplink",
+			}).Infof("Publish data into runner %s", d.Project)
 		}
 		a.insertStream <- d
 	}
