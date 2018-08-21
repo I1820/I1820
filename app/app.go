@@ -16,7 +16,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"log"
 	"math/rand"
 	"runtime"
 	"time"
@@ -166,7 +165,7 @@ func (a *Application) Run() {
 
 	// Connect to the mongodb
 	if err := a.session.Connect(context.Background()); err != nil {
-		log.Fatalf("DB connection error: %s", err)
+		a.Logger.Fatalf("DB connection error: %s", err)
 	}
 	a.db = a.session.Database("i1820")
 
