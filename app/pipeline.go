@@ -65,7 +65,7 @@ func (a *Application) decode() {
 					"component": "uplink",
 				}).Errorf("Marshal data error: %s", err)
 			}
-			a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, true, b)
+			a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, false, b)
 			a.Logger.WithFields(logrus.Fields{
 				"component": "uplink",
 			}).Infof("Publish data into runner %s", d.Project)
