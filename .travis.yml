@@ -3,7 +3,7 @@ language: go
 go: "1.10"
 
 env:
-  - GO_ENV=test DB_URL="mongodb://127.0.0.1:27017" BROKER_URL="tcp://vernemq1:1883"
+  - GO_ENV=test DB_URL="mongodb://127.0.0.1:27017"
 
 services:
   - mongodb
@@ -22,7 +22,7 @@ install:
   - dep ensure
   - docker pull i1820/elrunner
   - docker pull redis:alpine
-  - docker network create i1820
+  - docker network create -d bridge --subnet 192.168.72.0/24 --gateway 192.168.72.1 i1820
 
   # docker services
   - docker run -p 1883:1883 -e "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on" --name vernemq1 -d erlio/docker-vernemq
