@@ -32,9 +32,8 @@ type ProjectsResource struct {
 
 // project request payload
 type projectReq struct {
-	Name  string            `json:"name"`
-	Model string            `json:"model"`
-	Envs  map[string]string `json:"envs"`
+	Name string            `json:"name"`
+	Envs map[string]string `json:"envs"`
 	// TODO adds docker constraints
 }
 
@@ -77,11 +76,6 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 	}
 	name := rq.Name
 
-	model := "generic"
-	if rq.Model != "" {
-		model = rq.Model
-	}
-
 	envs := []runner.Env{
 		{Name: "MONGO_URL", Value: envy.Get("DB_URL", "mongodb://172.18.0.1:27017")},
 	}
@@ -90,7 +84,7 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 		envs = append(envs, runner.Env{Name: envKey, Value: envVal})
 	}
 
-	p, err := models.NewProject(c, name, model, envs)
+	p, err := models.NewProject(c, name, envs)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}

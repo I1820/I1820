@@ -31,6 +31,7 @@ type ThingsResource struct {
 type thingReq struct {
 	Name    string `json:"name" binding:"required"`
 	Project string `json:"project" binding:"required"`
+	Model   string `json:"model"`
 }
 
 // List gets all things. This function is mapped to the path
@@ -76,8 +77,14 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 
 	project := rq.Project
 
+	model := "generic"
+	if rq.Model != "" {
+		model = rq.Model
+	}
+
 	t := models.Thing{
 		ID:     rq.Name,
+		Model:  model,
 		Status: true,
 	}
 
