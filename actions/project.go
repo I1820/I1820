@@ -154,6 +154,9 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
+	if err := db.Collection(fmt.Sprintf("projects.logs.%s", name)).Drop(c); err != nil {
+	}
+
 	return c.Render(http.StatusOK, r.JSON(p))
 }
 
@@ -198,10 +201,7 @@ func (v ProjectsResource) Logs(c buffalo.Context) error {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	cur, err := db.Collection("projects.logs").Aggregate(c, bson.NewArray(
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$match", bson.EC.String("project", id)),
-		),
+	cur, err := db.Collection(fmt.Sprintf("projects.logs.%s", id)).Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.Int32("$limit", int32(limit)),
 		),
