@@ -17,11 +17,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"runtime"
 
 	"github.com/sirupsen/logrus"
 )
 
 func (a *Application) project() {
+	// This thread is mine
+	runtime.LockOSThread()
+
 	a.Logger.WithFields(logrus.Fields{
 		"component": "uplink",
 	}).Info("Project pipeline stage")
@@ -42,6 +46,9 @@ func (a *Application) project() {
 }
 
 func (a *Application) decode() {
+	// This thread is mine
+	runtime.LockOSThread()
+
 	a.Logger.WithFields(logrus.Fields{
 		"component": "uplink",
 	}).Info("Decode pipeline stage")
@@ -75,6 +82,9 @@ func (a *Application) decode() {
 }
 
 func (a *Application) insert() {
+	// This thread is mine
+	runtime.LockOSThread()
+
 	a.Logger.WithFields(logrus.Fields{
 		"component": "uplink",
 	}).Info("Insert pipeline stage")
