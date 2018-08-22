@@ -29,14 +29,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0ced2d36e12b6791b6d9b266be8c039ac3e11c862f4d413e0ca17d355bf56606"
+  digest = "1:1c057f5f6c2db9741477bd4ea2c1be4ce10abe4c6d23440b1c6577de2fc85bb1"
   name = "github.com/I1820/pm"
   packages = [
     "models",
     "runner",
   ]
   pruneopts = "UT"
-  revision = "4ec396efafaee217d4c972c8e73511fb68314e8f"
+  revision = "4e23e86213c000c7768c6b956cf9deb0a77a8118"
 
 [[projects]]
   digest = "1:f9ae348e1f793dcf9ed930ed47136a67343dbd6809c5c91391322267f4476892"
