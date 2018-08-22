@@ -29,22 +29,22 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5910ee63a70d08df437b53b79b16dd36d267488f7707026fb0538eba5482b13c"
+  digest = "1:0ced2d36e12b6791b6d9b266be8c039ac3e11c862f4d413e0ca17d355bf56606"
   name = "github.com/I1820/pm"
   packages = [
     "models",
     "runner",
   ]
   pruneopts = "UT"
-  revision = "80b215824a74b08d026c5bf2ab6e962f76360b75"
+  revision = "4ec396efafaee217d4c972c8e73511fb68314e8f"
 
 [[projects]]
-  digest = "1:adbfc2db750d6fbe0c165ad801ba2d730883a3bc40bc8fe829516eb42ed17771"
+  digest = "1:f9ae348e1f793dcf9ed930ed47136a67343dbd6809c5c91391322267f4476892"
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
   pruneopts = "UT"
-  revision = "a6d595ae73cf27a1b8fc32930668708f45ce1c85"
-  version = "v0.4.9"
+  revision = "78a084671df137c2acfcacaa730d7e7dc285ac39"
+  version = "v0.4.10"
 
 [[projects]]
   digest = "1:4189ee6a3844f555124d9d2656fe7af02fca961c2a9bad9074789df13a0c62e0"
@@ -113,11 +113,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:808cdddf087fb64baeae67b8dfaee2069034d9704923a3cb8bd96a995421a625"
+  digest = "1:192ae5ee10b592d53a75b5513986dc4d322652d06bdb7eebcb768b842a309213"
   name = "github.com/patrickmn/go-cache"
   packages = ["."]
   pruneopts = "UT"
-  revision = "9f6ff22cfff829561052f5886ec80a2ac148b4eb"
+  revision = "5633e0862627c011927fa39556acae8b1f1df58a"
 
 [[projects]]
   digest = "1:7413525ee648f20b4181be7fe8103d0cb98be9e141926a03ee082dc207061e4e"
@@ -148,15 +148,15 @@
     "publicsuffix",
   ]
   pruneopts = "UT"
-  revision = "c39426892332e1bb5ec0a434a079bf82f5d30c54"
+  revision = "922f4815f713f213882e8ef45e0d315b164d705c"
 
 [[projects]]
   branch = "master"
-  digest = "1:cbf3da13bdb8fff0cea91ffc9ac5bb9211117315842c191511a72c58245f1416"
+  digest = "1:0e22b636435114add60ec3317a54eb909cea4acf2eef1ddd1d11225eac06acd4"
   name = "golang.org/x/sys"
   packages = ["windows"]
   pruneopts = "UT"
-  revision = "98c5dad5d1a0e8a73845ecc8897d0bd56586511d"
+  revision = "3b58ed4ad3395d483fc92d5d14123ce2c3581fec"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
