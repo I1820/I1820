@@ -31,7 +31,7 @@ sudo usermod -aG docker $USER
 
 2. Create projects network
 ```sh
-docker network create i1820
+docker network create -d bridge --subnet 192.168.72.0/24 --gateway 192.168.72.1 i1820
 ```
 
 3. Pull required images
