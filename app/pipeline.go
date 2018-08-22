@@ -27,15 +27,15 @@ func (a *Application) project() {
 	}).Info("Project pipeline stage")
 
 	for d := range a.projectStream {
-		// Find thing project in I1820/pm
-		p, err := a.pm.ThingsShow(d.ThingID)
+		// Find thing in I1820/pm
+		t, err := a.pm.ThingsShow(d.ThingID)
 		if err != nil {
 			a.Logger.WithFields(logrus.Fields{
 				"component": "uplink",
 			}).Errorf("PM ThingsShow: %s", err)
 		} else {
-			d.Project = p.Name
-			d.Model = p.Model
+			d.Project = t.Project
+			d.Model = t.Model
 		}
 		a.decodeStream <- d
 	}
