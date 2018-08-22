@@ -77,7 +77,7 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 	name := rq.Name
 
 	envs := []runner.Env{
-		{Name: "MONGO_URL", Value: envy.Get("DB_URL", "mongodb://192.168.72.1:27017")},
+		{Name: "DB_URL", Value: envy.Get("DB_URL", "mongodb://192.168.72.1:27017")},
 		{Name: "BROKER_URL", Value: envy.Get("BROKER_URL", "tcp://192.168.72.1:1883")},
 	}
 
