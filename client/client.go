@@ -205,7 +205,7 @@ func (p PM) RunnersDecode(payload []byte, project string, device string) (interf
 			"projectId": project,
 			"thingId":   device,
 		}).
-		Post("/api/runners/{projectId}/codecs/{thingId}/decode")
+		Post("/api/runners/{projectId}/api/codecs/{thingId}/decode")
 	if err != nil {
 		return nil, err
 	}

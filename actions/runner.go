@@ -44,7 +44,7 @@ func RunnersHandler(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	url, err := url.Parse(fmt.Sprintf("http://%s:%s/api", envy.Get("D_HOST", "127.0.0.1"), p.Runner.Port))
+	url, err := url.Parse(fmt.Sprintf("http://%s:%s", envy.Get("D_HOST", "127.0.0.1"), p.Runner.Port))
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
