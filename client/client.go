@@ -23,12 +23,15 @@ import (
 
 var c *cache.Cache
 
-type entry struct {
-	pr models.Project
-	ti time.Time
+// Thing is required information for client from thing
+// This information is enough for client to communicate
+// with pm
+type Thing struct {
+	Project string
+	Model   string
 }
 
-// Error represents pm errors
+// Error represents project manager errors
 type Error struct {
 	Err  string `json:"error"`
 	Code int    `json:"code"`
@@ -144,13 +147,14 @@ func (p PM) ProjectsDelete(name string) (models.Project, error) {
 
 }
 
-// ThingsShow shows project that contains given thing
-func (p PM) ThingsShow(name string) (models.Project, error) {
-	if pr, found := c.Get(name); found {
-		return pr.(models.Project), nil
+// ThingsShow shows information of thing and project that contains that
+func (p PM) ThingsShow(name string) (Thing, error) {
+	if th, found := c.Get(name); found {
+		return th.(Thing), nil
 	}
 
 	var pr models.Project
+	var th Thing
 
 	resp, err := p.cli.R().
 		SetResult(&pr).
@@ -159,28 +163,30 @@ func (p PM) ThingsShow(name string) (models.Project, error) {
 		}).
 		Get("/api/things/{thingId}")
 	if err != nil {
-		return pr, err
+		return th, err
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return pr, resp.Error().(*Error)
+		return th, resp.Error().(*Error)
 	}
 
 	status := false
 	for _, t := range pr.Things {
 		if t.Status {
-			c.Set(t.ID, pr, cache.DefaultExpiration)
+			// set cache for all things of the project
+			c.Set(t.ID, Thing{pr.Name, t.Model}, cache.DefaultExpiration)
 			if t.ID == name {
 				status = true
+				th = Thing{pr.Name, t.Model}
 			}
 		}
 	}
 
 	if status {
-		return pr, nil
+		return th, nil
 	}
 
-	return pr, fmt.Errorf("Thing (%s) is not activate", name)
+	return th, fmt.Errorf("Thing (%s) is not activate", name)
 }
 
 // RunnersDecode decodes given data on given runner
