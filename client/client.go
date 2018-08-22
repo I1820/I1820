@@ -180,7 +180,7 @@ func (p PM) ThingsShow(name string) (models.Project, error) {
 		return pr, nil
 	}
 
-	return pr, fmt.Errorf("Thing (%s) is not activated", name)
+	return pr, fmt.Errorf("Thing (%s) is not activate", name)
 }
 
 // RunnersDecode decodes given data on given runner
@@ -210,3 +210,5 @@ func (p PM) RunnersDecode(payload []byte, project string, device string) (interf
 
 	return result, nil
 }
+
+//
