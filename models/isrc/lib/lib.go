@@ -13,7 +13,7 @@
 
 package main
 
-import "github.com/I1820/link/isrc"
+import "github.com/I1820/link/models/isrc"
 
 // Model exports ISRC model in plugin
 var Model isrc.Model
