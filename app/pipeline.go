@@ -40,6 +40,18 @@ func (a *Application) project() {
 		} else {
 			d.Project = t.Project
 			d.Model = t.Model
+			// Publish raw data
+			b, err := json.Marshal(d)
+			if err != nil {
+				a.Logger.WithFields(logrus.Fields{
+					"component": "uplink",
+				}).Errorf("Marshal data error: %s", err)
+			}
+			a.cli.Publish(fmt.Sprintf("i1820/project/%s/raw", d.Project), 0, false, b)
+			a.Logger.WithFields(logrus.Fields{
+				"component": "uplink",
+			}).Infof("Publish data into runner %s", d.Project)
+
 		}
 		a.decodeStream <- d
 	}
@@ -65,17 +77,18 @@ func (a *Application) decode() {
 				} else {
 					d.Data = m.Decode(d.Raw)
 				}
-			}
-			b, err := json.Marshal(d)
-			if err != nil {
+				// Publish parsed data
+				b, err := json.Marshal(d)
+				if err != nil {
+					a.Logger.WithFields(logrus.Fields{
+						"component": "uplink",
+					}).Errorf("Marshal data error: %s", err)
+				}
+				a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, false, b)
 				a.Logger.WithFields(logrus.Fields{
 					"component": "uplink",
-				}).Errorf("Marshal data error: %s", err)
+				}).Infof("Publish data into runner %s", d.Project)
 			}
-			a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, false, b)
-			a.Logger.WithFields(logrus.Fields{
-				"component": "uplink",
-			}).Infof("Publish data into runner %s", d.Project)
 		}
 		a.insertStream <- d
 	}
