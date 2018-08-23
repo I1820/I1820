@@ -57,7 +57,7 @@ func BenchmarkPipeline(b *testing.B) {
 	a.Run()
 
 	wait := make(chan struct{})
-	a.cli.Subscribe("i1820/project/her/data", 0, func(client paho.Client, message paho.Message) {
+	a.cli.Subscribe("i1820/project/her/raw", 0, func(client paho.Client, message paho.Message) {
 		wait <- struct{}{}
 	})
 

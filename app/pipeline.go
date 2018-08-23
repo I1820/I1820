@@ -40,6 +40,9 @@ func (a *Application) project() {
 		} else {
 			d.Project = t.Project
 			d.Model = t.Model
+		}
+
+		if d.Project != "" {
 			// Publish raw data
 			b, err := json.Marshal(d)
 			if err != nil {
@@ -53,6 +56,7 @@ func (a *Application) project() {
 			}).Infof("Publish data into runner %s", d.Project)
 
 		}
+
 		a.decodeStream <- d
 	}
 }
