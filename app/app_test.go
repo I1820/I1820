@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/I1820/types"
+	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/stretchr/testify/assert"
 )
@@ -49,4 +50,30 @@ func TestPipeline(t *testing.T) {
 	assert.NoError(t, q.Decode(&d))
 
 	assert.Equal(t, d.Timestamp.Unix(), ts.Unix())
+}
+
+func BenchmarkPipeline(b *testing.B) {
+	a := New()
+	a.Run()
+
+	wait := make(chan struct{})
+	a.cli.Subscribe("i1820/project/her/data", 0, func(client paho.Client, message paho.Message) {
+		wait <- struct{}{}
+	})
+
+	for i := 0; i < b.N; i++ {
+		ts := time.Now()
+
+		a.projectStream <- types.Data{
+			Raw:       []byte("Hello"),
+			Data:      nil,
+			Timestamp: ts,
+			ThingID:   "el-thing",
+			RxInfo:    nil,
+			TxInfo:    nil,
+			Project:   "her",
+		}
+
+		<-wait
+	}
 }
