@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/I1820/link/aolab"
 	linkapp "github.com/I1820/link/app"
+	"github.com/I1820/link/models/aolab"
 	"github.com/I1820/link/protocols/lan"
 	"github.com/I1820/link/protocols/lora"
 	"github.com/gobuffalo/buffalo"
