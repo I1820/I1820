@@ -6,8 +6,8 @@ import (
 
 	"github.com/I1820/link/aolab"
 	linkapp "github.com/I1820/link/app"
-	"github.com/I1820/link/lan"
-	"github.com/I1820/link/lora"
+	"github.com/I1820/link/protocols/lan"
+	"github.com/I1820/link/protocols/lora"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
 	"github.com/gobuffalo/buffalo/middleware/ssl"
