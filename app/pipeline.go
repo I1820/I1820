@@ -53,8 +53,7 @@ func (a *Application) project() {
 			a.cli.Publish(fmt.Sprintf("i1820/project/%s/raw", d.Project), 0, false, b)
 			a.Logger.WithFields(logrus.Fields{
 				"component": "uplink",
-			}).Infof("Publish data into runner %s", d.Project)
-
+			}).Infof("Publish raw data: %s", d.Project)
 		}
 
 		a.decodeStream <- d
@@ -91,7 +90,7 @@ func (a *Application) decode() {
 				a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, false, b)
 				a.Logger.WithFields(logrus.Fields{
 					"component": "uplink",
-				}).Infof("Publish data into runner %s", d.Project)
+				}).Infof("Publish parsed data: %s", d.Project)
 			}
 		}
 		a.insertStream <- d
