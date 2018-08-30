@@ -1,6 +1,6 @@
 # types
 [![Go Report](https://goreportcard.com/badge/github.com/I1820/types?style=flat-square)](https://goreportcard.com/report/github.com/I1820/types)
-[![Codacy Badge](https://img.shields.io/codacy/grade/7479c1d332d94b8fb12215a4bd52ea00.svg?style=flat-square)](https://www.codacy.com/project/i1820/types/dashboard)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7479c1d332d94b8fb12215a4bd52ea00)](https://www.codacy.com/app/i1820/types?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=I1820/types&amp;utm_campaign=Badge_Grade)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/types)
 
 ## Introduction
