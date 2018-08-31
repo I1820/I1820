@@ -33,6 +33,7 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 			mgo.IndexModel{
 				Keys: bson.NewDocument(
 					bson.EC.Int32("name", 1),
+					bson.EC.Int32("user", 1),
 				),
 				Options: bson.NewDocument(
 					bson.EC.Boolean("unique", true),
@@ -42,9 +43,9 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 				Keys: bson.NewDocument(
 					bson.EC.Int32("things.id", 1),
 				),
-				/*Options: bson.NewDocument(
+				Options: bson.NewDocument(
 					bson.EC.Boolean("unique", true),
-				),*/
+				),
 			},
 		},
 	)
