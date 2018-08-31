@@ -29,12 +29,14 @@ import (
 // RunnersHandler sends request to specific GoRunner
 func RunnersHandler(c buffalo.Context) error {
 	name := c.Param("project_id")
+	user := c.Param("user_id")
 	path := c.Param("path")
 
 	var p models.Project
 
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
 		bson.EC.String("name", name),
+		bson.EC.String("user", user),
 	))
 
 	if err := dr.Decode(&p); err != nil {
