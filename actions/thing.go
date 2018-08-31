@@ -13,6 +13,7 @@ package actions
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/I1820/pm/models"
 	"github.com/gobuffalo/buffalo"
@@ -22,6 +23,15 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 )
 
+var devEUIRegexp *regexp.Regexp
+
+func init() {
+	rg, err := regexp.Compile("[0-9a-fA-F]{16}")
+	if err == nil {
+		devEUIRegexp = rg
+	}
+}
+
 // ThingsResource manages existing things
 type ThingsResource struct {
 	buffalo.Resource
@@ -30,6 +40,7 @@ type ThingsResource struct {
 // thing request payload
 type thingReq struct {
 	Name    string `json:"name" binding:"required"`
+	User    string `json:"user"`
 	Project string `json:"project" binding:"required"`
 	Model   string `json:"model"`
 }
@@ -37,11 +48,25 @@ type thingReq struct {
 // List gets all things. This function is mapped to the path
 // GET /things
 func (v ThingsResource) List(c buffalo.Context) error {
+	user := c.Param("user_id")
+	if user == "" {
+		user = ".*"
+	}
+
 	results := make([]models.Thing, 0)
 
 	cur, err := db.Collection("projects").Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$match", bson.EC.Regex("user", user, "")),
+		),
+		bson.VC.DocumentFromElements(
 			bson.EC.String("$unwind", "$things"),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$addFields",
+				bson.EC.String("things.project", "$name"),
+				bson.EC.String("things.user", "$user"),
+			),
 		),
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$replaceRoot", bson.EC.String("newRoot", "$things")),
@@ -75,7 +100,12 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
+	if rq.Name == "" || !devEUIRegexp.MatchString(rq.Name) {
+		return c.Error(http.StatusBadRequest, fmt.Errorf("Invalid name: %s", rq.Name))
+	}
+
 	project := rq.Project
+	user := rq.User
 
 	model := "generic"
 	if rq.Model != "" {
@@ -90,6 +120,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 
 	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("name", project),
+		bson.EC.String("user", user),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$addToSet", bson.EC.Interface("things", t)),
 	), findopt.ReturnDocument(mongoopt.After))
