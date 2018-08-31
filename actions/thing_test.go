@@ -16,12 +16,12 @@ const tName = "0000000000000073"
 
 func (as *ActionSuite) Test_ThingsResource_Create() {
 	// Create
-	resc := as.JSON("/api/projects").Post(projectReq{Name: pName})
+	resc := as.JSON("/api/%s/projects", uName).Post(projectReq{Name: pName})
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
 
 	// Create
 	var tc models.Thing
-	rest := as.JSON("/api/things").Post(thingReq{Name: tName, Project: pName})
+	rest := as.JSON("/api/things").Post(thingReq{Name: tName, Project: pName, User: uName})
 	as.Equalf(200, rest.Code, "Error: %s", rest.Body.String())
 	rest.Bind(&tc)
 
@@ -34,7 +34,7 @@ func (as *ActionSuite) Test_ThingsResource_Create() {
 	as.Equal(ts, tc)
 
 	// Destroy
-	resd := as.JSON("/api/projects/%s", pName).Delete()
+	resd := as.JSON("/api/%s/projects/%s", uName, pName).Delete()
 	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
 }
 
