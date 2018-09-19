@@ -13,22 +13,29 @@
 
 package actions
 
-import "time"
+import (
+	"time"
+
+	"github.com/I1820/pm/models"
+)
 
 func (as *ActionSuite) Test_RunnersHandler() {
-	// Create
-	resc := as.JSON("/api/%s/projects", uName).Post(projectReq{Name: pName})
+	// Create project
+	var pr models.Project
+	resc := as.JSON("/api/projects").Post(projectReq{Name: pName})
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
+	resc.Bind(&pr)
+	pID = pr.ID
 
-	// wait for GoRunner
+	// wait for ElRunner make ready
 	time.Sleep(15 * time.Second)
 
-	// GoRunner About
-	res := as.JSON("/api/%s/runners/%s/about", uName, pName).Get()
+	// ElRunner About API
+	res := as.JSON("/api/runners/%s/about", pID).Get()
 	as.Equal(200, res.Code)
 	as.Contains(res.Body.String(), "18.20 is leaving us")
 
-	// Destroy
-	resd := as.JSON("/api/%s/projects/%s", uName, pName).Delete()
+	// Destroy project
+	resd := as.JSON("/api/projects/%s", pID).Delete()
 	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
 }
