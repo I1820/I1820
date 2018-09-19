@@ -14,32 +14,36 @@ import "github.com/I1820/pm/models"
 
 const tName = "0000000000000073"
 
-func (as *ActionSuite) Test_ThingsResource_Create() {
-	// Create
-	resc := as.JSON("/api/%s/projects", uName).Post(projectReq{Name: pName})
-	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
+var tID = ""
 
-	// Create
+func (as *ActionSuite) Test_ThingsResource_Create() {
+	// Create project
+	var pc models.Project
+	resc := as.JSON("/api/projects").Post(projectReq{Name: pName, Owner: pOwner})
+	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
+	resc.Bind(&pc)
+	pID = pc.ID
+
+	// Create thing (POST /api/projects/{project_id}/things)
 	var tc models.Thing
-	rest := as.JSON("/api/things").Post(thingReq{Name: tName, Project: pName, User: uName})
+	rest := as.JSON("/api/projects/%s/things", pID).Post(thingReq{Name: tName})
 	as.Equalf(200, rest.Code, "Error: %s", rest.Body.String())
 	rest.Bind(&tc)
+	tID = tc.ID
 
-	// Show
+	// Show (GET /api/projects/{project_id}/things/{thing_id}
 	var ts models.Thing
-	ress := as.JSON("/api/things/%s", tName).Get()
+	ress := as.JSON("/api/projects/%s/things/%s", pID, tID).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&ts)
 
 	as.Equal(ts, tc)
 
-	// Destroy
-	resd := as.JSON("/api/%s/projects/%s", uName, pName).Delete()
+	// List (GET /api/projects/{project_id}/things)
+	resl := as.JSON("/api/projects/%s/things", pID).Get()
+	as.Equalf(200, resl.Code, "Error: %s", resl.Body.String())
+
+	// Destroy project
+	resd := as.JSON("/api/projects/%s", pID).Delete()
 	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
-}
-
-func (as *ActionSuite) Test_ThingsResource_List() {
-	res := as.JSON("/api/things").Get()
-	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
-
 }
