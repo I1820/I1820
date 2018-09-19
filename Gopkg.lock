@@ -712,6 +712,14 @@
   revision = "46c73eb196baff5bb07288f245b223bd1a30fba6"
 
 [[projects]]
+  digest = "1:8a3e7525dc0cf0236b163166800ecbc78d6c8c5d7ac956996e7b3bef8cfadc41"
+  name = "github.com/segmentio/ksuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "112f929a3020abfcd06b77c963ec919130796a35"
+  version = "1.0.1"
+
+[[projects]]
   branch = "master"
   digest = "1:efa124a0ca36a35cc1a1b472cb0fa2be1e7d9fd1db0f8bc9a042e42e4c6405aa"
   name = "github.com/serenize/snaker"
@@ -990,6 +998,7 @@
     "github.com/prometheus/client_golang/prometheus",
     "github.com/prometheus/client_golang/prometheus/promhttp",
     "github.com/rs/cors",
+    "github.com/segmentio/ksuid",
     "github.com/stretchr/testify/assert",
     "github.com/unrolled/secure",
     "gopkg.in/go-playground/validator.v9",
