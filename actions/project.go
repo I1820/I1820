@@ -153,7 +153,7 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 	}
 
 	if _, err := db.Collection("projects").DeleteOne(c, bson.NewDocument(
-		bson.EC.String("id", projectID),
+		bson.EC.String("_id", projectID),
 	)); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
