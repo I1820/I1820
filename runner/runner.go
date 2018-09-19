@@ -119,7 +119,7 @@ func createRunner(ctx context.Context, name string, envs []Env) (string, string,
 
 	dockerEnvs := []string{
 		fmt.Sprintf("REDIS_HOST=rd_%s", name),
-		fmt.Sprintf("HOST=%s", name),
+		fmt.Sprintf("PROJECT=%s", name),
 		"PORT=8080",
 		"ADDR=0.0.0.0",
 	}
