@@ -35,7 +35,7 @@ func init() {
 	}
 }
 
-// UserID acts as middleware and handles userid validation
+// UserID acts as a middleware and validates userid
 func UserID(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		user := c.Param("user_id")
@@ -53,8 +53,9 @@ type ProjectsResource struct {
 
 // project request payload
 type projectReq struct {
-	Name string            `json:"name"`
-	Envs map[string]string `json:"envs"`
+	Name string            `json:"name"` // project_id
+	Envs map[string]string `json:"envs"` // project environment variables
+
 	// TODO adds docker constraints
 }
 
@@ -102,16 +103,19 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 	}
 	name := rq.Name
 
+	// predefined environment variables
 	envs := []runner.Env{
 		{Name: "DB_URL", Value: envy.Get("DB_URL", "mongodb://192.168.72.1:27017")},
 		{Name: "BROKER_URL", Value: envy.Get("BROKER_URL", "tcp://192.168.72.1:1883")},
 		{Name: "USER", Value: user},
 	}
 
+	// user-defined environment variables
 	for envKey, envVal := range rq.Envs {
 		envs = append(envs, runner.Env{Name: envKey, Value: envVal})
 	}
 
+	// creates project entity with its docker (have fun :D)
 	p, err := models.NewProject(c, user, name, envs)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
@@ -120,8 +124,6 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 	if _, err := db.Collection("projects").InsertOne(c, p); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
-
-	// numberOfCreatedProjects.Inc()
 
 	return c.Render(http.StatusOK, r.JSON(p))
 }
