@@ -25,18 +25,14 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 
 	db := client.Database("i1820")
 
-	// pm collection
-	cp := db.Collection("projects")
-	names, err := cp.Indexes().CreateMany(
+	// things collection
+	ct := db.Collection("things")
+	tnames, err := ct.Indexes().CreateMany(
 		c,
 		[]mgo.IndexModel{
 			mgo.IndexModel{
 				Keys: bson.NewDocument(
-					bson.EC.Int32("name", 1),
-					bson.EC.Int32("user", 1),
-				),
-				Options: bson.NewDocument(
-					bson.EC.Boolean("unique", true),
+					bson.EC.Int32("project", 1),
 				),
 			},
 		},
@@ -44,7 +40,7 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("DB [pm] index: %s\n", names)
+	log.Printf("DB [things] index: %s\n", tnames)
 
 	return nil
 })
