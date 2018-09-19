@@ -13,7 +13,6 @@ package actions
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/I1820/pm/models"
@@ -21,30 +20,10 @@ import (
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/objectid"
+
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/findopt"
-	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 )
-
-var nameRegexp *regexp.Regexp
-
-func init() {
-	rg, err := regexp.Compile("[0-9a-zA-Z]")
-	if err == nil {
-		nameRegexp = rg
-	}
-}
-
-// UserID acts as a middleware and validates userid
-func UserID(next buffalo.Handler) buffalo.Handler {
-	return func(c buffalo.Context) error {
-		user := c.Param("user_id")
-		if !nameRegexp.MatchString(user) {
-			return c.Error(http.StatusBadRequest, fmt.Errorf("Invalid user id: %s", user))
-		}
-		return next(c)
-	}
-}
 
 // ProjectsResource manages existing projects
 type ProjectsResource struct {
@@ -53,21 +32,17 @@ type ProjectsResource struct {
 
 // project request payload
 type projectReq struct {
-	Name string            `json:"name"` // project_id
-	Envs map[string]string `json:"envs"` // project environment variables
-
-	// TODO adds docker constraints
+	Name  string            `json:"name" validate:"required"`        // project name
+	Owner string            `json:"owner" validate:"required,email"` // project owner email address
+	Envs  map[string]string `json:"envs"`                            // project environment variables
 }
 
 // List gets all projects. This function is mapped to the path
-// GET /{user_id}/projects
+// GET /projects
 func (v ProjectsResource) List(c buffalo.Context) error {
-	user := c.Param("user_id")
 	ps := make([]models.Project, 0)
 
-	cur, err := db.Collection("projects").Find(c, bson.NewDocument(
-		bson.EC.String("user", user),
-	))
+	cur, err := db.Collection("projects").Find(c, bson.NewDocument())
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
@@ -89,25 +64,22 @@ func (v ProjectsResource) List(c buffalo.Context) error {
 }
 
 // Create adds a project to the DB and creates its docker. This function is mapped to the
-// path POST /{user_id}/projects
+// path POST /projects
 func (v ProjectsResource) Create(c buffalo.Context) error {
-	user := c.Param("user_id")
-
 	var rq projectReq
 	if err := c.Bind(&rq); err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	if rq.Name == "" || !nameRegexp.MatchString(rq.Name) {
-		return c.Error(http.StatusBadRequest, fmt.Errorf("Invalid name: %s", rq.Name))
+	if err := validate.Struct(rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
 	}
-	name := rq.Name
 
 	// predefined environment variables
 	envs := []runner.Env{
 		{Name: "DB_URL", Value: envy.Get("DB_URL", "mongodb://192.168.72.1:27017")},
 		{Name: "BROKER_URL", Value: envy.Get("BROKER_URL", "tcp://192.168.72.1:1883")},
-		{Name: "USER", Value: user},
+		{Name: "OWNER", Value: rq.Owner},
 	}
 
 	// user-defined environment variables
@@ -115,11 +87,14 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 		envs = append(envs, runner.Env{Name: envKey, Value: envVal})
 	}
 
+	id := objectid.New().Hex()
+
 	// creates project entity with its docker (have fun :D)
-	p, err := models.NewProject(c, user, name, envs)
+	p, err := models.NewProject(c, id, rq.Name, envs)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
+	p.ID = id
 
 	if _, err := db.Collection("projects").InsertOne(c, p); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
@@ -129,21 +104,19 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 }
 
 // Show gets the data for one project. This function is mapped to
-// the path GET /{user_id}/projects/{project_id}
+// the path GET /projects/{project_id}
 func (v ProjectsResource) Show(c buffalo.Context) error {
-	user := c.Param("user_id")
-	name := c.Param("project_id")
+	projectID := c.Param("project_id")
 
 	var p models.Project
 
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.String("name", name),
-		bson.EC.String("user", user),
+		bson.EC.String("_id", projectID),
 	))
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 		}
 		return c.Error(http.StatusInternalServerError, err)
 	}
@@ -158,20 +131,19 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 }
 
 // Destroy deletes a project from the DB and its docker. This function is mapped
-// to the path DELETE /{user_id}/projects/{project_id}
+// to the path DELETE /projects/{project_id}
 func (v ProjectsResource) Destroy(c buffalo.Context) error {
-	user := c.Param("user_id")
-	name := c.Param("project_id")
+	projectID := c.Param("project_id")
 
 	var p models.Project
 
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.String("name", name),
+		bson.EC.String("_id", projectID),
 	))
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 		}
 		return c.Error(http.StatusInternalServerError, err)
 	}
@@ -181,63 +153,30 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 	}
 
 	if _, err := db.Collection("projects").DeleteOne(c, bson.NewDocument(
-		bson.EC.String("name", name),
-		bson.EC.String("user", user),
+		bson.EC.String("id", projectID),
 	)); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	if err := db.Collection(fmt.Sprintf("projects.logs.%s", name)).Drop(c); err != nil {
-	}
-
-	return c.Render(http.StatusOK, r.JSON(p))
-}
-
-// Activation activates/deactivates project. This function is mapped
-// to the path GET /{user_id}/projects/{project_id}/{t:(?:activate|deactivate)}
-func (v ProjectsResource) Activation(c buffalo.Context) error {
-	name := c.Param("project_id")
-	user := c.Param("user_id")
-
-	t := c.Param("t")
-	status := false
-	if t == "activate" {
-		status = true
-	}
-
-	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
-		bson.EC.String("name", name),
-		bson.EC.String("user", user),
-	), bson.NewDocument(
-		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", status)),
-	), findopt.ReturnDocument(mongoopt.After))
-
-	var p models.Project
-
-	if err := dr.Decode(&p); err != nil {
-		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
-		}
-		return c.Error(http.StatusInternalServerError, err)
+	if err := db.Collection(fmt.Sprintf("projects.logs.%s", projectID)).Drop(c); err != nil {
 	}
 
 	return c.Render(http.StatusOK, r.JSON(p))
 }
 
 // Logs returns project execution logs and errors. This function is mapped
-// to the path GET /{user_id}/projects/{project_id}/logs
+// to the path GET /projects/{project_id}/logs
 func (v ProjectsResource) Logs(c buffalo.Context) error {
 	var pls = make([]models.ProjectLog, 0)
 
-	name := c.Param("project_id")
-	user := c.Param("user_id")
+	projectID := c.Param("project_id")
 
 	limit, err := strconv.Atoi(c.Param("limit"))
 	if err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	cur, err := db.Collection(fmt.Sprintf("projects.logs.%s_%s", name, user)).Aggregate(c, bson.NewArray(
+	cur, err := db.Collection(fmt.Sprintf("projects.logs.%s", projectID)).Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.Int32("$limit", int32(limit)),
 		),
