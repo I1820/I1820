@@ -17,15 +17,18 @@ import (
 	"github.com/I1820/pm/runner"
 )
 
-// Project represents structure of ISRC projects
+// Project represents structure of I1820 platform projects
+// The project is a virtual entity that collects things together
+// under one name and eases their management,
+// like an Agricultural project that manages your farm and its smart things.
 type Project struct {
-	Name   string        `json:"name" bson:"name"`
-	User   string        `json:"user" bson:"user"` // project owner username (1995parham)
-	Runner runner.Runner `json:"runner" bson:"runner"`
-	Things []Thing       `json:"things" bson:"things"`
-	Status bool          `json:"status" bson:"status"` // active/inactive
+	Name   string        `json:"name" bson:"name"`     // project code name
+	User   string        `json:"user" bson:"user"`     // project owner username (1995parham)
+	Runner runner.Runner `json:"runner" bson:"runner"` // information about project docker
+	Things []Thing       `json:"things" bson:"things"` // project things
+	Status bool          `json:"status" bson:"status"` // active/inactive, inactive project drops its data and do not store them
 
-	Inspects interface{} `json:"inspects,omitempty" bson:"-"`
+	Inspects interface{} `json:"inspects,omitempty" bson:"-"` // more information about project docker
 }
 
 // NewProject creates new project with given name
