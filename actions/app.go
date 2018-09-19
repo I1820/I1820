@@ -11,6 +11,7 @@ import (
 	"github.com/gobuffalo/envy"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/unrolled/secure"
+	validator "gopkg.in/go-playground/validator.v9"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -24,6 +25,7 @@ import (
 var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
 var db *mgo.Database
+var validate *validator.Validate
 
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
@@ -44,7 +46,7 @@ func App() *buffalo.App {
 			SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
 		}))
 
-		// Set the request content type to JSON
+		// set the request content type to JSON (until new version of buffalo)
 		app.Use(middleware.SetContentType("application/json"))
 		app.Use(func(next buffalo.Handler) buffalo.Handler {
 			return func(c buffalo.Context) error {
@@ -56,7 +58,7 @@ func App() *buffalo.App {
 			}
 		})
 
-		// Create mongodb connection
+		// create mongodb connection
 		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
 		client, err := mgo.NewClient(url)
 		if err != nil {
@@ -67,11 +69,14 @@ func App() *buffalo.App {
 		}
 		db = client.Database("i1820")
 
+		// validator
+		validate = validator.New()
+
 		if ENV == "development" {
 			app.Use(middleware.ParameterLogger)
 		}
 
-		// Collectors
+		// prometheus collector
 		rds := prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
 				Namespace: "pm",
@@ -107,21 +112,21 @@ func App() *buffalo.App {
 		app.GET("/about", AboutHandler)
 		api := app.Group("/api")
 		{
-			ug := api.Group("/{user_id}")
+
+			// /projects
+			pr := ProjectsResource{}
+			api.Resource("/projects", pr)
+			api.GET("/projects/{project_id}/logs", pr.Logs)
+
+			// /projects/{project_id}/things
+			pg := api.Group("/projects/{project_id}")
 			{
-				ug.Use(UserID)
-
-				pr := ProjectsResource{}
-				ug.Resource("/projects", pr)
-				ug.GET("/projects/{project_id}/{t:(?:activate|deactivate)}", pr.Activation)
-				ug.GET("/projects/{project_id}/logs", pr.Logs)
-
-				ug.ANY("/runners/{project_id}/{path:.+}", RunnersHandler)
+				tr := ThingsResource{}
+				pg.Resource("/things", tr)
+				pg.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
 			}
 
-			tr := ThingsResource{}
-			api.Resource("/things", tr)
-			api.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
+			api.ANY("/runners/{project_id}/{path:.+}", RunnersHandler)
 		}
 		app.GET("/metrics", buffalo.WrapHandler(promhttp.Handler()))
 	}
