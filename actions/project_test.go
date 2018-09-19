@@ -17,18 +17,18 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 )
 
-const pName = "Her"
+const pName = "kj"
 const uName = "1995parham"
 
 func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	var pr models.Project
 
-	// Create
+	// Create (POST /api/{user_id}/projects)
 	resc := as.JSON("/api/%s/projects", uName).Post(projectReq{Name: pName})
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
 	resc.Bind(&pr)
 
-	// Database
+	// check database for project existence
 	var pd models.Project
 	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", pName),
@@ -39,7 +39,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 
 	as.Equal(pd, pr)
 
-	// Show
+	// Show (GET /api/{user_id}/projects/{project_id})
 	ress := as.JSON("/api/%s/projects/%s", uName, pName).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&pr)
@@ -47,12 +47,12 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 
 	as.Equal(pd, pr)
 
-	// Deactivate
+	// Deactivate (GET /api/{user_id}/projects/{project_id}/deactivate)
 	resa := as.JSON("/api/%s/projects/%s/deactivate", uName, pName).Get()
 	as.Equalf(200, resa.Code, "Error: %s", resa.Body.String())
 	resa.Bind(&pd)
 
-	// Destroy
+	// Destroy (DELETE /api/{user_id}/projects/{project_id})
 	resd := as.JSON("/api/%s/projects/%s", uName, pName).Delete()
 	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
 	resd.Bind(&pr)
