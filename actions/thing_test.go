@@ -18,11 +18,11 @@ var tID = ""
 
 func (as *ActionSuite) Test_ThingsResource_Create() {
 	// Create project
-	var pc models.Project
+	var pr models.Project
 	resc := as.JSON("/api/projects").Post(projectReq{Name: pName, Owner: pOwner})
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
-	resc.Bind(&pc)
-	pID = pc.ID
+	resc.Bind(&pr)
+	pID = pr.ID
 
 	// Create thing (POST /api/projects/{project_id}/things)
 	var tc models.Thing
