@@ -13,24 +13,15 @@ package actions
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 
 	"github.com/I1820/pm/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/objectid"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
 	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 )
-
-var devEUIRegexp *regexp.Regexp
-
-func init() {
-	rg, err := regexp.Compile("[0-9a-fA-F]{16}")
-	if err == nil {
-		devEUIRegexp = rg
-	}
-}
 
 // ThingsResource manages existing things
 type ThingsResource struct {
@@ -39,38 +30,19 @@ type ThingsResource struct {
 
 // thing request payload
 type thingReq struct {
-	Name    string `json:"name" binding:"required"`
-	User    string `json:"user"`
-	Project string `json:"project" binding:"required"`
-	Model   string `json:"model"`
+	Name  string `json:"name" validate:"required"`
+	Model string `json:"model"`
 }
 
 // List gets all things. This function is mapped to the path
-// GET /things
+// GET /projects/{project_id}/things
 func (v ThingsResource) List(c buffalo.Context) error {
-	user := c.Param("user_id")
-	if user == "" {
-		user = ".*"
-	}
+	projectID := c.Param("project_id")
 
 	results := make([]models.Thing, 0)
 
-	cur, err := db.Collection("projects").Aggregate(c, bson.NewArray(
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$match", bson.EC.Regex("user", user, "")),
-		),
-		bson.VC.DocumentFromElements(
-			bson.EC.String("$unwind", "$things"),
-		),
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$addFields",
-				bson.EC.String("things.project", "$name"),
-				bson.EC.String("things.user", "$user"),
-			),
-		),
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$replaceRoot", bson.EC.String("newRoot", "$things")),
-		),
+	cur, err := db.Collection("things").Find(c, bson.NewDocument(
+		bson.EC.String("project", projectID),
 	))
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
@@ -93,124 +65,119 @@ func (v ThingsResource) List(c buffalo.Context) error {
 }
 
 // Create adds a thing to the DB and its project. This function is mapped to the
-// path POST /things
+// path POST /projects/{project_id}/things
 func (v ThingsResource) Create(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+
 	var rq thingReq
 	if err := c.Bind(&rq); err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	if rq.Name == "" || !devEUIRegexp.MatchString(rq.Name) {
-		return c.Error(http.StatusBadRequest, fmt.Errorf("Invalid name: %s", rq.Name))
+	if err := validate.Struct(rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
 	}
-
-	project := rq.Project
-	user := rq.User
 
 	model := "generic"
 	if rq.Model != "" {
 		model = rq.Model
 	}
 
-	t := models.Thing{
-		ID:     rq.Name,
-		Model:  model,
-		Status: true,
-	}
-
-	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
-		bson.EC.String("name", project),
-		bson.EC.String("user", user),
-	), bson.NewDocument(
-		bson.EC.SubDocumentFromElements("$addToSet", bson.EC.Interface("things", t)),
-	), findopt.ReturnDocument(mongoopt.After))
-
-	var p models.Project
-
-	if err := dr.Decode(&p); err != nil {
-		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", project))
-		}
-		return c.Error(http.StatusInternalServerError, err)
-	}
-
-	return c.Render(http.StatusOK, r.JSON(p))
-}
-
-// Show gets the project for one thing. This function is mapped to
-// the path GET /things/{thing_id}
-func (v ThingsResource) Show(c buffalo.Context) error {
-	name := c.Param("thing_id")
-
-	var p models.Project
-
+	// check project existence
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.Boolean("status", true),
-		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements("$elemMatch",
-			bson.EC.String("id", name),
-		)),
+		bson.EC.String("_id", projectID),
 	))
 
+	var p models.Project
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 		}
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(p))
+	t := models.Thing{
+		ID:      objectid.New().Hex(),
+		Name:    rq.Name,
+		Model:   model,
+		Status:  true,
+		Project: projectID,
+	}
+
+	_, err := db.Collection("things").InsertOne(c, t)
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(t))
+}
+
+// Show gets the data for one thing. This function is mapped to
+// the path GET /projects/{project_id}/things/{thing_id}
+func (v ThingsResource) Show(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+	id := c.Param("thing_id")
+
+	var t models.Thing
+
+	dr := db.Collection("things").FindOne(c, bson.NewDocument(
+		bson.EC.Boolean("status", true),
+		bson.EC.String("_id", id),
+		bson.EC.String("project", projectID),
+	))
+
+	if err := dr.Decode(&t); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", id))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(t))
 }
 
 // Destroy deletes a thing from the DB and its project. This function is mapped
-// to the path DELETE /things/{thing_id}
+// to the path DELETE /projects/{project_id}/things/{thing_id}
 func (v ThingsResource) Destroy(c buffalo.Context) error {
-	name := c.Param("thing_id")
+	projectID := c.Param("project_id")
+	id := c.Param("thing_id")
 
-	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(), bson.NewDocument(
-		bson.EC.SubDocumentFromElements("$pull", bson.EC.SubDocumentFromElements(
-			"things", bson.EC.String("id", name)),
-		),
-	), findopt.ReturnDocument(mongoopt.After))
-
-	var p models.Project
-
-	if err := dr.Decode(&p); err != nil {
-		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
-		}
+	if _, err := db.Collection("things").DeleteOne(c, bson.NewDocument(
+		bson.EC.String("_id", id),
+		bson.EC.String("project", projectID),
+	)); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(p))
+	return c.Render(http.StatusOK, r.JSON(true))
 }
 
 // Activation activates/deactivates thing. This function is mapped
-// to the path GET /things/{thing_id}/{t:(?:activate|deactivate)}
+// to the path GET /projects/{project_id}/things/{thing_id}/{t:(?:activate|deactivate)}
 func (v ThingsResource) Activation(c buffalo.Context) error {
-	name := c.Param("thing_id")
+	id := c.Param("thing_id")
+	projectID := c.Param("project_id")
 
-	t := c.Param("t")
 	status := false
-	if t == "activate" {
+	if c.Param("t") == "activate" {
 		status = true
 	}
 
-	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
-		bson.EC.SubDocumentFromElements("things", bson.EC.SubDocumentFromElements(
-			"$elemMatch", bson.EC.String("id", name),
-		)),
+	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.String("_id", id),
+		bson.EC.String("project", projectID),
 	), bson.NewDocument(
-		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("things.$.status", status)),
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", status)),
 	), findopt.ReturnDocument(mongoopt.After))
 
-	var p models.Project
+	var t models.Thing
 
-	if err := dr.Decode(&p); err != nil {
+	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", name))
+			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", id))
 		}
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(p))
+	return c.Render(http.StatusOK, r.JSON(t))
 }
