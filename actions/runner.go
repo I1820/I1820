@@ -26,22 +26,20 @@ import (
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
 
-// RunnersHandler sends request to specific GoRunner
+// RunnersHandler sends request to specific ElRunner
 func RunnersHandler(c buffalo.Context) error {
-	name := c.Param("project_id")
-	user := c.Param("user_id")
+	projectID := c.Param("project_id")
 	path := c.Param("path")
 
 	var p models.Project
 
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.String("name", name),
-		bson.EC.String("user", user),
+		bson.EC.String("_id", projectID),
 	))
 
 	if err := dr.Decode(&p); err != nil {
 		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", name))
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 		}
 		return c.Error(http.StatusInternalServerError, err)
 	}
