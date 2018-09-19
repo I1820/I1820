@@ -34,7 +34,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	// check database for project existence
 	var pd models.Project
 	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
-		bson.EC.String("id", pID),
+		bson.EC.String("_id", pID),
 	))
 
 	as.NoError(dr.Decode(&pd))

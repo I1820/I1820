@@ -22,7 +22,7 @@ import (
 func (as *ActionSuite) Test_RunnersHandler() {
 	// Create project
 	var pr models.Project
-	resc := as.JSON("/api/projects").Post(projectReq{Name: pName})
+	resc := as.JSON("/api/projects").Post(projectReq{Name: pName, Owner: pOwner})
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
 	resc.Bind(&pr)
 	pID = pr.ID
