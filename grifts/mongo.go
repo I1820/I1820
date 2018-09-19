@@ -39,14 +39,6 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 					bson.EC.Boolean("unique", true),
 				),
 			},
-			mgo.IndexModel{
-				Keys: bson.NewDocument(
-					bson.EC.Int32("things.id", 1),
-				),
-				Options: bson.NewDocument(
-					bson.EC.Boolean("unique", true),
-				),
-			},
 		},
 	)
 	if err != nil {
