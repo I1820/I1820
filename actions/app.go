@@ -107,16 +107,21 @@ func App() *buffalo.App {
 		app.GET("/about", AboutHandler)
 		api := app.Group("/api")
 		{
-			pr := ProjectsResource{}
-			api.Resource("/projects", pr)
-			api.GET("/projects/{project_id}/{t:(?:activate|deactivate)}", pr.Activation)
-			api.GET("/projects/{project_id}/logs", pr.Logs)
+			ug := api.Group("/{user_id}")
+			{
+				ug.Use(UserID)
+
+				pr := ProjectsResource{}
+				ug.Resource("/projects", pr)
+				ug.GET("/projects/{project_id}/{t:(?:activate|deactivate)}", pr.Activation)
+				ug.GET("/projects/{project_id}/logs", pr.Logs)
+
+				ug.ANY("/runners/{project_id}/{path:.+}", RunnersHandler)
+			}
 
 			tr := ThingsResource{}
 			api.Resource("/things", tr)
 			api.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
-
-			api.ANY("/runners/{project_id}/{path:.+}", RunnersHandler)
 		}
 		app.GET("/metrics", buffalo.WrapHandler(promhttp.Handler()))
 	}

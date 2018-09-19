@@ -12,6 +12,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/I1820/pm/runner"
 )
@@ -19,6 +20,7 @@ import (
 // Project represents structure of ISRC projects
 type Project struct {
 	Name   string        `json:"name" bson:"name"`
+	User   string        `json:"user" bson:"user"` // project owner username (1995parham)
 	Runner runner.Runner `json:"runner" bson:"runner"`
 	Things []Thing       `json:"things" bson:"things"`
 	Status bool          `json:"status" bson:"status"` // active/inactive
@@ -27,8 +29,8 @@ type Project struct {
 }
 
 // NewProject creates new project with given name
-func NewProject(ctx context.Context, name string, envs []runner.Env) (*Project, error) {
-	r, err := runner.New(ctx, name, envs)
+func NewProject(ctx context.Context, user string, name string, envs []runner.Env) (*Project, error) {
+	r, err := runner.New(ctx, fmt.Sprintf("%s_%s", name, user), envs)
 
 	if err != nil {
 		return nil, err
@@ -36,6 +38,7 @@ func NewProject(ctx context.Context, name string, envs []runner.Env) (*Project, 
 
 	return &Project{
 		Name:   name,
+		User:   user,
 		Runner: r,
 		Things: make([]Thing, 0),
 		Status: true,

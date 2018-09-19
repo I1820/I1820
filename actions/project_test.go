@@ -18,12 +18,13 @@ import (
 )
 
 const pName = "Her"
+const uName = "1995parham"
 
 func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	var pr models.Project
 
 	// Create
-	resc := as.JSON("/api/projects").Post(projectReq{Name: pName})
+	resc := as.JSON("/api/%s/projects", uName).Post(projectReq{Name: pName})
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
 	resc.Bind(&pr)
 
@@ -31,6 +32,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	var pd models.Project
 	dr := db.Collection("projects").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("name", pName),
+		bson.EC.String("user", uName),
 	))
 
 	as.NoError(dr.Decode(&pd))
@@ -38,7 +40,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	as.Equal(pd, pr)
 
 	// Show
-	ress := as.JSON("/api/projects/%s", pName).Get()
+	ress := as.JSON("/api/%s/projects/%s", uName, pName).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&pr)
 	pr.Inspects = nil
@@ -46,12 +48,12 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	as.Equal(pd, pr)
 
 	// Deactivate
-	resa := as.JSON("/api/projects/%s/deactivate", pName).Get()
+	resa := as.JSON("/api/%s/projects/%s/deactivate", uName, pName).Get()
 	as.Equalf(200, resa.Code, "Error: %s", resa.Body.String())
 	resa.Bind(&pd)
 
 	// Destroy
-	resd := as.JSON("/api/projects/%s", pName).Delete()
+	resd := as.JSON("/api/%s/projects/%s", uName, pName).Delete()
 	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
 	resd.Bind(&pr)
 
@@ -61,7 +63,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 func (as *ActionSuite) Test_ProjectsResource_List() {
 	var ps []models.Project
 
-	res := as.JSON("/api/projects").Get()
+	res := as.JSON("/api/%s/projects", uName).Get()
 	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
 	res.Bind(&ps)
 }

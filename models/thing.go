@@ -15,4 +15,7 @@ type Thing struct {
 	ID     string `json:"id" bson:"id"`         // DevEUI
 	Status bool   `json:"status" bson:"status"` // active/inactive
 	Model  string `json:"model" bson:"model"`   // model describes project decoder
+
+	Project string `json:"project,omitempty" bson:"project,omitempty"`
+	User    string `json:"user,omitempty" bson:"user,omitempty"`
 }
