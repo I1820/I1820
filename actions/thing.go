@@ -21,6 +21,7 @@ import (
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
 	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
+	"github.com/segmentio/ksuid"
 )
 
 // ThingsResource manages existing things
@@ -97,10 +98,12 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 	}
 
 	t := models.Thing{
-		ID:      objectid.New().Hex(),
-		Name:    rq.Name,
-		Model:   model,
-		Status:  true,
+		ID:     objectid.New().Hex(),
+		Name:   rq.Name,
+		Model:  model,
+		Status: true,
+		Tokens: []string{ksuid.New().String()},
+
 		Project: projectID,
 	}
 
@@ -180,4 +183,14 @@ func (v ThingsResource) Activation(c buffalo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, r.JSON(t))
+}
+
+// CreateToken creates new token for given device
+func (v ThingsResource) CreateToken(c buffalo.Context) error {
+	return nil
+}
+
+// RemoveToken removes token from given device
+func (v ThingsResource) RemoveToken(c buffalo.Context) error {
+	return nil
 }
