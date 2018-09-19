@@ -18,5 +18,4 @@ type Thing struct {
 	Model  string `json:"model" bson:"model"`      // model describes how to decode an incoming payload
 
 	Project string `json:"project" bson:"project`
-	User    string `json:"user" bson:"user"`
 }
