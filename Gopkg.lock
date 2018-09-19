@@ -173,14 +173,6 @@
   version = "v0.16.0"
 
 [[projects]]
-  digest = "1:cf9c32df6fe209f9b5db1aa91c6e4084d3867baa9063803df07c5b80a37f1f90"
-  name = "github.com/go-resty/resty"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "97a15579492cd5f35632499f315d7a8df94160a1"
-  version = "v1.8.0"
-
-[[projects]]
   digest = "1:adea5a94903eb4384abef30f3d878dc9ff6b6b5b0722da25b82e5169216dfb61"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
@@ -620,14 +612,6 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:808cdddf087fb64baeae67b8dfaee2069034d9704923a3cb8bd96a995421a625"
-  name = "github.com/patrickmn/go-cache"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "a3647f8e31d79543b2d0f0ae2fe5c379d72cedc0"
-  version = "v2.1.0"
-
-[[projects]]
   digest = "1:7413525ee648f20b4181be7fe8103d0cb98be9e141926a03ee082dc207061e4e"
   name = "github.com/phayes/freeport"
   packages = ["."]
@@ -879,17 +863,15 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d701419fdb38fb335e0bfdc1b561483103d27c3a87fbcc9b1bb5b97329fcbc52"
+  digest = "1:804ac35cc47ab59eb86ecfbe988f7c15c18bda53c8518fd56df8cc954b0cfb70"
   name = "golang.org/x/net"
   packages = [
     "context",
     "context/ctxhttp",
     "html",
     "html/atom",
-    "idna",
     "internal/socks",
     "proxy",
-    "publicsuffix",
   ]
   pruneopts = "UT"
   revision = "c39426892332e1bb5ec0a434a079bf82f5d30c54"
@@ -917,23 +899,15 @@
   revision = "98c5dad5d1a0e8a73845ecc8897d0bd56586511d"
 
 [[projects]]
-  digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
+  digest = "1:8029e9743749d4be5bc9f7d42ea1659471767860f0cdc34d37c3111bd308a295"
   name = "golang.org/x/text"
   packages = [
-    "collate",
-    "collate/build",
-    "internal/colltab",
     "internal/gen",
-    "internal/tag",
     "internal/triegen",
     "internal/ucd",
-    "language",
-    "secure/bidirule",
     "transform",
-    "unicode/bidi",
     "unicode/cldr",
     "unicode/norm",
-    "unicode/rangetable",
   ]
   pruneopts = "UT"
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
@@ -979,7 +953,6 @@
     "docker.io/go-docker/api/types",
     "docker.io/go-docker/api/types/container",
     "github.com/docker/go-connections/nat",
-    "github.com/go-resty/resty",
     "github.com/gobuffalo/buffalo",
     "github.com/gobuffalo/buffalo/middleware",
     "github.com/gobuffalo/buffalo/middleware/ssl",
@@ -993,7 +966,6 @@
     "github.com/mongodb/mongo-go-driver/mongo",
     "github.com/mongodb/mongo-go-driver/mongo/findopt",
     "github.com/mongodb/mongo-go-driver/mongo/mongoopt",
-    "github.com/patrickmn/go-cache",
     "github.com/phayes/freeport",
     "github.com/prometheus/client_golang/prometheus",
     "github.com/prometheus/client_golang/prometheus/promhttp",
