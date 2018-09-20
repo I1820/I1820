@@ -98,7 +98,7 @@ func (v AssetsResource) Create(c buffalo.Context) error {
 // the path GET /things/{thing_id}/assets/{asset_name}
 func (v AssetsResource) Show(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
-	assetName := c.Param("asset_name")
+	assetName := c.Param("asset_id")
 
 	var t models.Thing
 
@@ -120,7 +120,7 @@ func (v AssetsResource) Show(c buffalo.Context) error {
 // to the path DELETE /things/{thing_id}/assets/{asset_name}
 func (v AssetsResource) Destroy(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
-	assetName := c.Param("asset_name")
+	assetName := c.Param("asset_id")
 
 	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
