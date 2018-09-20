@@ -108,8 +108,29 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		Project: projectID,
 	}
 
-	_, err := db.Collection("things").InsertOne(c, t)
-	if err != nil {
+	if _, err := db.Collection("things").InsertOne(c, t); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	// create data collection with following format
+	// data.project_id.thing_id
+	cd := db.Collection(fmt.Sprintf("data.%s.%s", projectID, t.ID))
+	if _, err := cd.Indexes().CreateMany(
+		c,
+		[]mgo.IndexModel{
+			mgo.IndexModel{
+				Keys: bson.NewDocument(
+					bson.EC.Int32("at", 1),
+				),
+			},
+			mgo.IndexModel{
+				Keys: bson.NewDocument(
+					bson.EC.Int32("asset", 1),
+				),
+			},
+		},
+	); err != nil {
+		// this error should not happen but in case of it happens you can ignore it safely.
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
