@@ -19,6 +19,10 @@ This component provides API based on HTTP ReST so other components can utilize t
 
 PM requires only MongoDB to persist things and projects data.
 
+## Assets
+An asset is a new concept that is added recently to PM. assets are sensors or actuators that are connected into things.
+Assets can send or receive data based on their kind.
+
 ## Up and Running
 
 To use this module you can use its docker or build from source
