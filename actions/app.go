@@ -126,6 +126,9 @@ func App() *buffalo.App {
 				pg.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
 			}
 
+			// /things/{thing_id}/assets
+			api.Resource("/things/{thing_id}/assets", AssetsResource{})
+
 			api.ANY("/runners/{project_id}/{path:.+}", RunnersHandler)
 		}
 		app.GET("/metrics", buffalo.WrapHandler(promhttp.Handler()))
