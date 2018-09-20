@@ -41,7 +41,7 @@ func (as *ActionSuite) Test_AssetsResource_Create() {
 
 	// Show (Get /api/things/{thing_id}/assets/{asset_name})
 	var a models.Asset
-	ress := as.JSON("/api/things/%s/assets", tID).Post(assetReq{Name: aName, Title: aTitle, Type: aType, Kind: aKind})
+	ress := as.JSON("/api/things/%s/assets/%s", tID, aName).Post(assetReq{Name: aName, Title: aTitle, Type: aType, Kind: aKind})
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&a)
 	as.Equal(aTitle, a.Title)
