@@ -43,6 +43,10 @@ func (as *ActionSuite) Test_ThingsResource_Create() {
 	resl := as.JSON("/api/projects/%s/things", pID).Get()
 	as.Equalf(200, resl.Code, "Error: %s", resl.Body.String())
 
+	// Destroy (DELETE /api/projects/{project_id}/things)
+	resr := as.JSON("/api/projects/%s/things/%s", pID, tID).Delete()
+	as.Equalf(200, resr.Code, "Error: %s", resr.Body.String())
+
 	// Destroy project
 	resd := as.JSON("/api/projects/%s", pID).Delete()
 	as.Equalf(200, resd.Code, "Error: %s", resd.Body.String())
