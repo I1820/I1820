@@ -32,10 +32,10 @@ type AssetsResource struct {
 
 // asset request payload
 type assetReq struct {
-	Name  string `json:"name"`
-	Title string `json:"title"`
-	Type  string `json:"type"`
-	Kind  string `json:"kind"`
+	Name  string `json:"name" validate:"alphanum,required"`
+	Title string `json:"title" validate:"required"`
+	Type  string `json:"type" validate:"required,oneof=boolean number string array object"`
+	Kind  string `json:"kind" validate:"required,oneof=sensor actuator"`
 }
 
 // List gets all assets of a given thing. This function is mapped to the path
@@ -64,6 +64,9 @@ func (v AssetsResource) Create(c buffalo.Context) error {
 
 	var rq assetReq
 	if err := c.Bind(&rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+	if err := validate.Struct(rq); err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
