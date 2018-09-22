@@ -47,21 +47,19 @@ type fetchResp struct {
 	}
 }
 
-// List lists things and count of their data in database.
+// List lists assets and count of their data in database.
 // This function is mapped to the path
-// GET /queries/{project_id}/list
+// GET /projects/{project_id}/things/{thing_id}/qeuries/list
 func (q QueriesResource) List(c buffalo.Context) error {
+	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
+
 	var results = make([]listResp, 0)
 
-	cur, err := db.Collection("data").Aggregate(c, bson.NewArray(
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$match",
-				bson.EC.String("project", c.Param("project_id")),
-			),
-		),
+	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$group",
-				bson.EC.String("_id", "$thingid"),
+				bson.EC.String("_id", "$asset"),
 				bson.EC.SubDocumentFromElements("total", bson.EC.Int32("$sum", 1)),
 			),
 		),
