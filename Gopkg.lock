@@ -748,7 +748,6 @@
     "github.com/gobuffalo/buffalo/middleware/ssl",
     "github.com/gobuffalo/buffalo/render",
     "github.com/gobuffalo/envy",
-    "github.com/gobuffalo/packr",
     "github.com/gobuffalo/suite",
     "github.com/gobuffalo/x/sessions",
     "github.com/mongodb/mongo-go-driver/bson",
