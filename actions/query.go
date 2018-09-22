@@ -15,8 +15,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/I1820/types"
 	"github.com/gobuffalo/buffalo"
 	"github.com/mongodb/mongo-go-driver/bson"
+	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
 
 // QueriesResource handles useful queries on database
@@ -32,11 +34,7 @@ type fetchReq struct {
 		From time.Time `json:"from"`
 		To   time.Time `json:"to"`
 	} `json:"range"`
-	IntervalMs int64 `json:"intervalMs"`
-	Targets    []struct {
-		Target string `json:"target"`
-		RefID  string `json:"refId"`
-	} `json:"targets"`
+	Target string `json:"target"`
 }
 
 type fetchResp struct {
@@ -87,55 +85,69 @@ func (q QueriesResource) List(c buffalo.Context) error {
 // Fetch fetches given keys data from database.
 // it works in given range based on given intervals
 // This function is mapped to the path
-// POST /queries/{}/fetch
+// POST projects/{project_id}/things/{thing_id}/queries/fetch
 func (q QueriesResource) Fetch(c buffalo.Context) error {
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
-	fmt.Println(req)
 
-	cur, err := db.Collection("data").Aggregate(c, bson.NewArray(
+	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
+
+	// find things by its id
+	// then find given asset and its type
+	var t struct {
+		Assets map[string]struct {
+			Type string
+		}
+	}
+	dr := db.Collection("things").FindOne(c, bson.NewDocument(
+		bson.EC.String("_id", thingID),
+	))
+	if err := dr.Decode(&t); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusInternalServerError, fmt.Errorf("Thing %s not found", thingID))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
+	assetName := req.Target
+	assetType := t.Assets[assetName].Type
+	if assetType == "" {
+		assetType = "String"
+	}
+
+	fmt.Println(assetName, assetType)
+
+	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$match",
-				bson.EC.String("project", c.Param("project_id")),
-				bson.EC.SubDocumentFromElements("data", bson.EC.Null("$ne")),
-				bson.EC.SubDocumentFromElements("timestamp",
+				bson.EC.String("asset", assetName),
+				// bson.EC.SubDocumentFromElements(fmt.Sprintf("value.%s", assetType), bson.EC.Boolean("$exists", true)),
+				bson.EC.SubDocumentFromElements("at",
 					bson.EC.Time("$gt", req.Range.From),
 					bson.EC.Time("$lt", req.Range.To),
 				),
 			),
 		),
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$project",
-				bson.EC.SubDocumentFromElements("targets", bson.EC.String("$objectToArray", "$data")),
-			),
-		),
-		bson.VC.DocumentFromElements(bson.EC.String("$unwind", "$targets")),
 	))
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
+	results := make([]types.State, 0)
 	for cur.Next(c) {
-		var result struct {
-			Targets struct {
-				K interface{}
-				V interface{}
-			}
-		}
+		var result types.State
 
 		if err := cur.Decode(&result); err != nil {
 			return c.Error(http.StatusInternalServerError, err)
 		}
 
-		fmt.Println(result)
+		results = append(results, result)
 	}
 	if err := cur.Close(c); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
-
-	var results = make([]fetchResp, 0)
 
 	return c.Render(http.StatusOK, r.JSON(results))
 }
