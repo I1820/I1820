@@ -44,6 +44,14 @@
   version = "v0.3.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:8037354decb6f2e4425c0289448d39e2126bc1dad45e10ebfade37c8c525eff8"
+  name = "github.com/I1820/types"
+  packages = ["connectivity"]
+  pruneopts = "UT"
+  revision = "5d5577348dc47e0a33c8553e19902a0a81c6349d"
+
+[[projects]]
   digest = "1:f9ae348e1f793dcf9ed930ed47136a67343dbd6809c5c91391322267f4476892"
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
@@ -975,6 +983,7 @@
     "docker.io/go-docker",
     "docker.io/go-docker/api/types",
     "docker.io/go-docker/api/types/container",
+    "github.com/I1820/types/connectivity",
     "github.com/docker/go-connections/nat",
     "github.com/gobuffalo/buffalo",
     "github.com/gobuffalo/buffalo/middleware",
