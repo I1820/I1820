@@ -57,7 +57,7 @@ func (v AssetsResource) List(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(t.Assets))
 }
 
-// Create adds a asset to the DB and its thing. This function is mapped to the
+// Create adds an asset to the DB and its thing. This function is mapped to the
 // path POST /things/{thing_id}/assets
 func (v AssetsResource) Create(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
@@ -94,7 +94,7 @@ func (v AssetsResource) Create(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(t))
 }
 
-// Show gets the data for given asset. This function is mapped to
+// Show gets the data for a given asset. This function is mapped to
 // the path GET /things/{thing_id}/assets/{asset_name}
 func (v AssetsResource) Show(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
@@ -116,7 +116,7 @@ func (v AssetsResource) Show(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(t.Assets[assetName]))
 }
 
-// Destroy deletes a asset from the DB and its thing. This function is mapped
+// Destroy deletes an asset from the DB and its thing. This function is mapped
 // to the path DELETE /things/{thing_id}/assets/{asset_name}
 func (v AssetsResource) Destroy(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
