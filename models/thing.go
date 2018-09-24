@@ -18,7 +18,8 @@ type Thing struct {
 	Model  string   `json:"model" bson:"model"`      // model describes how to decode an incoming payload
 	Tokens []string `json:"tokens" bson:"tokens"`    // thing access tokens that are generated based on K-Sortable Globally Unique IDs
 
-	Assets map[string]Asset `json:"assets" bson:"assets"` // thing assets (sensors and actuators
+	Assets         map[string]Asset       `json:"assets" bson:"assets"`                 // thing assets (sensors and actuators)
+	Connectivities map[string]interface{} `json:"connectivities" bson:"connectivities"` // supported connectivities (like TheThingsNetwork and etc.)
 
 	Project string `json:"project" bson:"project"`
 }
