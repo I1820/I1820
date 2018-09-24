@@ -49,7 +49,7 @@
   name = "github.com/I1820/types"
   packages = ["connectivity"]
   pruneopts = "UT"
-  revision = "5d5577348dc47e0a33c8553e19902a0a81c6349d"
+  revision = "e1578e4e91b2af23d3faff3ae9d53894e7297f90"
 
 [[projects]]
   digest = "1:f9ae348e1f793dcf9ed930ed47136a67343dbd6809c5c91391322267f4476892"
@@ -219,7 +219,7 @@
   name = "github.com/gobuffalo/buffalo-plugins"
   packages = ["plugins"]
   pruneopts = "UT"
-  revision = "a6d5cbb1889d93a873c2567a7569134e1c1ca6d8"
+  revision = "6ea00eeaef923e5c595ef4777f07e8160c5106ba"
 
 [[projects]]
   digest = "1:38101365bdbea4ca2746cf7bac064b3f18d6a5561787d653a54f80c7afb4b513"
@@ -231,11 +231,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9d79937aab5aa878623347fd585f8dd143144d5bffdb0870a298dec62b4bcf4c"
+  digest = "1:1eb13b92e4c7593e9e3ba376bad9c7ec4a4fc62aaa06e8f02a465c85612a4910"
   name = "github.com/gobuffalo/events"
   packages = ["."]
   pruneopts = "UT"
-  revision = "bcd0f5dd556ac0ecffb04ae7f47d13cbd5ae053b"
+  revision = "b0372953254d8af77aaef89b5db0b26475e4d11f"
 
 [[projects]]
   digest = "1:087e64a63822cec8e79ebc90c3c602fb1b1fe5474e73f6eda780f4b962c8fdd4"
@@ -249,15 +249,15 @@
   version = "v1.0.11"
 
 [[projects]]
-  digest = "1:63eaf7fa1a6881882dfad7fb6fdb5b37181521f94ba44a63f506f71c1c14a6f0"
+  digest = "1:d2b56555eb15e319da4656309c395c39febc3bdd451f2f44c00b71bd82ef1d0f"
   name = "github.com/gobuffalo/github_flavored_markdown"
   packages = [
     ".",
     "internal/russross/blackfriday",
   ]
   pruneopts = "UT"
-  revision = "e74aa94f91da523845822137e4f63180e95644ac"
-  version = "v1.0.4"
+  revision = "99b77ecb08795b8b2cf87f687633f95e8f40c651"
+  version = "v1.0.5"
 
 [[projects]]
   digest = "1:429c929bb5abee25889f9c9783f046a9d8b97d16e1f5734187defe2bca68ae67"
@@ -269,11 +269,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:257fafe8f23510db4e9e118d53ef2e084524b19735ab9c822b3626713deb31b1"
+  digest = "1:81ce107dae345e215dff1bd0a260b760252d2a07cf1b1f8d54954a6312697238"
   name = "github.com/gobuffalo/mapi"
   packages = ["."]
   pruneopts = "UT"
-  revision = "5485bb0900f530773d7f5d95f1b8c59f2e2021b3"
+  revision = "c7d85897722b71e36f3ae695a30de9e934cac5cf"
 
 [[projects]]
   digest = "1:c8ad4ba32ae8b71ef2bf5e1bad402aeb99ce77a1240f9b684db8b1ff5353e7ab"
@@ -364,7 +364,7 @@
     "sessions",
   ]
   pruneopts = "UT"
-  revision = "dc54d929c4a2942638d7786a178894b41648f284"
+  revision = "b9bd64714615f265a0419acf1bf880427f8cbda2"
 
 [[projects]]
   digest = "1:701239373bbf22998c5a36c76d2ff4ee309b3980e39b7a66d72cabd3aab748fa"
