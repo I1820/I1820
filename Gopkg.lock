@@ -45,9 +45,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8037354decb6f2e4425c0289448d39e2126bc1dad45e10ebfade37c8c525eff8"
+  digest = "1:91018a1a71d7d4dc7346d0d9867a32eb3e87560f8d22ea1cdc2a784e8fa5cb63"
   name = "github.com/I1820/types"
-  packages = ["connectivity"]
+  packages = [
+    ".",
+    "connectivity",
+  ]
   pruneopts = "UT"
   revision = "e1578e4e91b2af23d3faff3ae9d53894e7297f90"
 
@@ -983,6 +986,7 @@
     "docker.io/go-docker",
     "docker.io/go-docker/api/types",
     "docker.io/go-docker/api/types/container",
+    "github.com/I1820/types",
     "github.com/I1820/types/connectivity",
     "github.com/docker/go-connections/nat",
     "github.com/gobuffalo/buffalo",
