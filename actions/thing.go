@@ -104,7 +104,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		Status:          true,
 		Tokens:          []string{ksuid.New().String()},
 		Assets:          make(map[string]models.Asset),
-		Coonnectivities: make(map[string]interface{}),
+		Connectivities: make(map[string]interface{}),
 
 		Project: projectID,
 	}
