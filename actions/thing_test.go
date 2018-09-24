@@ -10,7 +10,10 @@
 
 package actions
 
-import "github.com/I1820/pm/models"
+import (
+	"github.com/I1820/pm/models"
+	"github.com/I1820/types"
+)
 
 const tName = "0000000000000073"
 
@@ -25,14 +28,14 @@ func (as *ActionSuite) Test_ThingsResource_Create() {
 	pID = pr.ID
 
 	// Create thing (POST /api/projects/{project_id}/things)
-	var tc models.Thing
+	var tc types.Thing
 	rest := as.JSON("/api/projects/%s/things", pID).Post(thingReq{Name: tName})
 	as.Equalf(200, rest.Code, "Error: %s", rest.Body.String())
 	rest.Bind(&tc)
 	tID = tc.ID
 
 	// Show (GET /api/projects/{project_id}/things/{thing_id}
-	var ts models.Thing
+	var ts types.Thing
 	ress := as.JSON("/api/projects/%s/things/%s", pID, tID).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&ts)

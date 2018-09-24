@@ -13,7 +13,10 @@
 
 package actions
 
-import "github.com/I1820/pm/models"
+import (
+	"github.com/I1820/pm/models"
+	"github.com/I1820/types"
+)
 
 const aName = "101"
 const aTitle = "Temperature"
@@ -29,7 +32,7 @@ func (as *ActionSuite) Test_AssetsResource_Create() {
 	pID = pr.ID
 
 	// Create thing
-	var tc models.Thing
+	var tc types.Thing
 	rest := as.JSON("/api/projects/%s/things", pID).Post(thingReq{Name: tName})
 	as.Equalf(200, rest.Code, "Error: %s", rest.Body.String())
 	rest.Bind(&tc)
@@ -40,7 +43,7 @@ func (as *ActionSuite) Test_AssetsResource_Create() {
 	as.Equalf(200, resa.Code, "Error: %s", resa.Body.String())
 
 	// Show (Get /api/things/{thing_id}/assets/{asset_name})
-	var a models.Asset
+	var a types.Asset
 	ress := as.JSON("/api/things/%s/assets/%s", tID, aName).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&a)

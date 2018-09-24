@@ -15,6 +15,7 @@ import (
 	"net/http"
 
 	"github.com/I1820/pm/models"
+	"github.com/I1820/types"
 	"github.com/gobuffalo/buffalo"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
@@ -40,7 +41,7 @@ type thingReq struct {
 func (v ThingsResource) List(c buffalo.Context) error {
 	projectID := c.Param("project_id")
 
-	results := make([]models.Thing, 0)
+	results := make([]types.Thing, 0)
 
 	cur, err := db.Collection("things").Find(c, bson.NewDocument(
 		bson.EC.String("project", projectID),
@@ -50,7 +51,7 @@ func (v ThingsResource) List(c buffalo.Context) error {
 	}
 
 	for cur.Next(c) {
-		var result models.Thing
+		var result types.Thing
 
 		if err := cur.Decode(&result); err != nil {
 			return c.Error(http.StatusInternalServerError, err)
@@ -97,13 +98,13 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	t := models.Thing{
-		ID:              objectid.New().Hex(),
-		Name:            rq.Name,
-		Model:           model,
-		Status:          true,
-		Tokens:          []string{ksuid.New().String()},
-		Assets:          make(map[string]models.Asset),
+	t := types.Thing{
+		ID:             objectid.New().Hex(),
+		Name:           rq.Name,
+		Model:          model,
+		Status:         true,
+		Tokens:         []string{ksuid.New().String()},
+		Assets:         make(map[string]types.Asset),
 		Connectivities: make(map[string]interface{}),
 
 		Project: projectID,
@@ -144,7 +145,7 @@ func (v ThingsResource) Show(c buffalo.Context) error {
 	projectID := c.Param("project_id")
 	id := c.Param("thing_id")
 
-	var t models.Thing
+	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.Boolean("status", true),
@@ -196,7 +197,7 @@ func (v ThingsResource) Activation(c buffalo.Context) error {
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Boolean("status", status)),
 	), findopt.ReturnDocument(mongoopt.After))
 
-	var t models.Thing
+	var t types.Thing
 
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {

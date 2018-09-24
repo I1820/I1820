@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/I1820/pm/models"
+	"github.com/I1820/types"
 	"github.com/gobuffalo/buffalo"
 	"github.com/mongodb/mongo-go-driver/bson"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
@@ -40,7 +40,7 @@ type connectivityReq struct {
 // GET /things/{thing_id}/connectivities
 func (v ConnectivitiesResource) List(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
-	var t models.Thing
+	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
@@ -74,7 +74,7 @@ func (v ConnectivitiesResource) Create(c buffalo.Context) error {
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Interface(fmt.Sprintf("connectivities.%s", rq.Name), rq.Info)),
 	), findopt.ReturnDocument(mongoopt.After))
 
-	var t models.Thing
+	var t types.Thing
 
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {
@@ -92,7 +92,7 @@ func (v ConnectivitiesResource) Show(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
 	connectivityName := c.Param("connectivity_id")
 
-	var t models.Thing
+	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
@@ -120,7 +120,7 @@ func (v ConnectivitiesResource) Destroy(c buffalo.Context) error {
 		bson.EC.SubDocumentFromElements("$unset", bson.EC.String(fmt.Sprintf("connectivities.%s", connectivityName), "")),
 	), findopt.ReturnDocument(mongoopt.After))
 
-	var t models.Thing
+	var t types.Thing
 
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {

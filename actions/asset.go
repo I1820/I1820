@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/I1820/pm/models"
+	"github.com/I1820/types"
 	"github.com/gobuffalo/buffalo"
 	"github.com/mongodb/mongo-go-driver/bson"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
@@ -42,7 +42,7 @@ type assetReq struct {
 // GET /things/{thing_id}/assets
 func (v AssetsResource) List(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
-	var t models.Thing
+	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
@@ -70,7 +70,7 @@ func (v AssetsResource) Create(c buffalo.Context) error {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
-	a := models.Asset{
+	a := types.Asset{
 		Title: rq.Title,
 		Type:  rq.Type,
 		Kind:  rq.Kind,
@@ -82,7 +82,7 @@ func (v AssetsResource) Create(c buffalo.Context) error {
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Interface(fmt.Sprintf("assets.%s", rq.Name), a)),
 	), findopt.ReturnDocument(mongoopt.After))
 
-	var t models.Thing
+	var t types.Thing
 
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {
@@ -100,7 +100,7 @@ func (v AssetsResource) Show(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
 	assetName := c.Param("asset_id")
 
-	var t models.Thing
+	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
@@ -128,7 +128,7 @@ func (v AssetsResource) Destroy(c buffalo.Context) error {
 		bson.EC.SubDocumentFromElements("$unset", bson.EC.String(fmt.Sprintf("assets.%s", assetName), "")),
 	), findopt.ReturnDocument(mongoopt.After))
 
-	var t models.Thing
+	var t types.Thing
 
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {
