@@ -98,12 +98,13 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 	}
 
 	t := models.Thing{
-		ID:     objectid.New().Hex(),
-		Name:   rq.Name,
-		Model:  model,
-		Status: true,
-		Tokens: []string{ksuid.New().String()},
-		Assets: make(map[string]models.Asset),
+		ID:              objectid.New().Hex(),
+		Name:            rq.Name,
+		Model:           model,
+		Status:          true,
+		Tokens:          []string{ksuid.New().String()},
+		Assets:          make(map[string]models.Asset),
+		Coonnectivities: make(map[string]interface{}),
 
 		Project: projectID,
 	}
