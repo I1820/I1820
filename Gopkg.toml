@@ -30,6 +30,10 @@
   name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/I1820/types"
+
+[[constraint]]
   name = "github.com/gobuffalo/buffalo"
   version = "0.12.4"
 
