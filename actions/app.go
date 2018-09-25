@@ -74,6 +74,7 @@ func App() *buffalo.App {
 			{
 				qr := QueriesResource{}
 				pt.GET("/queries/list", qr.List)
+				pt.GET("/assets/{asset_name}/queries/recently", qr.Recently)
 				pt.POST("/queries/fetch", qr.Fetch)
 			}
 		}
