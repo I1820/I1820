@@ -13,6 +13,7 @@ package actions
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/I1820/types"
@@ -82,8 +83,56 @@ func (q QueriesResource) List(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(results))
 }
 
-// Fetch fetches given keys data from database.
-// it works in given range based on given intervals
+// Recently fetches given assets recently data from database
+// by default it fetches last 5 record
+// This function is mapped to the path
+// POST projects/{project_id}/things/{thing_id}/assets/{asset_name}/queries/recently
+func (q QueriesResource) Recently(c buffalo.Context) error {
+	limit, err := strconv.ParseInt(c.Param("limit"), 10, 64)
+	if err != nil {
+		limit = 5
+	}
+	assetName := c.Param("asset_name")
+	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
+
+	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$match",
+				bson.EC.String("asset", assetName),
+			),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$sort",
+				bson.EC.Int32("at", -1),
+			),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.Int64("$limit", limit),
+		),
+	))
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	results := make([]types.State, 0)
+	for cur.Next(c) {
+		var result types.State
+
+		if err := cur.Decode(&result); err != nil {
+			return c.Error(http.StatusInternalServerError, err)
+		}
+
+		results = append(results, result)
+	}
+	if err := cur.Close(c); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(results))
+}
+
+// Fetch fetches given assets data in given time range from database.
 // This function is mapped to the path
 // POST projects/{project_id}/things/{thing_id}/queries/fetch
 func (q QueriesResource) Fetch(c buffalo.Context) error {
@@ -97,11 +146,7 @@ func (q QueriesResource) Fetch(c buffalo.Context) error {
 
 	// find things by its id
 	// then find given asset and its type
-	var t struct {
-		Assets map[string]struct {
-			Type string
-		}
-	}
+	var t types.Thing
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
 	))
