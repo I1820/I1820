@@ -136,16 +136,19 @@ func (q QueriesResource) Recently(c buffalo.Context) error {
 }
 
 // PartialFetch fetches data with windowing
+// This function is mapped to the path
+// POST projects/{project_id}/things/{thing_id}/queries/pfetch
 func (q QueriesResource) PartialFetch(c buffalo.Context) error {
-	thingID := c.Param("thing_id")
-	projectID := c.Param("project_id")
-
-	var results []struct {
-	}
-
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
 		return c.Error(http.StatusBadRequest, err)
+	}
+
+	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
+	assetName := req.Target
+
+	var results []struct {
 	}
 
 	// set default window size
@@ -160,22 +163,31 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 		cs++
 	}
 
-	pipe := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Pipe([]bson.M{
-		{"$match": bson.M{
-			"thingid": bson.M{
-				"$in": json.ThingIDs,
-			},
-			"data": bson.M{
-				"$ne": nil,
-			},
-			"timestamp": bson.M{
-				"$gt": time.Unix(json.Since, 0),
-				"$lt": time.Unix(json.Until, 0),
-			},
-		}},
+	_, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$match",
+				bson.EC.String("asset", assetName),
+				// bson.EC.SubDocumentFromElements(fmt.Sprintf("value.%s", assetType), bson.EC.Boolean("$exists", true)),
+				bson.EC.SubDocumentFromElements("at",
+					bson.EC.Time("$gt", req.Range.From),
+					bson.EC.Time("$lt", req.Range.To),
+				),
+			),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.SubDocumentFromElements("$group",
+				bson.EC.SubDocumentFromElements("_id",
+					bson.EC.String("asset", "$asset"),
+				),
+				bson.EC.Int32("$sum", 1),
+				bson.EC.SubDocumentFromElements("data", bson.EC.String("$avg", "$value.number")),
+			),
+		),
+	))
+	/*
+
 		{"$group": bson.M{
 			"_id": bson.M{
-				"thingid": "$thingid",
 				"cluster": bson.M{"$floor": bson.M{"$divide": []interface{}{
 					bson.M{
 						"$subtract": []interface{}{
@@ -195,8 +207,8 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 			"until": bson.M{"$add": []interface{}{time.Unix(0, 0), cs, bson.M{"$multiply": []interface{}{"$_id.cluster", cs}}}},
 		}},
 		{"$sort": bson.M{"since": -1}},
-	})
-	if err := pipe.All(&results); err != nil {
+	})*/
+	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
