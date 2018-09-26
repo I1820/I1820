@@ -49,6 +49,17 @@ type fetchResp struct {
 	}
 }
 
+type pfetchResp struct {
+	ID struct {
+		Asset   string `json:"asset" bson:"asset"`
+		Cluster int64  `json:"cluster" bson:"cluster"`
+	} `json:"id" bson:"_id"`
+	Count int       `json:"count" bson:"count"`
+	Data  float64   `json:"data" bson:"data"`
+	Since time.Time `json:"since" bson:"since"`
+	Until time.Time `json:"until" bson:"until"`
+}
+
 // List lists assets and count of their data in database.
 // This function is mapped to the path
 // GET /projects/{project_id}/things/{thing_id}/qeuries/list
@@ -138,6 +149,7 @@ func (q QueriesResource) Recently(c buffalo.Context) error {
 // PartialFetch fetches data with windowing
 // This function is mapped to the path
 // POST projects/{project_id}/things/{thing_id}/queries/pfetch
+// please consider that this query only works on numbers
 func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
@@ -148,69 +160,102 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 	projectID := c.Param("project_id")
 	assetName := req.Target
 
-	var results []struct {
-	}
-
 	// set default window size
 	if req.Window.Size == 0 {
 		req.Window.Size = 200
 	}
 
-	// to - from / window size indicates each partition duration in nanosecond
-	cs := int64(req.Range.To.Sub(req.Range.From)) / req.Window.Size
-	cs *= 1000 // convert nanosecond to milisecond
+	// to - from / window size indicates each partition duration in seconds
+	cs := int64(req.Range.To.Sub(req.Range.From).Seconds()) / req.Window.Size
 	if cs == 0 {
 		cs++
 	}
+	fmt.Println(cs)
 
-	_, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
-		bson.VC.DocumentFromElements(
+	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
+		bson.VC.DocumentFromElements( // match phase
 			bson.EC.SubDocumentFromElements("$match",
 				bson.EC.String("asset", assetName),
-				// bson.EC.SubDocumentFromElements(fmt.Sprintf("value.%s", assetType), bson.EC.Boolean("$exists", true)),
+				bson.EC.SubDocumentFromElements("value.number", bson.EC.Boolean("$exists", true)),
 				bson.EC.SubDocumentFromElements("at",
 					bson.EC.Time("$gt", req.Range.From),
 					bson.EC.Time("$lt", req.Range.To),
 				),
 			),
 		),
-		bson.VC.DocumentFromElements(
+		bson.VC.DocumentFromElements( // group phase
 			bson.EC.SubDocumentFromElements("$group",
 				bson.EC.SubDocumentFromElements("_id",
 					bson.EC.String("asset", "$asset"),
+					bson.EC.SubDocumentFromElements("cluster",
+						bson.EC.SubDocumentFromElements("$floor",
+							bson.EC.ArrayFromElements("$divide",
+								bson.VC.DocumentFromElements(
+									bson.EC.ArrayFromElements("$subtract",
+										bson.VC.String("$at"),
+										bson.VC.DateTime(0),
+									),
+								),
+								bson.VC.Int64(cs),
+							),
+						),
+					),
 				),
-				bson.EC.Int32("$sum", 1),
+				bson.EC.SubDocumentFromElements("count", bson.EC.Int32("$sum", 1)),
 				bson.EC.SubDocumentFromElements("data", bson.EC.String("$avg", "$value.number")),
 			),
 		),
+		bson.VC.DocumentFromElements( // add fields phase
+			bson.EC.SubDocumentFromElements("$addFields",
+				bson.EC.SubDocumentFromElements("since",
+					bson.EC.ArrayFromElements("$add",
+						bson.VC.DateTime(0),
+						bson.VC.DocumentFromElements(
+							bson.EC.ArrayFromElements("$multiply",
+								bson.VC.String("$_id.cluster"),
+								bson.VC.Int64(cs),
+							),
+						),
+					),
+				),
+				bson.EC.SubDocumentFromElements("until",
+					bson.EC.ArrayFromElements("$add",
+						bson.VC.DateTime(0),
+						bson.VC.Int64(cs),
+						bson.VC.DocumentFromElements(
+							bson.EC.ArrayFromElements("$multiply",
+								bson.VC.String("$_id.cluster"),
+								bson.VC.Int64(cs),
+							),
+						),
+					),
+				),
+			),
+		),
+		bson.VC.DocumentFromElements( // sort phase
+			bson.EC.SubDocumentFromElements("$sort",
+				bson.EC.Int32("since", -1),
+			),
+		),
 	))
-	/*
-
-		{"$group": bson.M{
-			"_id": bson.M{
-				"cluster": bson.M{"$floor": bson.M{"$divide": []interface{}{
-					bson.M{
-						"$subtract": []interface{}{
-							"$timestamp",
-							time.Unix(0, 0),
-						},
-					},
-					cs,
-				}}},
-			},
-			"count": bson.M{"$sum": 1},
-			// "data":  bson.M{"$push": bson.M{"$cond": []interface{}{bson.M{"$ne": []interface{}{"$data", nil}}, "$data", "$noval"}}},
-			"data": bson.M{"$last": "$data"},
-		}},
-		{"$addFields": bson.M{
-			"since": bson.M{"$add": []interface{}{time.Unix(0, 0), bson.M{"$multiply": []interface{}{"$_id.cluster", cs}}}},
-			"until": bson.M{"$add": []interface{}{time.Unix(0, 0), cs, bson.M{"$multiply": []interface{}{"$_id.cluster", cs}}}},
-		}},
-		{"$sort": bson.M{"since": -1}},
-	})*/
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
+
+	results := make([]pfetchResp, 0)
+	for cur.Next(c) {
+		var result pfetchResp
+
+		if err := cur.Decode(&result); err != nil {
+			return c.Error(http.StatusInternalServerError, err)
+		}
+
+		results = append(results, result)
+	}
+	if err := cur.Close(c); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+	fmt.Println(results)
 
 	return c.Render(http.StatusOK, r.JSON(results))
 }
