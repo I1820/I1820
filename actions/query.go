@@ -36,6 +36,9 @@ type fetchReq struct {
 		To   time.Time `json:"to"`
 	} `json:"range"`
 	Target string `json:"target"`
+	Window struct {
+		Size int64 `json:"size"`
+	} `json:"window"`
 }
 
 type fetchResp struct {
@@ -126,6 +129,74 @@ func (q QueriesResource) Recently(c buffalo.Context) error {
 		results = append(results, result)
 	}
 	if err := cur.Close(c); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(results))
+}
+
+// PartialFetch fetches data with windowing
+func (q QueriesResource) PartialFetch(c buffalo.Context) error {
+	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
+
+	var results []struct {
+	}
+
+	var req fetchReq
+	if err := c.Bind(&req); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	// set default window size
+	if req.Window.Size == 0 {
+		req.Window.Size = 200
+	}
+
+	// to - from / window size indicates each partition duration in nanosecond
+	cs := int64(req.Range.To.Sub(req.Range.From)) / req.Window.Size
+	cs *= 1000 // convert nanosecond to milisecond
+	if cs == 0 {
+		cs++
+	}
+
+	pipe := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Pipe([]bson.M{
+		{"$match": bson.M{
+			"thingid": bson.M{
+				"$in": json.ThingIDs,
+			},
+			"data": bson.M{
+				"$ne": nil,
+			},
+			"timestamp": bson.M{
+				"$gt": time.Unix(json.Since, 0),
+				"$lt": time.Unix(json.Until, 0),
+			},
+		}},
+		{"$group": bson.M{
+			"_id": bson.M{
+				"thingid": "$thingid",
+				"cluster": bson.M{"$floor": bson.M{"$divide": []interface{}{
+					bson.M{
+						"$subtract": []interface{}{
+							"$timestamp",
+							time.Unix(0, 0),
+						},
+					},
+					cs,
+				}}},
+			},
+			"count": bson.M{"$sum": 1},
+			// "data":  bson.M{"$push": bson.M{"$cond": []interface{}{bson.M{"$ne": []interface{}{"$data", nil}}, "$data", "$noval"}}},
+			"data": bson.M{"$last": "$data"},
+		}},
+		{"$addFields": bson.M{
+			"since": bson.M{"$add": []interface{}{time.Unix(0, 0), bson.M{"$multiply": []interface{}{"$_id.cluster", cs}}}},
+			"until": bson.M{"$add": []interface{}{time.Unix(0, 0), cs, bson.M{"$multiply": []interface{}{"$_id.cluster", cs}}}},
+		}},
+		{"$sort": bson.M{"since": -1}},
+	})
+	if err := pipe.All(&results); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
