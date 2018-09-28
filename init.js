@@ -11,47 +11,39 @@
 
 
 db.data.insert({
-  raw: new BinData(0, "omMxMDAZF3BjMTAxGRnO"),
-  data: {
-    101: 6606,
-    100: 6000
+  raw: 7000,
+  value: {
+    number: 7000,
   },
-  timestamp: new ISODate("2018-05-07T05:49:54.415Z"),
-  thingid: "0000000000000001",
-  rxinfo: [
-    {
-      mac: "b827ebffff633260",
-      name: "isrc-gateway",
-      time: new ISODate("2018-05-07T05:49:53.874Z"),
-      rssi: -57,
-      lorasnr: 10
-    }
-  ],
-  txinfo: {
-    frequency: 868100000,
-    adr: true,
-    coderate: "4/6"
-  },
-  project: "hello"
-
+  at: new ISODate("2018-09-26T21:52:06.443+03:30"),
+  project: "5ba3f19c87a142b0a840fae0",
+  thing_id: "5ba3f1a287a142b0a840fae1",
+  asset: "100"
 }, {
-  raw: new BinData(0, "omMxMDAZF3BjMTAxGRnO"),
-  data: null,
-  timestamp: new ISODate("2018-05-06T18:40:03.156Z"),
-  thingid: "0000000000000010",
-  rxinfo: [
-    {
-      mac: "b827ebffff633260",
-      name: "isrc-gateway",
-      time: new ISODate("2018-05-06T18:40:03.151Z"),
-      rssi: -57,
-      lorasnr: 10
-    }
-  ],
-  txinfo: {
-    frequency : 868100000,
-    adr : true,
-    coderate : "4/6"
+  raw: 6500,
+  value: {
+    number: 6500,
   },
-  project : "hello"
+  at: new ISODate("2018-09-26T21:52:07.443+03:30"),
+  project: "5ba3f19c87a142b0a840fae0",
+  thing_id: "5ba3f1a287a142b0a840fae1",
+  asset: "100"
+}, {
+  raw: 7000,
+  value: {
+    number: 7000,
+  },
+  at: new ISODate("2018-09-26T21:52:08.443+03:30"),
+  project: "5ba3f19c87a142b0a840fae0",
+  thing_id: "5ba3f1a287a142b0a840fae1",
+  asset: "100"
+}, {
+  raw: 6500,
+  value: {
+    number: 6500,
+  },
+  at: new ISODate("2018-09-26T21:52:09.443+03:30"),
+  project: "5ba3f19c87a142b0a840fae0",
+  thing_id: "5ba3f1a287a142b0a840fae1",
+  asset: "100"
 });
