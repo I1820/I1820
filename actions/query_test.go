@@ -47,5 +47,5 @@ func (as *ActionSuite) Test_QueriesResource_PFetch() {
 	res.Bind(&results)
 
 	as.Equal(1, len(results))
-	as.Equal(6750, results[0].Data)
+	as.Equal(6750.0, results[0].Data)
 }
