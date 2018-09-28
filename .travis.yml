@@ -20,9 +20,7 @@ before_install:
 install:
   - go get github.com/gobuffalo/buffalo/buffalo
   - dep ensure
-  - docker pull i1820/elrunner
-  - docker pull redis:alpine
-  - docker network create -d bridge --subnet 192.168.72.0/24 --gateway 192.168.72.1 i1820
+  - ./runme.sh # setups docker network and pulls required images
 
   # docker services
   - docker run -p 1883:1883 -e "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on" --name vernemq1 -d erlio/docker-vernemq
