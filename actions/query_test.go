@@ -36,8 +36,8 @@ func (as *ActionSuite) Test_QueriesResource_PFetch() {
 	var results []pfetchResp
 
 	var req fetchReq
-	req.Range.To = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
-	req.Range.From = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
+	req.Range.To = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
+	req.Range.From = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
 	req.Target = "100"
 	req.Window.Size = 1
 
