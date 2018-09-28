@@ -23,11 +23,11 @@ func (as *ActionSuite) Test_QueriesResource_List() {
 
 	res.Bind(&results)
 
-	as.NotEqual(len(results), 0)
+	as.NotEqual(0, len(results))
 
 	for _, r := range results {
 		if r.ID == "100" {
-			as.Equal(r.Total, 4)
+			as.Equal(4, r.Total)
 		}
 	}
 }
@@ -36,8 +36,8 @@ func (as *ActionSuite) Test_QueriesResource_PFetch() {
 	var results []pfetchResp
 
 	var req fetchReq
-	req.Range.To = time.Date(2018, time.September, 26, 0, 0, 0, 0, time.UTC)
-	req.Range.From = time.Date(2018, time.September, 30, 0, 0, 0, 0, time.UTC)
+	req.Range.To = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
+	req.Range.From = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
 	req.Target = "100"
 	req.Window.Size = 1
 
@@ -46,6 +46,6 @@ func (as *ActionSuite) Test_QueriesResource_PFetch() {
 
 	res.Bind(&results)
 
-	as.Equal(len(results), 1)
-	as.Equal(results[0].Data, 6750)
+	as.Equal(1, len(results))
+	as.Equal(6750, results[0].Data)
 }
