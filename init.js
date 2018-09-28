@@ -13,7 +13,7 @@ var thingID = "5ba3f1a287a142b0a840fae1"
 var projectID = "5ba3f19c87a142b0a840fae0"
 var collection = "data." + projectID +  "." + thingID
 
-db.[collection].insert({
+db[collection].insert({
   raw: 7000,
   value: {
     number: 7000,
