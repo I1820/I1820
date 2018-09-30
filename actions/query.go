@@ -165,7 +165,7 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 		req.Window.Size = 200
 	}
 
-	// to - from / window size indicates each partition duration in mili-seconds
+	// to - from / window size indicates each partition duration in milliseconds
 	cs := int64(req.Range.To.Sub(req.Range.From).Seconds()*1000) / req.Window.Size
 	if cs == 0 {
 		cs++
