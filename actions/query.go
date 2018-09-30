@@ -285,6 +285,8 @@ func (q QueriesResource) Fetch(c buffalo.Context) error {
 					bson.EC.Time("$lt", req.Range.To),
 				),
 			),
+		),
+		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$sort",
 				bson.EC.Int32("at", -1),
 			),
