@@ -257,6 +257,7 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 }
 
 // Fetch fetches given assets data in given time range from database.
+// please consider that this fuction returns data in ascending time order.
 // This function is mapped to the path
 // POST projects/{project_id}/things/{thing_id}/queries/fetch
 func (q QueriesResource) Fetch(c buffalo.Context) error {
@@ -280,11 +281,6 @@ func (q QueriesResource) Fetch(c buffalo.Context) error {
 					bson.EC.Time("$gt", req.Range.From),
 					bson.EC.Time("$lt", req.Range.To),
 				),
-			),
-		),
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$sort",
-				bson.EC.Int32("at", -1),
 			),
 		),
 	))
