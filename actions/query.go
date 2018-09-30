@@ -190,7 +190,10 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 						bson.EC.SubDocumentFromElements("$floor",
 							bson.EC.ArrayFromElements("$divide",
 								bson.VC.DocumentFromElements(
-									bson.EC.String("$toLong", "$at"),
+									bson.EC.ArrayFromElements("$subtract",
+										bson.VC.String("$at"),
+										bson.VC.DateTime(0),
+									),
 								),
 								bson.VC.Int64(cs),
 							),
