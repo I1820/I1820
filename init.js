@@ -49,4 +49,22 @@ db[collection].insert([{
   project: projectID,
   thing_id: thingID,
   asset: "100"
+}, {
+  raw: 6500,
+  value: {
+    number: 6500,
+  },
+  at: new ISODate("2018-09-26T21:52:09.443+03:30"),
+  project: projectID,
+  thing_id: thingID,
+  asset: "101"
+}, {
+  raw: "hello",
+  value: {
+    string: "hello",
+  },
+  at: new ISODate("2018-09-26T21:52:09.443+03:30"),
+  project: projectID,
+  thing_id: thingID,
+  asset: "101"
 }]);
