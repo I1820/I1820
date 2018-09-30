@@ -10,7 +10,11 @@
 
 package actions
 
-import "time"
+import (
+	"time"
+
+	"github.com/I1820/types"
+)
 
 const thingID = "5ba3f1a287a142b0a840fae1"
 const projectID = "5ba3f19c87a142b0a840fae0"
@@ -48,4 +52,22 @@ func (as *ActionSuite) Test_QueriesResource_PFetch() {
 
 	as.Equal(1, len(results))
 	as.Equal(6750.0, results[0].Data)
+}
+
+func (as *ActionSuite) Test_QueriesResource_Fetch() {
+	var results []types.State
+
+	var req fetchReq
+	req.Range.To = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
+	req.Range.From = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
+	req.Target = "101"
+	req.Type = "string"
+
+	res := as.JSON("/api/projects/%s/things/%s/queries/fetch", projectID, thingID).Post(req)
+	as.Equal(200, res.Code)
+
+	res.Bind(&results)
+
+	as.Equal(1, len(results))
+	as.Equal("hello", results[0].Value.String)
 }
