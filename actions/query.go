@@ -165,8 +165,8 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 		req.Window.Size = 200
 	}
 
-	// to - from / window size indicates each partition duration in seconds
-	cs := int64(req.Range.To.Sub(req.Range.From).Seconds()) / req.Window.Size
+	// to - from / window size indicates each partition duration in mili-seconds
+	cs := int64(req.Range.To.Sub(req.Range.From).Seconds()*1000) / req.Window.Size
 	if cs == 0 {
 		cs++
 	}
@@ -190,10 +190,7 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 						bson.EC.SubDocumentFromElements("$floor",
 							bson.EC.ArrayFromElements("$divide",
 								bson.VC.DocumentFromElements(
-									bson.EC.ArrayFromElements("$subtract",
-										bson.VC.String("$at"),
-										bson.VC.DateTime(0),
-									),
+									bson.EC.String("$toLong", "$at"),
 								),
 								bson.VC.Int64(cs),
 							),
