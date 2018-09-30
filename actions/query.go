@@ -170,7 +170,6 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 	if cs == 0 {
 		cs++
 	}
-	fmt.Println(cs)
 
 	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements( // match phase
