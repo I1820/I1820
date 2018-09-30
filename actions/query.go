@@ -19,7 +19,6 @@ import (
 	"github.com/I1820/types"
 	"github.com/gobuffalo/buffalo"
 	"github.com/mongodb/mongo-go-driver/bson"
-	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
 
 // QueriesResource handles useful queries on database
@@ -35,6 +34,7 @@ type fetchReq struct {
 		From time.Time `json:"from"`
 		To   time.Time `json:"to"`
 	} `json:"range"`
+	Type   string `json:"type"`
 	Target string `json:"target"`
 	Window struct {
 		Size int64 `json:"size"`
@@ -272,35 +272,21 @@ func (q QueriesResource) Fetch(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
 	projectID := c.Param("project_id")
 
-	// find things by its id
-	// then find given asset and its type
-	var t types.Thing
-	dr := db.Collection("things").FindOne(c, bson.NewDocument(
-		bson.EC.String("_id", thingID),
-	))
-	if err := dr.Decode(&t); err != nil {
-		if err == mgo.ErrNoDocuments {
-			return c.Error(http.StatusInternalServerError, fmt.Errorf("Thing %s not found", thingID))
-		}
-		return c.Error(http.StatusInternalServerError, err)
-	}
 	assetName := req.Target
-	assetType := t.Assets[assetName].Type
-	if assetType == "" {
-		assetType = "String"
-	}
-
-	fmt.Println(assetName, assetType)
+	assetType := req.Type
 
 	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$match",
+			bson.EC.SubDocumentFromElements("$match", // find states of given asset that have given type
 				bson.EC.String("asset", assetName),
-				// bson.EC.SubDocumentFromElements(fmt.Sprintf("value.%s", assetType), bson.EC.Boolean("$exists", true)),
+				bson.EC.SubDocumentFromElements(fmt.Sprintf("value.%s", assetType), bson.EC.Boolean("$exists", true)),
 				bson.EC.SubDocumentFromElements("at",
 					bson.EC.Time("$gt", req.Range.From),
 					bson.EC.Time("$lt", req.Range.To),
 				),
+			),
+			bson.EC.SubDocumentFromElements("$sort",
+				bson.EC.Int32("at", -1),
 			),
 		),
 	))
