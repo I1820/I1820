@@ -34,7 +34,7 @@
   version = "0.3.0"
 
 [[constraint]]
-  branch = "master"
+  version = "=0.0.12"
   name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
