@@ -80,6 +80,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
+	// read more about thing model in I1820 platform website
 	model := "generic"
 	if rq.Model != "" {
 		model = rq.Model
@@ -106,6 +107,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		Tokens:         []string{ksuid.New().String()},
 		Assets:         make(map[string]types.Asset),
 		Connectivities: make(map[string]interface{}),
+		Tags:           make([]string, 0),
 
 		Project: projectID,
 	}
