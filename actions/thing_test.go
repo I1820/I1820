@@ -53,7 +53,7 @@ func (as *ActionSuite) Test_ThingsResource_Create() {
 
 	// GeoWithin (POST /api/projects/{project_id}/things/geo)
 	var tg []types.Thing
-	resg := as.JSON("/api/projects/{project_id}/things/geo").Post(geoWithinReq{
+	resg := as.JSON("/api/projects/%s/things/geo", pID).Post(geoWithinReq{
 		[][]float64{
 			[]float64{35.806731, 51.398618},
 			[]float64{35.807784, 51.397810},
