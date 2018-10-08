@@ -247,7 +247,6 @@ func (v ThingsResource) GeoWithin(c buffalo.Context) error {
 			bson.VC.Double(coordinate[0]), // latitude is second in mongo
 		))
 	}
-	fmt.Println(coordinates)
 
 	results := make([]types.Thing, 0)
 
