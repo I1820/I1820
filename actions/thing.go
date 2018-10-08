@@ -32,8 +32,12 @@ type ThingsResource struct {
 
 // thing request payload
 type thingReq struct {
-	Name  string `json:"name" validate:"required"`
-	Model string `json:"model"`
+	Name     string `json:"name" validate:"required"`
+	Model    string `json:"model"`
+	Location struct {
+		Latitude  float64 `json:"lat"`
+		Longitude float64 `json:"long"`
+	} `json:"location"`
 }
 
 // List gets all things. This function is mapped to the path
@@ -111,6 +115,10 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 
 		Project: projectID,
 	}
+
+	// set location if it is provided by user
+	t.Location.Type = "Point"
+	t.Location.Coordinates = []float64{rq.Location.Latitude, rq.Location.Longitude}
 
 	if _, err := db.Collection("things").InsertOne(c, t); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
