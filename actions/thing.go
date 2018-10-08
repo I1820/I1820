@@ -41,6 +41,8 @@ type thingReq struct {
 }
 
 // geo within request payload
+// each coordinate in coordinates have following standard format
+// [latitude, longitude]
 type geoWithinReq struct {
 	Coordinates [][]float64 `json:"coordinates"`
 }
@@ -123,7 +125,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 
 	// set location if it is provided by user
 	t.Location.Type = "Point"
-	t.Location.Coordinates = []float64{rq.Location.Latitude, rq.Location.Longitude}
+	t.Location.Coordinates = []float64{rq.Location.Longitude, rq.Location.Latitude}
 
 	if _, err := db.Collection("things").InsertOne(c, t); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
@@ -241,8 +243,8 @@ func (v ThingsResource) GeoWithin(c buffalo.Context) error {
 	coordinates := bson.NewArray()
 	for _, coordinate := range rq.Coordinates {
 		coordinates.Append(bson.VC.ArrayFromValues(
-			bson.VC.Double(coordinate[0]), // longitude
-			bson.VC.Double(coordinate[1]), // latitude
+			bson.VC.Double(coordinate[1]), // longitude is first in mongo
+			bson.VC.Double(coordinate[0]), // latitude is second in mongo
 		))
 	}
 	fmt.Println(coordinates)
