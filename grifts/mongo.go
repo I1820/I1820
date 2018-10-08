@@ -35,6 +35,11 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 					bson.EC.Int32("project", 1),
 				),
 			},
+			mgo.IndexModel{
+				Keys: bson.NewDocument(
+					bson.EC.String("location", "2dsphere"),
+				),
+			},
 		},
 	)
 	if err != nil {
