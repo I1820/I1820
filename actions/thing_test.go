@@ -29,7 +29,12 @@ func (as *ActionSuite) Test_ThingsResource_Create() {
 
 	// Create thing (POST /api/projects/{project_id}/things)
 	var tc types.Thing
-	rest := as.JSON("/api/projects/%s/things", pID).Post(thingReq{Name: tName})
+	// build thing creation request
+	var rq thingReq
+	rq.Name = tName
+	rq.Location.Latitude = 35.807657 // I1820 location
+	rq.Location.Longitude = 51.398408
+	rest := as.JSON("/api/projects/%s/things", pID).Post(rq)
 	as.Equalf(200, rest.Code, "Error: %s", rest.Body.String())
 	rest.Bind(&tc)
 	tID = tc.ID
@@ -45,6 +50,22 @@ func (as *ActionSuite) Test_ThingsResource_Create() {
 	// List (GET /api/projects/{project_id}/things)
 	resl := as.JSON("/api/projects/%s/things", pID).Get()
 	as.Equalf(200, resl.Code, "Error: %s", resl.Body.String())
+
+	// GeoWithin (POST /api/projects/{project_id}/things/geo)
+	var tg []types.Thing
+	resg := as.JSON("/api/projects/{project_id}/things/geo").Post(geoWithinReq{
+		[][]float64{
+			[]float64{35.806731, 51.398618},
+			[]float64{35.807784, 51.397810},
+			[]float64{35.807827, 51.399516},
+			[]float64{35.806731, 51.398618},
+		},
+	})
+	as.Equalf(200, resg.Code, "Error: %s", resg.Body.String())
+	resg.Bind(&tg)
+
+	as.Equal(len(tg), 1) // el-thing must be found
+	as.Equal(tg[0], tc)
 
 	// Destroy (DELETE /api/projects/{project_id}/things)
 	resr := as.JSON("/api/projects/%s/things/%s", pID, tID).Delete()
