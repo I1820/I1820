@@ -13,7 +13,7 @@ go_import_path: github.com/I1820/dm
 before_install:
   - PKGS=$(go list ./... ) # All the import paths
   - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh # go dep
-  - go get -u github.com/golang/lint/golint   # linter
+  - go get -u golang.org/x/lint/golint   # linter
   - go get -u github.com/kisielk/errcheck     # errcheck checks that you checked errors.
 
 install:
