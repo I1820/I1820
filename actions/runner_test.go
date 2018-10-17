@@ -32,7 +32,7 @@ func (as *ActionSuite) Test_RunnersHandler() {
 
 	// ElRunner About API
 	res := as.JSON("/api/runners/%s/about", pID).Get()
-	as.Equal(200, res.Code)
+	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
 	as.Contains(res.Body.String(), "18.20 is leaving us")
 
 	// Destroy project
