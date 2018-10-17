@@ -4,11 +4,10 @@ import (
 	"context"
 
 	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/buffalo/middleware"
-	"github.com/gobuffalo/buffalo/middleware/ssl"
 	"github.com/gobuffalo/envy"
+	contenttype "github.com/gobuffalo/mw-contenttype"
+	paramlogger "github.com/gobuffalo/mw-paramlogger"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/unrolled/secure"
 
 	"github.com/gobuffalo/x/sessions"
 	"github.com/rs/cors"
@@ -33,23 +32,11 @@ func App() *buffalo.App {
 			},
 			SessionName: "_dm_session",
 		})
-		// Automatically redirect to SSL
-		app.Use(ssl.ForceSSL(secure.Options{
-			SSLRedirect:     ENV == "production",
-			SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
-		}))
 
-		// Set the request content type to JSON
-		app.Use(middleware.SetContentType("application/json"))
-		app.Use(func(next buffalo.Handler) buffalo.Handler {
-			return func(c buffalo.Context) error {
-				defer func() {
-					c.Response().Header().Set("Content-Type", "application/json")
-				}()
-
-				return next(c)
-			}
-		})
+		// If no content type is sent by the client
+		// the application/json will be set, otherwise the client's
+		// content type will be used.
+		app.Use(contenttype.Add("application/json"))
 
 		// Create mongodb connection
 		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
@@ -63,7 +50,7 @@ func App() *buffalo.App {
 		db = client.Database("i1820")
 
 		if ENV == "development" {
-			app.Use(middleware.ParameterLogger)
+			app.Use(paramlogger.ParameterLogger)
 		}
 
 		// Routes
