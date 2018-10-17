@@ -200,21 +200,19 @@
   version = "v1.8.0"
 
 [[projects]]
-  digest = "1:6e0745e8aabbe9d7e46bda3a1f71c1ad61409e4035f6f2ec3028e0f075241af2"
+  digest = "1:601514938ddede7d913345d211051fd811b93548fc06977848b875186bee3397"
   name = "github.com/gobuffalo/buffalo"
   packages = [
     ".",
     "binding",
-    "middleware",
     "middleware/csrf",
-    "middleware/ssl",
     "render",
     "servers",
     "worker",
   ]
   pruneopts = "UT"
-  revision = "f1f1f144d12a0e090c92e3d58166c8d6e467dff2"
-  version = "v0.12.7"
+  revision = "0ff7229ba5aae57f03457fa12512b974be641822"
+  version = "v0.13.0"
 
 [[projects]]
   digest = "1:62515277bcd7cdcb6798156fc08cdc8eb21f30fbc97acafcd56d2d81bb31eef6"
@@ -301,6 +299,30 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:5333c9c62a1e737c1a478c3c7ad02c69b5504d0cdd35c73a75890959ee2a4afb"
+  name = "github.com/gobuffalo/mw-contenttype"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "74f5a47f4d56946ce59a0179c76bd2bc112c1b85"
+
+[[projects]]
+  branch = "master"
+  digest = "1:09fa6d091e821158250363f83fc8efc38f3ff8f850df54578e65a7eb132649b1"
+  name = "github.com/gobuffalo/mw-csrf"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "446ff26e108b9a8933dfc854d37a68d5adf2c226"
+
+[[projects]]
+  branch = "master"
+  digest = "1:29b501ddc9a2f895cbd1ed4670a0322ecbf677529d43fdca7de9b73a78461096"
+  name = "github.com/gobuffalo/mw-paramlogger"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d6ee392ec72e2863654657a8449a58e47420e617"
+
+[[projects]]
   digest = "1:c8ad4ba32ae8b71ef2bf5e1bad402aeb99ce77a1240f9b684db8b1ff5353e7ab"
   name = "github.com/gobuffalo/packr"
   packages = ["."]
@@ -381,11 +403,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e7b788a59820554cbf50c65d39849cec1fcc54f8c7eb56ccc75dd8853e79e658"
+  digest = "1:765aa82af227db3bc2badcf038e65200aa2995cbac59ce62b4b2edabdc80a6cf"
   name = "github.com/gobuffalo/x"
   packages = [
     "defaults",
     "httpx",
+    "randx",
     "sessions",
   ]
   pruneopts = "UT"
@@ -912,14 +935,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b3fc264e7f7d8ce623a4a33e84cb4725c61dd4dd2ab789bc2e5f1713294886b4"
-  name = "github.com/unrolled/secure"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ff9db2ff917ff44b71a2e62c015f4c7e0e567929"
-
-[[projects]]
-  branch = "master"
   digest = "1:40fdfd6ab85ca32b6935853bbba35935dcb1d796c8135efd85947566c76e662e"
   name = "github.com/xdg/scram"
   packages = ["."]
@@ -1034,10 +1049,10 @@
     "github.com/I1820/types/connectivity",
     "github.com/docker/go-connections/nat",
     "github.com/gobuffalo/buffalo",
-    "github.com/gobuffalo/buffalo/middleware",
-    "github.com/gobuffalo/buffalo/middleware/ssl",
     "github.com/gobuffalo/buffalo/render",
     "github.com/gobuffalo/envy",
+    "github.com/gobuffalo/mw-contenttype",
+    "github.com/gobuffalo/mw-paramlogger",
     "github.com/gobuffalo/suite",
     "github.com/gobuffalo/x/sessions",
     "github.com/markbates/grift/grift",
@@ -1052,7 +1067,6 @@
     "github.com/rs/cors",
     "github.com/segmentio/ksuid",
     "github.com/stretchr/testify/assert",
-    "github.com/unrolled/secure",
     "gopkg.in/go-playground/validator.v9",
   ]
   solver-name = "gps-cdcl"

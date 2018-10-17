@@ -43,7 +43,7 @@
 
 [[constraint]]
   name = "github.com/gobuffalo/buffalo"
-  version = "0.12.4"
+  version = "0.13.0"
 
 [[constraint]]
   name = "github.com/gobuffalo/envy"
@@ -60,10 +60,6 @@
 [[constraint]]
   name = "github.com/rs/cors"
   version = "1.4.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/unrolled/secure"
 
 [[constraint]]
   name = "github.com/prometheus/client_golang"
@@ -84,3 +80,11 @@
 [[constraint]]
   branch = "master"
   name = "github.com/I1820/types"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gobuffalo/mw-contenttype"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gobuffalo/mw-paramlogger"
