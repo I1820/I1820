@@ -120,6 +120,11 @@ func App() *buffalo.App {
 			// /things/{thing_id}/connectivities
 			api.Resource("/things/{thing_id}/connectivities", ConnectivitiesResource{})
 
+			// /things/{thing_id}/tags
+			tr := TagsResource{}
+			api.POST("/things/{thing_id}/tags", tr.Create)
+			api.GET("/things/{thing_id}/tags", tr.List)
+
 			api.ANY("/runners/{project_id}/{path:.+}", RunnersHandler)
 		}
 		app.GET("/metrics", buffalo.WrapHandler(promhttp.Handler()))
