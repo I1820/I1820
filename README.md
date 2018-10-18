@@ -22,6 +22,12 @@ PM requires only MongoDB to persist things and projects data.
 ## Assets
 An asset is a new concept that is added recently to PM. assets are sensors or actuators that are connected into things.
 Assets can send or receive data based on their kind.
+Assets are stored as a map between their name and their information in things structure.
+
+## Connectivities
+Each connectivity represents a way for other platforms to integrate with I1820.
+Connectivities are stored as a map between their platform code name (`ttn` code name of `The Things Network` platform)
+and their information. Please note that each platform has its specific information.
 
 ## Up and Running
 
