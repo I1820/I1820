@@ -111,6 +111,7 @@ func App() *buffalo.App {
 				tr := ThingsResource{}
 				pg.Resource("/things", tr)
 				pg.POST("/things/geo", tr.GeoWithin)
+				pg.POST("/things/tags", tr.HaveTags)
 				pg.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
 			}
 

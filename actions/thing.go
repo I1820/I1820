@@ -47,6 +47,11 @@ type geoWithinReq struct {
 	Coordinates [][]float64 `json:"coordinates"`
 }
 
+// have tag request payload
+type haveTagReq struct {
+	Tags []string
+}
+
 // List gets all things. This function is mapped to the path
 // GET /projects/{project_id}/things
 func (v ThingsResource) List(c buffalo.Context) error {
@@ -226,8 +231,8 @@ func (v ThingsResource) Activation(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(t))
 }
 
-// GeoWithin returns all things that are in the polygon that is given by user
-// POST /projects/{project_id}/things/geo
+// GeoWithin returns all things that are in the polygon that is given by user.
+// This function is mapped to the path POST /projects/{project_id}/things/geo
 func (v ThingsResource) GeoWithin(c buffalo.Context) error {
 	projectID := c.Param("project_id")
 
@@ -259,6 +264,48 @@ func (v ThingsResource) GeoWithin(c buffalo.Context) error {
 					bson.EC.Array("coordinates", bson.NewArray(bson.VC.Array(coordinates))),
 				),
 			),
+		),
+	))
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	for cur.Next(c) {
+		var result types.Thing
+
+		if err := cur.Decode(&result); err != nil {
+			return c.Error(http.StatusInternalServerError, err)
+		}
+
+		results = append(results, result)
+	}
+	if err := cur.Close(c); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(results))
+}
+
+// HaveTags returns all things that have tags that are given by user
+// This function is mapped to the path POST /projeects/{project_id}/things/tags
+func (v ThingsResource) HaveTags(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+
+	var rq haveTagReq
+	if err := c.Bind(&rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	if err := validate.Struct(rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	results := make([]types.Thing, 0)
+
+	cur, err := db.Collection("things").Find(c, bson.NewDocument(
+		bson.EC.String("project", projectID),
+		bson.EC.SubDocumentFromElements("tags",
+			bson.EC.Interface("$in", rq.Tags),
 		),
 	))
 	if err != nil {
