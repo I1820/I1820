@@ -49,7 +49,7 @@ func RunnersHandler(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	c.Request().URL.Path = path
+	c.Request().URL.Path = "/" + path
 	return buffalo.WrapHandler(
 		httputil.NewSingleHostReverseProxy(url),
 	)(c)
