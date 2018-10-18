@@ -14,6 +14,7 @@
 package actions
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/I1820/pm/models"
@@ -30,8 +31,9 @@ func (as *ActionSuite) Test_RunnersHandler() {
 	// wait for ElRunner make ready
 	time.Sleep(15 * time.Second)
 
-	// ElRunner About API
+	// ElRunner About API (GET /api/runners/{project_id}/about)
 	res := as.JSON("/api/runners/%s/about", pID).Get()
+	fmt.Println(res.Header())
 	as.Equalf(200, res.Code, "Error: %s", res.Body.String())
 	as.Contains(res.Body.String(), "18.20 is leaving us")
 
