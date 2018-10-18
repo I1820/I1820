@@ -25,6 +25,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 )
 
+// TagsResource manages tags on things
 type TagsResource struct{}
 
 // tagReq contains of user given tag array.
