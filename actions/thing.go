@@ -208,7 +208,7 @@ func (v ThingsResource) Update(c buffalo.Context) error {
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$set", bson.EC.String("name", rq.Name)),
 		bson.EC.SubDocumentFromElements("$set", bson.EC.String("model", rq.Model)),
-		bson.EC.SubDocumentFromElements("$set", bson.EC.ArrayFromElements("location.coorinates",
+		bson.EC.SubDocumentFromElements("$set", bson.EC.ArrayFromElements("location.coordinates",
 			bson.VC.Double(rq.Location.Longitude),
 			bson.VC.Double(rq.Location.Latitude),
 		)),
