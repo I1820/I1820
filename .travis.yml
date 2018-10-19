@@ -3,7 +3,7 @@ language: go
 go: "1.10"
 
 env:
-  - GO_ENV=test DB_URL="mongodb://127.0.0.1:27017"
+  - GO_ENV=test DB_URL="mongodb://127.0.0.1:27017" BROKER_URL="tcp://192.168.72.1:1883"
 
 services:
   - mongodb
