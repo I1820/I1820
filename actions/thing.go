@@ -186,6 +186,47 @@ func (v ThingsResource) Show(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(t))
 }
 
+// Update updates a thing information includes name, model and location. Please note that you must
+// provide them all in update request even if you do not want to change it.
+// This function is mapped to the path PUT /projects/{project_id}/things/{thing_id}
+func (v ThingsResource) Update(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+	id := c.Param("thing_id")
+
+	var rq thingReq
+	if err := c.Bind(&rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	if err := validate.Struct(rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.String("_id", id),
+		bson.EC.String("project", projectID),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.String("name", rq.Name)),
+		bson.EC.SubDocumentFromElements("$set", bson.EC.String("model", rq.Model)),
+		bson.EC.SubDocumentFromElements("$set", bson.EC.ArrayFromElements("location.coorinates",
+			bson.VC.Double(rq.Location.Longitude),
+			bson.VC.Double(rq.Location.Latitude),
+		)),
+	), findopt.ReturnDocument(mongoopt.After))
+
+	var t types.Thing
+
+	if err := dr.Decode(&t); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", id))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(t))
+
+}
+
 // Destroy deletes a thing from the DB and its project. This function is mapped
 // to the path DELETE /projects/{project_id}/things/{thing_id}
 func (v ThingsResource) Destroy(c buffalo.Context) error {
