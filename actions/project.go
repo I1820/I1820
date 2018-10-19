@@ -22,6 +22,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
+	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
@@ -127,6 +128,39 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 	p.Inspects = ins
+
+	return c.Render(http.StatusOK, r.JSON(p))
+}
+
+// Update updates the name of the project. The project owner is passed as an environment variable
+// to project docker so it cannot be changed.
+// This function is mapped to the path PUT /projects/{project_id}
+func (v ProjectsResource) Update(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+
+	var name string
+	if err := c.Bind(&name); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	if err := validate.Var(name, "required"); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	var p models.Project
+
+	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.String("_id", projectID),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.String("name", name)),
+	), findopt.ReturnDocument(mongoopt.After))
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
 
 	return c.Render(http.StatusOK, r.JSON(p))
 }
