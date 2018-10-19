@@ -222,7 +222,7 @@ func (v ProjectsResource) Logs(c buffalo.Context) error {
 
 	limit, err := strconv.Atoi(c.Param("limit"))
 	if err != nil {
-		return c.Error(http.StatusBadRequest, err)
+		limit = 10 // default limit is 10
 	}
 
 	cur, err := db.Collection(fmt.Sprintf("projects.logs.%s", projectID)).Aggregate(c, bson.NewArray(
