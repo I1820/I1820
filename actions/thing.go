@@ -35,8 +35,8 @@ type thingReq struct {
 	Name     string `json:"name" validate:"required"`
 	Model    string `json:"model" validate:"omitempty,alphanum"`
 	Location struct {
-		Latitude  float64 `json:"lat" validate:"omitempty,latitude"`
-		Longitude float64 `json:"long" validate:"omitempty,longitude"`
+		Latitude  float64 `json:"lat"`
+		Longitude float64 `json:"long"`
 	} `json:"location"`
 }
 
@@ -128,7 +128,8 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 		Project: projectID,
 	}
 
-	// set location if it is provided by user
+	// set thing location if it is provided by user
+	// otherwise it would be 0, 0
 	t.Location.Type = "Point"
 	t.Location.Coordinates = []float64{rq.Location.Longitude, rq.Location.Latitude}
 
