@@ -52,7 +52,7 @@ func (as *ActionSuite) Test_ProjectsResource_Create_Show_Destroy() {
 	// Update (PUT /api/projects/{project_id})
 	resu := as.JSON("/api/projects/%s", pID).Put("jk")
 	as.Equalf(200, resu.Code, "Error: %s", resu.Body.String())
-	resc.Bind(&pr)
+	resu.Bind(&pr)
 
 	// name of the project was changed in the above request
 	pd.Name = "jk"
