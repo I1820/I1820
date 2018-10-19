@@ -33,10 +33,10 @@ type ThingsResource struct {
 // thing request payload
 type thingReq struct {
 	Name     string `json:"name" validate:"required"`
-	Model    string `json:"model" validate:"alphanum"`
+	Model    string `json:"model" validate:"omitempty,alphanum"`
 	Location struct {
-		Latitude  float64 `json:"lat" validate:"latitude"`
-		Longitude float64 `json:"long" validate:"longitude"`
+		Latitude  float64 `json:"lat" validate:"omitempty,latitude"`
+		Longitude float64 `json:"long" validate:"omitempty,longitude"`
 	} `json:"location"`
 }
 
