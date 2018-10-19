@@ -33,10 +33,10 @@ type ThingsResource struct {
 // thing request payload
 type thingReq struct {
 	Name     string `json:"name" validate:"required"`
-	Model    string `json:"model"`
+	Model    string `json:"model" validate:"alphanum"`
 	Location struct {
-		Latitude  float64 `json:"lat"`
-		Longitude float64 `json:"long"`
+		Latitude  float64 `json:"lat" validate:"latitude"`
+		Longitude float64 `json:"long" validate:"longitude"`
 	} `json:"location"`
 }
 
@@ -44,12 +44,12 @@ type thingReq struct {
 // each coordinate in coordinates have following standard format
 // [latitude, longitude]
 type geoWithinReq struct {
-	Coordinates [][]float64 `json:"coordinates"`
+	Coordinates [][]float64 `json:"coordinates" validate:"required"`
 }
 
 // have tag request payload
 type haveTagReq struct {
-	Tags []string
+	Tags []string `json:"tags" validate:"required"`
 }
 
 // List gets all things. This function is mapped to the path
