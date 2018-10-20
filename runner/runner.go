@@ -111,6 +111,7 @@ func New(ctx context.Context, name string, envs []Env) (Runner, error) {
 	}, nil
 }
 
+// createRedis creates a redis container by using rd_{name} as its name.
 func createRedis(ctx context.Context, name string) (string, error) {
 	lport, _ := nat.NewPort("tcp", "6379")
 
@@ -140,6 +141,7 @@ func createRedis(ctx context.Context, name string) (string, error) {
 	return resp.ID, nil
 }
 
+// createRunner creates a runner container by using el_{name} as its name.
 func createRunner(ctx context.Context, name string, envs []Env) (string, string, error) {
 	lport, _ := nat.NewPort("tcp", "8080")
 	eport, err := freeport.GetFreePort()
