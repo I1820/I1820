@@ -13,6 +13,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"time"
 
@@ -53,16 +54,31 @@ func init() {
 
 // Pull pulls latest images of i1820/elrunner and redis:alpine.
 // Please consider that image names are defined globally.
-func Pull(ctx context.Context) error {
-	if _, err := dockerClient.ImagePull(ctx, runnerImage, types.ImagePullOptions{}); err != nil {
-		return err
+func Pull(ctx context.Context) ([2]string, error) {
+	var results [2]string
+
+	re, err := dockerClient.ImagePull(ctx, runnerImage, types.ImagePullOptions{})
+	if err != nil {
+		return results, err
+	}
+	be, err := ioutil.ReadAll(re)
+	if err != nil {
+		return results, err
 	}
 
-	if _, err := dockerClient.ImagePull(ctx, redisImage, types.ImagePullOptions{}); err != nil {
-		return err
+	rr, err := dockerClient.ImagePull(ctx, redisImage, types.ImagePullOptions{})
+	if err != nil {
+		return results, err
+	}
+	br, err := ioutil.ReadAll(rr)
+	if err != nil {
+		return results, err
 	}
 
-	return nil
+	results[0] = string(be)
+	results[1] = string(br)
+
+	return results, nil
 }
 
 // New creates runner docker with given user name
