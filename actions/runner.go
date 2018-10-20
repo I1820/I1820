@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/I1820/pm/models"
+	"github.com/I1820/pm/runner"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	"github.com/mongodb/mongo-go-driver/bson"
@@ -54,4 +55,13 @@ func RunnersHandler(c buffalo.Context) error {
 	return buffalo.WrapHandler(
 		httputil.NewSingleHostReverseProxy(url),
 	)(c)
+}
+
+// PullHandler pulls the latest version of required images.
+func PullHandler(c buffalo.Context) error {
+	err := runner.Pull(c)
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+	return c.Render(http.StatusOK, r.JSON(true))
 }
