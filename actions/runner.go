@@ -59,9 +59,9 @@ func RunnersHandler(c buffalo.Context) error {
 
 // PullHandler pulls the latest version of required images.
 func PullHandler(c buffalo.Context) error {
-	err := runner.Pull(c)
+	rs, err := runner.Pull(c)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
-	return c.Render(http.StatusOK, r.JSON(true))
+	return c.Render(http.StatusOK, r.JSON(rs))
 }
