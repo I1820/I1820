@@ -176,7 +176,7 @@ func (r Runner) Restart(ctx context.Context) error {
 	return dockerClient.ContainerRestart(ctx, r.ID, &td)
 }
 
-// Show returns detail information about runner and redis dockers
+// Show returns detail information about runner and redis dockers in the array with a length of 2
 func (r Runner) Show(ctx context.Context) ([2]types.ContainerJSON, error) {
 	var inspects [2]types.ContainerJSON
 
