@@ -51,6 +51,20 @@ func init() {
 	dockerClient = cli
 }
 
+// Pull pulls latest images of i1820/elrunner and redis:alpine.
+// Please consider that image names are defined globally.
+func Pull(ctx context.Context) error {
+	if _, err := dockerClient.ImagePull(ctx, runnerImage, types.ImagePullOptions{}); err != nil {
+		return err
+	}
+
+	if _, err := dockerClient.ImagePull(ctx, redisImage, types.ImagePullOptions{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // New creates runner docker with given user name
 // mgu represents mongo url that is used in runners
 // for collecting errors and access to thing data
