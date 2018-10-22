@@ -136,7 +136,9 @@ func (v ProjectsResource) Recreate(c buffalo.Context) error {
 	}
 
 	// let's create new dockers for the project
-	models.ReProject(c, envs, &p)
+	if err := models.ReProject(c, envs, &p); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
 
 	du := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("_id", projectID),
