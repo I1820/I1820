@@ -21,6 +21,7 @@ import (
 	"github.com/gobuffalo/envy"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/mongo/aggregateopt"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
 	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 
@@ -278,12 +279,12 @@ func (v ProjectsResource) Logs(c buffalo.Context) error {
 
 	cur, err := db.Collection(fmt.Sprintf("projects.logs.%s", projectID)).Aggregate(c, bson.NewArray(
 		bson.VC.DocumentFromElements(
-			bson.EC.Int32("$limit", int32(limit)),
-		),
-		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$sort", bson.EC.Int32("Time", -1)),
 		),
-	))
+		bson.VC.DocumentFromElements(
+			bson.EC.Int32("$limit", int32(limit)),
+		),
+	), aggregateopt.AllowDiskUse(true))
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
