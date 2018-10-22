@@ -105,6 +105,55 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(p))
 }
 
+// Recreate creates project docker and stores their information.
+// This function is mapped to the path GET /projects/{project_id}/recreate
+func (v ProjectsResource) Recreate(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+
+	if err := validate.Var(projectID, "required"); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	var p models.Project
+
+	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
+		bson.EC.String("_id", projectID),
+	))
+
+	if err := dr.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	// predefined environment variables
+	// This newely created project is under supervision of platform admin
+	envs := []runner.Env{
+		{Name: "DB_URL", Value: envy.Get("DB_URL", "mongodb://192.168.72.1:27017")},
+		{Name: "BROKER_URL", Value: envy.Get("BROKER_URL", "tcp://192.168.72.1:1883")},
+		{Name: "OWNER", Value: "platform.avidnetco@gmail.com"},
+	}
+
+	// let's create new dockers for the project
+	models.ReProject(c, envs, &p)
+
+	du := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.String("_id", projectID),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$set", bson.EC.Interface("runner", p.Runner)),
+	), findopt.ReturnDocument(mongoopt.After))
+
+	if err := du.Decode(&p); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(p))
+}
+
 // Show gets the data for one project. This function is mapped to
 // the path GET /projects/{project_id}
 func (v ProjectsResource) Show(c buffalo.Context) error {

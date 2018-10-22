@@ -104,6 +104,7 @@ func App() *buffalo.App {
 			pr := ProjectsResource{}
 			api.Resource("/projects", pr)
 			api.GET("/projects/{project_id}/logs", pr.Logs)
+			api.GET("/projects/{project_id}/recreate", pr.Recreate)
 
 			// /projects/{project_id}/things
 			pg := api.Group("/projects/{project_id}")
