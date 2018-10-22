@@ -40,3 +40,16 @@ func NewProject(ctx context.Context, id string, name string, envs []runner.Env) 
 		Runner: r,
 	}, nil
 }
+
+// ReProject recreates project dockers and replaces runner field of given project with new
+// information
+func ReProject(ctx context.Context, envs []runner.Env, p *Project) error {
+	r, err := runner.New(ctx, p.ID, envs)
+	if err != nil {
+		return err
+	}
+
+	p.Runner = r
+
+	return nil
+}
