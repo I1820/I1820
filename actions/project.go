@@ -177,9 +177,12 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 
 	ins, err := p.Runner.Show(c)
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		// There is no available docker for this project. We do not return an error in this condition,
+		// but the user must find out based on empty inspect that he must recreate the docker for this project,
+		// or try to find out better details from the Portainer.
+	} else {
+		p.Inspects = ins
 	}
-	p.Inspects = ins
 
 	return c.Render(http.StatusOK, r.JSON(p))
 }
