@@ -49,3 +49,18 @@ docker network create -d bridge --subnet 192.168.72.0/24 --gateway 192.168.72.1 
 docker pull i1820/elrunner
 docker pull redis:alpine
 ```
+
+4. Make sure MongoDB is up and running.
+
+5. Install the required dependencies (Please note that we use [dep](https://github.com/golang/dep) as our go package manager)
+```sh
+dep ensure
+```
+
+6. Check the configuration in `.env` file. (You can use `.env.example` as an example configuration)
+
+7. Run :runner:
+```sh
+go build
+./pm
+```
