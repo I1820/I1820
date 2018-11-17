@@ -25,6 +25,12 @@ type Project struct {
 	Name   string        `json:"name" bson:"name"`        // project human readable name
 	Runner runner.Runner `json:"runner" bson:"runner"`    // information about project docker
 
+	Description string   `json:"description" bson:"description"` // project description
+	Perimeter   struct { // operational perimeter
+		Type        string        `json:"type" bson:"type"`               // GeoJSON type eg. "Polygon"
+		Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"` // condinates eg. [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0  ] ] ]
+	} `json:"perimeter" bson:"perimeter"`
+
 	Inspects interface{} `json:"inspects,omitempty" bson:"-"` // more information about project docker
 }
 
