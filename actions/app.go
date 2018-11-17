@@ -117,6 +117,7 @@ func App() *buffalo.App {
 
 				kr := TokensResource{}
 				pg.GET("/things/{thing_id}/tokens", kr.Create)
+				pg.DELETE("/things/{thing_id}/tokens/{token}", kr.Destroy)
 			}
 
 			// /things/{thing_id}/assets

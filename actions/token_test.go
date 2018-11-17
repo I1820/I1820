@@ -18,7 +18,7 @@ import (
 	"github.com/I1820/types"
 )
 
-func (as *ActionSuite) Test_TokensResource_Create() {
+func (as *ActionSuite) Test_TokensResource_Create_Destroy() {
 	// Create project
 	var pr models.Project
 	resc := as.JSON("/api/projects").Post(projectReq{Name: pName, Owner: pOwner})
@@ -39,6 +39,16 @@ func (as *ActionSuite) Test_TokensResource_Create() {
 	as.Equalf(200, resk.Code, "Error: %s", resk.Body.String())
 	resk.Bind(&tk)
 	as.Equal(len(tk.Tokens), 2)
+
+	keyOriginal := tk.Tokens[0]
+	keyNew := tk.Tokens[1]
+
+	// Destroy (DELETE /api/projects/{project_id}/things/{thing_id}/tokens/{token})
+	resf := as.JSON("/api/projects/%s/things/%s/tokens/%s", pID, tID, keyNew).Get()
+	as.Equalf(200, resf.Code, "Error: %s", resf.Body.String())
+	resf.Bind(&tk)
+	as.Equal(len(tk.Tokens), 1)
+	as.Equal(tk.Tokens[0], keyOriginal)
 
 	// Destroy thing
 	resr := as.JSON("/api/projects/%s/things/%s", pID, tID).Delete()

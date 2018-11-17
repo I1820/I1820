@@ -56,7 +56,27 @@ func (v TokensResource) Create(c buffalo.Context) error {
 }
 
 // Destroy removes token from given device
-// path DELETE /projects/{project_id}/things/{thing_id}/tokens
+// path DELETE /projects/{project_id}/things/{thing_id}/tokens/{token}
 func (v TokensResource) Destroy(c buffalo.Context) error {
-	return nil
+	projectID := c.Param("project_id")
+	id := c.Param("thing_id")
+	token := c.Param("token")
+
+	var t types.Thing
+
+	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.String("_id", id),
+		bson.EC.String("project", projectID),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$pull", bson.EC.String("tokens", token)),
+	), findopt.ReturnDocument(mongoopt.After))
+
+	if err := dr.Decode(&t); err != nil {
+		if err == mgo.ErrNoDocuments {
+			return c.Error(http.StatusNotFound, fmt.Errorf("Thing %s not found", id))
+		}
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	return c.Render(http.StatusOK, r.JSON(t))
 }
