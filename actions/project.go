@@ -35,9 +35,14 @@ type ProjectsResource struct {
 
 // project request payload
 type projectReq struct {
-	Name  string            `json:"name" validate:"required"`        // project name
-	Owner string            `json:"owner" validate:"required,email"` // project owner email address
-	Envs  map[string]string `json:"envs"`                            // project environment variables
+	Name        string            `json:"name" validate:"required"`        // project name
+	Owner       string            `json:"owner" validate:"required,email"` // project owner email address
+	Envs        map[string]string `json:"envs"`                            // project environment variables
+	Description string            `json:"description"`                     // project description
+	Perimeter   []struct {        // project operational perimeter
+		Latitude  float64 `json:"lat"`
+		Longitude float64 `json:"long"`
+	} `json:"perimeter"`
 }
 
 // List gets all projects. This function is mapped to the path
@@ -97,7 +102,17 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
+	// sets other properties of the project
 	p.ID = id
+	p.Description = rq.Description
+	// converts request location to GeoJSON format
+	p.Perimeter.Type = "Polygon"
+	p.Perimeter.Coordinates = make([][][]float64, 1)
+	p.Perimeter.Coordinates[0] = make([][]float64, 0)
+	for _, point := range rq.Perimeter {
+		p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{point.Longitude, point.Latitude})
+	}
+	p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{rq.Perimeter[0].Longitude, rq.Perimeter[0].Latitude})
 
 	if _, err := db.Collection("projects").InsertOne(c, p); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
