@@ -44,7 +44,7 @@ func (as *ActionSuite) Test_TokensResource_Create_Destroy() {
 	keyNew := tk.Tokens[1]
 
 	// Destroy (DELETE /api/projects/{project_id}/things/{thing_id}/tokens/{token})
-	resf := as.JSON("/api/projects/%s/things/%s/tokens/%s", pID, tID, keyNew).Get()
+	resf := as.JSON("/api/projects/%s/things/%s/tokens/%s", pID, tID, keyNew).Delete()
 	as.Equalf(200, resf.Code, "Error: %s", resf.Body.String())
 	resf.Bind(&tk)
 	as.Equal(len(tk.Tokens), 1)
