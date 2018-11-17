@@ -114,6 +114,9 @@ func App() *buffalo.App {
 				pg.POST("/things/geo", tr.GeoWithin)
 				pg.POST("/things/tags", tr.HaveTags)
 				pg.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
+
+				kr := TokensResource{}
+				pg.GET("/things/{thing_id}/tokens", kr.Create)
 			}
 
 			// /things/{thing_id}/assets
