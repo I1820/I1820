@@ -25,6 +25,23 @@ var _ = grift.Add("mongo", func(c *grift.Context) error {
 
 	db := client.Database("i1820")
 
+	// projects collection
+	cp := db.Collection("things")
+	pnames, err := cp.Indexes().CreateMany(
+		c,
+		[]mgo.IndexModel{
+			mgo.IndexModel{
+				Keys: bson.NewDocument(
+					bson.EC.String("perimeter", "2dsphere"),
+				),
+			},
+		},
+	)
+	if err != nil {
+		return err
+	}
+	log.Printf("DB [projects] index: %s\n", pnames)
+
 	// things collection
 	ct := db.Collection("things")
 	tnames, err := ct.Indexes().CreateMany(
