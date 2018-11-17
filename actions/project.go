@@ -109,10 +109,12 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 	p.Perimeter.Type = "Polygon"
 	p.Perimeter.Coordinates = make([][][]float64, 1)
 	p.Perimeter.Coordinates[0] = make([][]float64, 0)
-	for _, point := range rq.Perimeter {
-		p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{point.Longitude, point.Latitude})
+	if len(rq.Perimeter) != 0 {
+		for _, point := range rq.Perimeter {
+			p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{point.Longitude, point.Latitude})
+		}
+		p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{rq.Perimeter[0].Longitude, rq.Perimeter[0].Latitude})
 	}
-	p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{rq.Perimeter[0].Longitude, rq.Perimeter[0].Latitude})
 
 	if _, err := db.Collection("projects").InsertOne(c, p); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
