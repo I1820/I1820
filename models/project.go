@@ -21,7 +21,7 @@ import (
 // under one name and eases their management,
 // like an Agricultural project that manages your farm and its smart things.
 type Project struct {
-	ID     string        `json:"id" bson:"_id,omitempty"` // Thing unique identifier
+	ID     string        `json:"id" bson:"_id,omitempty"` // Project unique identifier
 	Name   string        `json:"name" bson:"name"`        // project human readable name
 	Runner runner.Runner `json:"runner" bson:"runner"`    // information about project docker
 
