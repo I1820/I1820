@@ -369,13 +369,3 @@ func (v ThingsResource) HaveTags(c buffalo.Context) error {
 
 	return c.Render(http.StatusOK, r.JSON(results))
 }
-
-// CreateToken creates new token for given device
-func (v ThingsResource) CreateToken(c buffalo.Context) error {
-	return nil
-}
-
-// RemoveToken removes token from given device
-func (v ThingsResource) RemoveToken(c buffalo.Context) error {
-	return nil
-}
