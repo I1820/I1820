@@ -106,30 +106,31 @@ func App() *buffalo.App {
 			api.GET("/projects/{project_id}/logs", pr.Logs)
 			api.GET("/projects/{project_id}/recreate", pr.Recreate)
 
-			// /projects/{project_id}/things
 			pg := api.Group("/projects/{project_id}")
 			{
+				// /projects/{project_id}/things
 				tr := ThingsResource{}
 				pg.Resource("/things", tr)
 				pg.POST("/things/geo", tr.GeoWithin)
 				pg.POST("/things/tags", tr.HaveTags)
 				pg.GET("/things/{thing_id}/{t:(?:activate|deactivate)}", tr.Activation)
 
+				// /projects/{project_id}/things/{thing_id}/tokens
 				kr := TokensResource{}
 				pg.GET("/things/{thing_id}/tokens", kr.Create)
 				pg.DELETE("/things/{thing_id}/tokens/{token}", kr.Destroy)
+
+				// projects/{project_id}/things/{thing_id}/assets
+				pg.Resource("/things/{thing_id}/assets", AssetsResource{})
+
+				// /projects/{project_id}/things/{thing_id}/connectivities
+				pg.Resource("/things/{thing_id}/connectivities", ConnectivitiesResource{})
+
+				// /projects/{project_id}/things/{thing_id}/tags
+				gr := TagsResource{}
+				pg.POST("/things/{thing_id}/tags", gr.Create)
+				pg.GET("/things/{thing_id}/tags", gr.List)
 			}
-
-			// /things/{thing_id}/assets
-			api.Resource("/things/{thing_id}/assets", AssetsResource{})
-
-			// /things/{thing_id}/connectivities
-			api.Resource("/things/{thing_id}/connectivities", ConnectivitiesResource{})
-
-			// /things/{thing_id}/tags
-			tr := TagsResource{}
-			api.POST("/things/{thing_id}/tags", tr.Create)
-			api.GET("/things/{thing_id}/tags", tr.List)
 
 			// /runners
 			api.GET("/runners/pull", PullHandler)
