@@ -39,13 +39,15 @@ type assetReq struct {
 }
 
 // List gets all assets of a given thing. This function is mapped to the path
-// GET /things/{thing_id}/assets
+// GET /projects/{project_id}/things/{thing_id}/assets
 func (v AssetsResource) List(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	))
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {
@@ -58,9 +60,10 @@ func (v AssetsResource) List(c buffalo.Context) error {
 }
 
 // Create adds an asset to the DB and its thing. This function is mapped to the
-// path POST /things/{thing_id}/assets
+// path POST /projects/{project_id}/things/{thing_id}/assets
 func (v AssetsResource) Create(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 
 	var rq assetReq
 	if err := c.Bind(&rq); err != nil {
@@ -78,6 +81,7 @@ func (v AssetsResource) Create(c buffalo.Context) error {
 
 	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Interface(fmt.Sprintf("assets.%s", rq.Name), a)),
 	), findopt.ReturnDocument(mongoopt.After))
@@ -95,15 +99,17 @@ func (v AssetsResource) Create(c buffalo.Context) error {
 }
 
 // Show gets the data for a given asset. This function is mapped to
-// the path GET /things/{thing_id}/assets/{asset_name}
+// the path GET /projects/{project_id}/things/{thing_id}/assets/{asset_name}
 func (v AssetsResource) Show(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 	assetName := c.Param("asset_id")
 
 	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	))
 
 	if err := dr.Decode(&t); err != nil {
@@ -117,13 +123,15 @@ func (v AssetsResource) Show(c buffalo.Context) error {
 }
 
 // Destroy deletes an asset from the DB and its thing. This function is mapped
-// to the path DELETE /things/{thing_id}/assets/{asset_name}
+// to the path DELETE /projects/{project_id}/things/{thing_id}/assets/{asset_name}
 func (v AssetsResource) Destroy(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 	assetName := c.Param("asset_id")
 
 	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$unset", bson.EC.String(fmt.Sprintf("assets.%s", assetName), "")),
 	), findopt.ReturnDocument(mongoopt.After))

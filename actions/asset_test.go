@@ -38,13 +38,13 @@ func (as *ActionSuite) Test_AssetsResource_Create() {
 	rest.Bind(&tc)
 	tID = tc.ID
 
-	// Create (POST /api/things/{thing_id}/assets)
-	resa := as.JSON("/api/things/%s/assets", tID).Post(assetReq{Name: aName, Title: aTitle, Type: aType, Kind: aKind})
+	// Create (POST /api/projects/{project_id}/things/{thing_id}/assets)
+	resa := as.JSON("/api/projects/%s/things/%s/assets", pID, tID).Post(assetReq{Name: aName, Title: aTitle, Type: aType, Kind: aKind})
 	as.Equalf(200, resa.Code, "Error: %s", resa.Body.String())
 
-	// Show (Get /api/things/{thing_id}/assets/{asset_name})
+	// Show (Get /api/projects/{project_id}/things/{thing_id}/assets/{asset_name})
 	var a types.Asset
-	ress := as.JSON("/api/things/%s/assets/%s", tID, aName).Get()
+	ress := as.JSON("/api/projects/%s/things/%s/assets/%s", pID, tID, aName).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&a)
 	as.Equal(aTitle, a.Title)
