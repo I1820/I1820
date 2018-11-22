@@ -37,12 +37,12 @@ func (as *ActionSuite) Test_ConnectivitiesResource_Create() {
 	tID = tc.ID
 
 	// Create (POST /api/projects/{project_id}/things/{thing_id}/connectivities)
-	resa := as.JSON("/api/projects/%s/things/%s/connectivities", tID, pID).Post(connectivityReq{Name: cName, Info: connectivity.TTN{ApplicationID: "fan", DeviceEUI: "000AE31955C049FC"}})
+	resa := as.JSON("/api/projects/%s/things/%s/connectivities", pID, tID).Post(connectivityReq{Name: cName, Info: connectivity.TTN{ApplicationID: "fan", DeviceEUI: "000AE31955C049FC"}})
 	as.Equalf(200, resa.Code, "Error: %s", resa.Body.String())
 
 	// Show (Get /api/projects/{project_id}/things/{thing_id}/connectivities/{connectivity_name})
 	var ttn connectivity.TTN
-	ress := as.JSON("/api/projects/%s/things/%s/connectivities/%s", tID, pID, cName).Get()
+	ress := as.JSON("/api/projects/%s/things/%s/connectivities/%s", pID, tID, cName).Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&ttn)
 	as.Equal("fan", ttn.ApplicationID)
