@@ -37,13 +37,15 @@ type connectivityReq struct {
 }
 
 // List gets all connectivities of a given thing. This function is mapped to the path
-// GET /things/{thing_id}/connectivities
+// GET /projects/{project_id}/things/{thing_id}/connectivities
 func (v ConnectivitiesResource) List(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	))
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {
@@ -56,9 +58,10 @@ func (v ConnectivitiesResource) List(c buffalo.Context) error {
 }
 
 // Create adds a connectivity to the DB and its thing. This function is mapped to the
-// path POST /things/{thing_id}/connectivities
+// path POST /projects/{project_id}/things/{thing_id}/connectivities
 func (v ConnectivitiesResource) Create(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 
 	var rq connectivityReq
 	if err := c.Bind(&rq); err != nil {
@@ -70,6 +73,7 @@ func (v ConnectivitiesResource) Create(c buffalo.Context) error {
 
 	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Interface(fmt.Sprintf("connectivities.%s", rq.Name), rq.Info)),
 	), findopt.ReturnDocument(mongoopt.After))
@@ -87,15 +91,17 @@ func (v ConnectivitiesResource) Create(c buffalo.Context) error {
 }
 
 // Show gets the data for given connectivity. This function is mapped to
-// the path GET /things/{thing_id}/connectivities/{connectivity_name}
+// the path GET /projects/{project_id}/things/{thing_id}/connectivities/{connectivity_name}
 func (v ConnectivitiesResource) Show(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 	connectivityName := c.Param("connectivity_id")
 
 	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	))
 
 	if err := dr.Decode(&t); err != nil {
@@ -109,13 +115,15 @@ func (v ConnectivitiesResource) Show(c buffalo.Context) error {
 }
 
 // Destroy deletes a connectivity from the DB and its thing. This function is mapped
-// to the path DELETE /things/{thing_id}/connectivities/{connectivity_name}
+// to the path DELETE /projects/{project_id}/things/{thing_id}/connectivities/{connectivity_name}
 func (v ConnectivitiesResource) Destroy(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 	connectivityName := c.Param("connectivity_id")
 
 	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$unset", bson.EC.String(fmt.Sprintf("connectivities.%s", connectivityName), "")),
 	), findopt.ReturnDocument(mongoopt.After))
