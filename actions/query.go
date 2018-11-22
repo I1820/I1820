@@ -41,14 +41,6 @@ type fetchReq struct {
 	} `json:"window"`
 }
 
-type fetchResp struct {
-	Target     string
-	Datapoints []struct {
-		Metric    float64
-		Timestamp int64
-	}
-}
-
 type pfetchResp struct {
 	ID struct {
 		Asset   string `json:"asset" bson:"asset"`
