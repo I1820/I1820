@@ -34,9 +34,10 @@ type tagReq struct {
 }
 
 // Create replaces tag array of the given thing with the newly given tag array.
-// This function is mapped to the path POST /things/{thing_id}/tags
+// This function is mapped to the path POST /projects/{project_id}/things/{thing_id}/tags
 func (v TagsResource) Create(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 
 	var rq tagReq
 	if err := c.Bind(&rq); err != nil {
@@ -48,6 +49,7 @@ func (v TagsResource) Create(c buffalo.Context) error {
 
 	dr := db.Collection("things").FindOneAndUpdate(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Interface("tags", rq.Tags)),
 	), findopt.ReturnDocument(mongoopt.After))
@@ -65,13 +67,15 @@ func (v TagsResource) Create(c buffalo.Context) error {
 }
 
 // List returns the tag array of the given thing.
-// This function is mapped to the path GET /things/{thing_id}/tags
+// This function is mapped to the path GET /projects/{project_id}/things/{thing_id}/tags
 func (v TagsResource) List(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
 	var t types.Thing
 
 	dr := db.Collection("things").FindOne(c, bson.NewDocument(
 		bson.EC.String("_id", thingID),
+		bson.EC.String("project", projectID),
 	))
 	if err := dr.Decode(&t); err != nil {
 		if err == mgo.ErrNoDocuments {
