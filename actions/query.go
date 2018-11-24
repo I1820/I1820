@@ -13,7 +13,6 @@ package actions
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/I1820/types"
@@ -39,6 +38,12 @@ type fetchReq struct {
 	Window struct {
 		Size int64 `json:"size"`
 	} `json:"window"`
+}
+
+type recentlyReq struct {
+	Asset  string `json:"asset"`
+	Limit  int64  `json:"limit"`
+	Offset int64  `json:"offset"`
 }
 
 type pfetchResp struct {
@@ -90,16 +95,21 @@ func (q QueriesResource) List(c buffalo.Context) error {
 }
 
 // Recently fetches given asset recent's data from database
-// by default it fetches last 5 record
-// asset and number of fetched data can be configured with limit and asset parameters.
+// by default it fetches last 5 record.
 // This function is mapped to the path
-// GET projects/{project_id}/things/{thing_id}/queries/recently
+// POST projects/{project_id}/things/{thing_id}/queries/recently
 func (q QueriesResource) Recently(c buffalo.Context) error {
-	limit, err := strconv.ParseInt(c.Param("limit"), 10, 64)
-	if err != nil {
+	var req recentlyReq
+	if err := c.Bind(&req); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	limit := req.Limit
+	if limit == 0 {
 		limit = 5
 	}
-	assetName := c.Param("asset")
+	offset := req.Offset
+	assetName := req.Asset
 
 	thingID := c.Param("thing_id")
 	projectID := c.Param("project_id")
@@ -114,6 +124,9 @@ func (q QueriesResource) Recently(c buffalo.Context) error {
 			bson.EC.SubDocumentFromElements("$sort",
 				bson.EC.Int32("at", -1),
 			),
+		),
+		bson.VC.DocumentFromElements(
+			bson.EC.Int64("$skip", offset),
 		),
 		bson.VC.DocumentFromElements(
 			bson.EC.Int64("$limit", limit),
