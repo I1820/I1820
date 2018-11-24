@@ -71,3 +71,19 @@ func (as *ActionSuite) Test_QueriesResource_Fetch() {
 	as.Equal(1, len(results))
 	as.Equal("hello", results[0].Value.String)
 }
+
+func (as *ActionSuite) Test_QueriesResource_Recently() {
+	var results []types.State
+
+	var req recentlyReq
+	req.Asset = "101"
+	req.Limit = 1
+
+	res := as.JSON("/api/projects/%s/things/%s/queries/recently", projectID, thingID).Post(req)
+	as.Equal(200, res.Code)
+
+	res.Bind(&results)
+
+	as.Equal(1, len(results))
+	as.Equal("hello", results[0].Value.String)
+}
