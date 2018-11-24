@@ -89,16 +89,18 @@ func (q QueriesResource) List(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(results))
 }
 
-// Recently fetches given assets recently data from database
+// Recently fetches given asset recent's data from database
 // by default it fetches last 5 record
+// asset and number of fetched data can be configured with limit and asset parameters.
 // This function is mapped to the path
-// POST projects/{project_id}/things/{thing_id}/assets/{asset_name}/queries/recently
+// GET projects/{project_id}/things/{thing_id}/queries/recently
 func (q QueriesResource) Recently(c buffalo.Context) error {
 	limit, err := strconv.ParseInt(c.Param("limit"), 10, 64)
 	if err != nil {
 		limit = 5
 	}
-	assetName := c.Param("asset_name")
+	assetName := c.Param("asset")
+
 	thingID := c.Param("thing_id")
 	projectID := c.Param("project_id")
 
