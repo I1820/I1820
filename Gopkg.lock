@@ -1079,6 +1079,7 @@
     "github.com/mongodb/mongo-go-driver/bson",
     "github.com/mongodb/mongo-go-driver/bson/objectid",
     "github.com/mongodb/mongo-go-driver/mongo",
+    "github.com/mongodb/mongo-go-driver/mongo/aggregateopt",
     "github.com/mongodb/mongo-go-driver/mongo/findopt",
     "github.com/mongodb/mongo-go-driver/mongo/mongoopt",
     "github.com/phayes/freeport",
