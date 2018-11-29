@@ -85,5 +85,5 @@ func (as *ActionSuite) Test_QueriesResource_Recently() {
 	res.Bind(&results)
 
 	as.Equal(1, len(results))
-	as.Equal(7100, results[0].Value.Number)
+	as.Equal(7100.0, results[0].Value.Number)
 }
