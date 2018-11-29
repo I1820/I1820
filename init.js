@@ -14,6 +14,24 @@ var projectID = "5ba3f19c87a142b0a840fae0"
 var collection = "data." + projectID +  "." + thingID
 
 db[collection].insert([{
+  raw: 7100,
+  value: {
+    number: 7100,
+  },
+  at: new ISODate("2018-09-27T21:52:06.443+03:30"),
+  project: projectID,
+  thing_id: thingID,
+  asset: "102"
+}, {
+  raw: 7000,
+  value: {
+    number: 7000,
+  },
+  at: new ISODate("2018-09-26T21:52:06.443+03:30"),
+  project: projectID,
+  thing_id: thingID,
+  asset: "102"
+}, {
   raw: 7000,
   value: {
     number: 7000,
