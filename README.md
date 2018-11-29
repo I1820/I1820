@@ -55,6 +55,7 @@ buffalo task mongo
 
 To use this module you can use its docker or build from source
 after that, you must do the following things to provide the foundation for project creation.
+You can use `runme.sh` to these works for you.
 
 1. Non-Root user access for docker
 ```sh
