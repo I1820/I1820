@@ -76,7 +76,7 @@ func (as *ActionSuite) Test_QueriesResource_Recently() {
 	var results []types.State
 
 	var req recentlyReq
-	req.Asset = "101"
+	req.Asset = "102"
 	req.Limit = 1
 
 	res := as.JSON("/api/projects/%s/things/%s/queries/recently", projectID, thingID).Post(req)
@@ -85,5 +85,5 @@ func (as *ActionSuite) Test_QueriesResource_Recently() {
 	res.Bind(&results)
 
 	as.Equal(1, len(results))
-	as.Equal("hello", results[0].Value.String)
+	as.Equal(7100, results[0].Value.Number)
 }
