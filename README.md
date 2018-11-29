@@ -30,6 +30,27 @@ Connectivities are stored as a map between their platform code name (`ttn` code 
 and their information. Please note that each platform has its specific information.
 
 ## Up and Running
+To build this module from source do the following steps
+
+1. Make sure MongoDB is up and running.
+
+2. Install the required dependencies (Please note that we use [dep](https://github.com/golang/dep) as our go package manager)
+```sh
+dep ensure
+```
+
+3. Check the configuration in `.env` file. (You can use `.env.example` as an example configuration)
+
+4. Run :runner:
+```sh
+go build
+./link
+```
+
+5. Create MongoDB indexes
+```sh
+buffalo task mongo
+```
 
 To use this module you can use its docker or build from source
 after that, you must do the following things to provide the foundation for project creation.
@@ -48,19 +69,4 @@ docker network create -d bridge --subnet 192.168.72.0/24 --gateway 192.168.72.1 
 ```sh
 docker pull i1820/elrunner
 docker pull redis:alpine
-```
-
-4. Make sure MongoDB is up and running.
-
-5. Install the required dependencies (Please note that we use [dep](https://github.com/golang/dep) as our go package manager)
-```sh
-dep ensure
-```
-
-6. Check the configuration in `.env` file. (You can use `.env.example` as an example configuration)
-
-7. Run :runner:
-```sh
-go build
-./pm
 ```
