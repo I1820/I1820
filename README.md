@@ -24,3 +24,20 @@ which is located in the database where you executed the `setProfileLevel` comman
 ```
 db.system.profile.find().pretty()
 ```
+## Up and Running
+To build this module from source do the following steps
+
+1. Make sure MongoDB is up and running.
+
+2. Install the required dependencies (Please note that we use [dep](https://github.com/golang/dep) as our go package manager)
+```sh
+dep ensure
+```
+
+3. Check the configuration in `.env` file. (You can use `.env.example` as an example configuration)
+
+4. Run :runner:
+```sh
+go build
+./dm
+```
