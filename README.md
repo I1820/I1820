@@ -4,7 +4,6 @@
 [![Go Report](https://goreportcard.com/badge/github.com/I1820/pm?style=flat-square)](https://goreportcard.com/report/github.com/I1820/pm)
 [![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/pm)
-[![Docker Build](https://img.shields.io/docker/build/i1820/pm.svg?style=flat-square)](https://hub.docker.com/r/i1820/pm)
 
 ## Introduction
 PM is a project manager component of the I1820 platform.
