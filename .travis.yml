@@ -12,9 +12,9 @@ services:
 go_import_path: github.com/I1820/pm
 
 before_install:
-  - PKGS=$(go list ./... ) # All the import paths
   - go get -u golang.org/x/lint/golint   # linter
   - go get -u github.com/kisielk/errcheck     # errcheck checks that you checked errors.
+  - PKGS=$(go list ./... ) # All the import paths
 
 install:
   - go get github.com/gobuffalo/buffalo/buffalo
