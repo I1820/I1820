@@ -34,7 +34,7 @@ type AssetsResource struct {
 type assetReq struct {
 	Name  string `json:"name" validate:"alphanum,required"`
 	Title string `json:"title" validate:"required"`
-	Type  string `json:"type" validate:"required,oneof=boolean number string array object"`
+	Type  string `json:"type" validate:"required,oneof=boolean number string array object location"`
 	Kind  string `json:"kind" validate:"required,oneof=sensor actuator"`
 }
 
