@@ -2,7 +2,7 @@ module github.com/I1820/pm
 
 require (
 	docker.io/go-docker v1.0.0
-	github.com/I1820/types v1.0.0
+	github.com/I1820/types v1.0.1
 	github.com/Microsoft/go-winio v0.4.11 // indirect
 	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
 	github.com/buger/jsonparser v0.0.0-20180910192245-6acdf747ae99 // indirect
