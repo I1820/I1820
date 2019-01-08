@@ -4,6 +4,7 @@ FROM golang:1.11 as builder
 
 RUN mkdir -p "$GOPATH/src/github.com/I1820/pm"
 WORKDIR $GOPATH/src/github.com/I1820/pm
+ENV GO111MODULE=on
 
 COPY . .
 RUN go build -o /bin/app
