@@ -34,21 +34,16 @@ To build this module from source do the following steps
 
 1. Make sure MongoDB and Vernemq are up and running.
 
-2. Install the required dependencies (Please note that we use [dep](https://github.com/golang/dep) as our go package manager)
-```sh
-dep ensure
-```
-
-3. Check the configuration in `.env` file. (You can use `.env.example` as an example configuration).
+2. Check the configuration in `.env` file. (You can use `.env.example` as an example configuration).
 Please note that pm passes these configuration to project's dockers so they must work there too.
 
-4. Run :runner:
+3. Run :runner:
 ```sh
 go build
 ./pm
 ```
 
-5. Create MongoDB indexes
+4. Create MongoDB indexes
 ```sh
 buffalo task mongo
 ```
