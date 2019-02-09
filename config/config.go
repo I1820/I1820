@@ -25,10 +25,12 @@ import (
 
 // Config holds all dm component configurations
 type Config struct {
+	Debug    bool
+	Database struct {
+		URL string
+	}
+
 	Core struct {
-		Database struct {
-			URL string
-		}
 		Broker struct {
 			Host string
 			User string
