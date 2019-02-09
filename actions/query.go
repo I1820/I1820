@@ -16,12 +16,15 @@ import (
 	"time"
 
 	"github.com/I1820/types"
-	"github.com/gobuffalo/buffalo"
+	"github.com/labstack/echo/v4"
 	"github.com/mongodb/mongo-go-driver/bson"
+	mgo "github.com/mongodb/mongo-go-driver/mongo"
 )
 
-// QueriesResource handles useful queries on database
-type QueriesResource struct{}
+// QueriesHandler handles useful queries on database
+type QueriesHandler struct {
+	db *mgo.Database
+}
 
 type listResp struct {
 	ID    string `json:"id" bson:"_id"`
@@ -60,13 +63,16 @@ type pfetchResp struct {
 // List lists assets and count of their data in database.
 // This function is mapped to the path
 // GET /projects/{project_id}/things/{thing_id}/qeuries/list
-func (q QueriesResource) List(c buffalo.Context) error {
+func (q QueriesHandler) List(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
 	thingID := c.Param("thing_id")
 	projectID := c.Param("project_id")
 
 	var results = make([]listResp, 0)
 
-	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$group",
 				bson.EC.String("_id", "$asset"),
@@ -75,33 +81,36 @@ func (q QueriesResource) List(c buffalo.Context) error {
 		),
 	))
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	for cur.Next(c) {
+	for cur.Next(ctx) {
 		var result listResp
 
 		if err := cur.Decode(&result); err != nil {
-			return c.Error(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 
 		results = append(results, result)
 	}
-	if err := cur.Close(c); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err := cur.Close(ctx); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(results))
+	return c.JSON(http.StatusOK, results)
 }
 
 // Recently fetches given asset recent's data from database
 // by default it fetches last 5 record.
 // This function is mapped to the path
 // POST projects/{project_id}/things/{thing_id}/queries/recently
-func (q QueriesResource) Recently(c buffalo.Context) error {
+func (q QueriesHandler) Recently(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
 	var req recentlyReq
 	if err := c.Bind(&req); err != nil {
-		return c.Error(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	limit := req.Limit
@@ -114,7 +123,7 @@ func (q QueriesResource) Recently(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
 	projectID := c.Param("project_id")
 
-	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$match",
 				bson.EC.String("asset", assetName),
@@ -133,34 +142,37 @@ func (q QueriesResource) Recently(c buffalo.Context) error {
 		),
 	))
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	results := make([]types.State, 0)
-	for cur.Next(c) {
+	for cur.Next(ctx) {
 		var result types.State
 
 		if err := cur.Decode(&result); err != nil {
-			return c.Error(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 
 		results = append(results, result)
 	}
-	if err := cur.Close(c); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err := cur.Close(ctx); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(results))
+	return c.JSON(http.StatusOK, results)
 }
 
 // PartialFetch fetches data with windowing
 // This function is mapped to the path
 // POST projects/{project_id}/things/{thing_id}/queries/pfetch
 // please consider that this query only works on numbers
-func (q QueriesResource) PartialFetch(c buffalo.Context) error {
+func (q QueriesHandler) PartialFetch(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
-		return c.Error(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	thingID := c.Param("thing_id")
@@ -178,7 +190,7 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 		cs++
 	}
 
-	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
 		bson.VC.DocumentFromElements( // match phase
 			bson.EC.SubDocumentFromElements("$match",
 				bson.EC.String("asset", assetName),
@@ -245,35 +257,37 @@ func (q QueriesResource) PartialFetch(c buffalo.Context) error {
 		),
 	))
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	results := make([]pfetchResp, 0)
-	for cur.Next(c) {
+	for cur.Next(ctx) {
 		var result pfetchResp
 
 		if err := cur.Decode(&result); err != nil {
-			return c.Error(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 
 		results = append(results, result)
 	}
-	if err := cur.Close(c); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err := cur.Close(ctx); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	fmt.Println(results)
 
-	return c.Render(http.StatusOK, r.JSON(results))
+	return c.JSON(http.StatusOK, results)
 }
 
 // Fetch fetches given assets data in given time range from database.
 // please consider that this fuction returns data in ascending time order.
 // This function is mapped to the path
 // POST projects/{project_id}/things/{thing_id}/queries/fetch
-func (q QueriesResource) Fetch(c buffalo.Context) error {
+func (q QueriesHandler) Fetch(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
-		return c.Error(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	thingID := c.Param("thing_id")
@@ -282,7 +296,7 @@ func (q QueriesResource) Fetch(c buffalo.Context) error {
 	assetName := req.Target
 	assetType := req.Type
 
-	cur, err := db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(c, bson.NewArray(
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
 		bson.VC.DocumentFromElements(
 			bson.EC.SubDocumentFromElements("$match", // find states of given asset that have given type
 				bson.EC.String("asset", assetName),
@@ -295,22 +309,22 @@ func (q QueriesResource) Fetch(c buffalo.Context) error {
 		),
 	))
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	results := make([]types.State, 0)
-	for cur.Next(c) {
+	for cur.Next(ctx) {
 		var result types.State
 
 		if err := cur.Decode(&result); err != nil {
-			return c.Error(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 
 		results = append(results, result)
 	}
-	if err := cur.Close(c); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err := cur.Close(ctx); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(results))
+	return c.JSON(http.StatusOK, results)
 }
