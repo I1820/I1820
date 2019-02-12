@@ -21,6 +21,7 @@ import (
 
 	json "github.com/json-iterator/go"
 
+	"github.com/I1820/dm/config"
 	"github.com/I1820/types"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/streadway/amqp"
@@ -32,8 +33,8 @@ const aName = "memory" // Asset Name
 const pName = "her"    // Project Name
 
 func TestPipelineDirect(t *testing.T) {
-	a := new()
-	a.run()
+	a := New(config.GetConfig().Database.URL, fmt.Sprintf("amqp://%s:%s@%s/", config.GetConfig().Core.Broker.User, config.GetConfig().Core.Broker.Pass, config.GetConfig().Core.Broker.Host))
+	assert.NoError(t, a.Run())
 	ts := time.Now()
 
 	b, err := json.Marshal(types.State{
