@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/I1820/dm/actions"
+	"github.com/I1820/dm/config"
 	"github.com/I1820/dm/core"
 )
 
