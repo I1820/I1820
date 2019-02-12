@@ -3,10 +3,11 @@ language: go
 go: "1.11"
 
 env:
-  - GO_ENV=test DB_URL="mongodb://127.0.0.1:27017" GO111MODULE=on
+  - I1820_DM_DATABSE_URL="mongodb://127.0.0.1:27017" GO111MODULE=on I1820_DM_CORE_BROKER_USER=guest I1820_DM_CORE_BROKER_PASS=guest
 
 services:
   - mongodb
+  - rabbitmq
 
 go_import_path: github.com/I1820/dm
 
@@ -16,16 +17,14 @@ before_install:
   - go get -u github.com/kisielk/errcheck     # errcheck checks that you checked errors.
 
 install:
-  - go get github.com/gobuffalo/buffalo/buffalo
   - go mod tidy
   - go mod download
 
 before_script:
-  #  - buffalo task mongo
   - mongo i1820 init.js # mongo mock database
 
 script:
   - go vet -v $PKGS                   # go vet is the official Go static analyzer
   - errcheck -verbose $PKGS           # Check for unchecked errors
   - golint -set_exit_status $PKGS     # One last linter
-  - buffalo test
+  - go test -v $PKGS
