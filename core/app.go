@@ -21,24 +21,11 @@ import (
 
 	json "github.com/json-iterator/go"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	log "github.com/sirupsen/logrus"
 
-	"github.com/I1820/dm/config"
 	"github.com/I1820/types"
-	"github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 )
-
-var instance *Application
-var once sync.Once
-
-// GetApplication returns global instance of core application.
-func GetApplication() *Application {
-	once.Do(func() {
-		instance = new()
-		instance.run()
-	})
-	return instance
-}
 
 // Application is a main part of dm component that consists of
 // amqp client and protocols that provide information for amqp connectivity
@@ -50,8 +37,6 @@ type Application struct {
 	stateConn *amqp.Connection
 	stateChan *amqp.Channel
 
-	Logger *logrus.Logger
-
 	session *mgo.Client
 	db      *mgo.Database
 
@@ -62,42 +47,37 @@ type Application struct {
 	// count number of stages so `Exit` can wait for all of them
 	insertWG sync.WaitGroup
 
+	// configuration parameters
+	rabbitURL   string
+	databaseURL string
+
 	IsRun bool
 }
 
 // New creates new application.
-func new() *Application {
-	a := Application{}
+func New(databaseURL string, rabbitURL string) *Application {
+	return &Application{
+		rabbitURL:   rabbitURL,
+		databaseURL: databaseURL,
 
-	a.Logger = logrus.New()
-
-	// Create a mongodb connection
-	url := config.GetConfig().Database.URL
-	session, err := mgo.NewClient(url)
-	if err != nil {
-		a.Logger.Fatalf("Database client creation for %s error: %s", url, err)
+		insertStream: make(chan *types.State),
 	}
-	a.session = session
-
-	// pipeline channels
-	a.insertStream = make(chan *types.State)
-
-	return &a
 }
 
 // Run runs application. this function creates and connects amqp client.
-func (a *Application) run() {
+// this function also creates mongodb connection.
+func (a *Application) Run() error {
 	// Makes a rabbitmq connection
-	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s/", config.GetConfig().Core.Broker.User, config.GetConfig().Core.Broker.Pass, config.GetConfig().Core.Broker.Host))
+	conn, err := amqp.Dial(a.rabbitURL)
 	if err != nil {
-		a.Logger.Fatalf("RabbitMQ connection error: %s", err)
+		return fmt.Errorf("RabbitMQ connection error: %s", err)
 	}
 	a.stateConn = conn
 
 	// creates a rabbitmq channel
 	ch, err := conn.Channel()
 	if err != nil {
-		a.Logger.Fatalf("RabbitMQ channel error: %s", err)
+		return fmt.Errorf("RabbitMQ channel error: %s", err)
 	}
 	a.stateChan = ch
 
@@ -111,7 +91,7 @@ func (a *Application) run() {
 		false, // no-wait
 		nil,   // arguments
 	); err != nil {
-		a.Logger.Fatalf("RabbitMQ failed to declare an exchange %s", err)
+		return fmt.Errorf("RabbitMQ failed to declare an exchange %s", err)
 	}
 
 	// listen to fanout exchange
@@ -124,7 +104,7 @@ func (a *Application) run() {
 		nil,   // arguments
 	)
 	if err != nil {
-		a.Logger.Fatalf("RabbitMQ failed to declare a queue %s", err)
+		return fmt.Errorf("RabbitMQ failed to declare a queue %s", err)
 	}
 
 	if err := a.stateChan.QueueBind(
@@ -134,7 +114,7 @@ func (a *Application) run() {
 		false,
 		nil,
 	); err != nil {
-		a.Logger.Fatalf("RabbitMQ failed to bind a queue %s", err)
+		return fmt.Errorf("RabbitMQ failed to bind a queue %s", err)
 	}
 
 	msgs, err := a.stateChan.Consume(
@@ -147,7 +127,7 @@ func (a *Application) run() {
 		nil,    // args
 	)
 	if err != nil {
-		a.Logger.Fatalf("RabbitMQ failed to consume %s", err)
+		return fmt.Errorf("RabbitMQ failed to consume %s", err)
 	}
 
 	go func() {
@@ -156,9 +136,16 @@ func (a *Application) run() {
 		}
 	}()
 
+	// Create a mongodb connection
+	session, err := mgo.NewClient(a.databaseURL)
+	if err != nil {
+		return fmt.Errorf("Database client creation for %s error: %s", a.databaseURL, err)
+	}
+	a.session = session
+
 	// Connect to the mongodb
 	if err := a.session.Connect(context.Background()); err != nil {
-		a.Logger.Fatalf("DB connection error: %s", err)
+		return fmt.Errorf("DB connection error: %s", err)
 	}
 	a.db = a.session.Database("i1820")
 
@@ -169,13 +156,14 @@ func (a *Application) run() {
 	}
 
 	a.IsRun = true
+	return err
 }
 
 func (a *Application) consume(msg []byte) {
 	var s types.State
 	if err := json.Unmarshal(msg, &s); err != nil {
-		a.Logger.WithFields(logrus.Fields{
-			"component": "link",
+		log.WithFields(log.Fields{
+			"component": "dm",
 		}).Errorf("Unmarshal data error: %s", err)
 		return
 	}
@@ -192,9 +180,9 @@ func (a *Application) Exit() {
 
 	// disconnect from rabbitmq
 	if err := a.stateChan.Close(); err != nil {
-		a.Logger.Error(err)
+		log.Error(err)
 	}
 	if err := a.stateConn.Close(); err != nil {
-		a.Logger.Error(err)
+		log.Error(err)
 	}
 }
