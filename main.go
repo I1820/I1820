@@ -33,7 +33,10 @@ func main() {
 
 		}
 	}()
-	app := core.GetApplication()
+	app := core.New(config.GetConfig().Database.URL, fmt.Sprintf("amqp://%s:%s@%s/", config.GetConfig().Core.Broker.User, config.GetConfig().Core.Broker.Pass, config.GetConfig().Core.Broker.Host))
+	if err := app.Run(); err != nil {
+		log.Fatalf("Core Application failed with %s", err)
+	}
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
