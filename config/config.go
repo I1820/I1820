@@ -72,7 +72,7 @@ func config() {
 		}
 	}
 
-	v.SetEnvPrefix("i1820_link")
+	v.SetEnvPrefix("i1820_dm")
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
