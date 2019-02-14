@@ -16,6 +16,7 @@ func App() *echo.Echo {
 	app := echo.New()
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
+	app.Pre(middleware.RemoveTrailingSlash())
 
 	if config.GetConfig().Debug {
 		app.Logger.SetLevel(log.DEBUG)
