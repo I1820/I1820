@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/I1820/types"
+	"github.com/labstack/echo/v4"
 )
 
 const thingID = "5ba3f1a287a142b0a840fae1"
@@ -30,6 +31,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_List() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things/%s/queries/list", projectID, thingID), nil)
 	suite.NoError(err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
 	suite.Equal(200, w.Code)
@@ -60,6 +62,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_PFetch() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/pfetch", projectID, thingID), bytes.NewReader(data))
 	suite.NoError(err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
 	suite.Equal(200, w.Code)
@@ -85,6 +88,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_Fetch() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/fetch", projectID, thingID), bytes.NewReader(data))
 	suite.NoError(err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
 	suite.Equal(200, w.Code)
@@ -108,6 +112,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_Recently() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/recently", projectID, thingID), bytes.NewReader(data))
 	suite.NoError(err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
 	suite.Equal(200, w.Code)
