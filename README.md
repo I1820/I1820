@@ -1,13 +1,13 @@
 # Data Manager
 [![Travis branch](https://img.shields.io/travis/com/I1820/dm/master.svg?style=flat-square)](https://travis-ci.com/I1820/dm)
 [![Go Report](https://goreportcard.com/badge/github.com/I1820/dm?style=flat-square)](https://goreportcard.com/report/github.com/I1820/dm)
-[![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
+[![Echo](https://img.shields.io/badge/powered%20by-echo-blue.svg?style=flat-square)](https://echo.labstack.com/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2cda8cad3c7b46879da2544c1057c91f)](https://www.codacy.com/app/i1820/dm?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=I1820/dm&amp;utm_campaign=Badge_Grade)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/dm)
 
 ## Introduction
-DM is a Data Manager component of the I1820 platform.
-It has some useful built-in queries that can returns data from the database (MongoDB).
+DM is a Data Manager component of the I1820 platform. It handles data that are coming from RabbitMQ and stores them.
+It also has some useful built-in queries that can returns data from the database (MongoDB).
 We plan to create [Grafana](https://grafana.com/) plugin for it.
 
 ## Profiler
