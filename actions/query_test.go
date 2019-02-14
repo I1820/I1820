@@ -117,6 +117,8 @@ func (suite *DMTestSuite) Test_QueriesHandler_Recently() {
 
 	suite.Equal(200, w.Code)
 
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
+
 	suite.Equal(1, len(results))
 	suite.Equal(7100.0, results[0].Value.Number)
 }
