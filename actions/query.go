@@ -112,6 +112,9 @@ func (q QueriesHandler) Recently(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
+	if err := c.Validate(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
 
 	limit := req.Limit
 	if limit == 0 {
@@ -173,6 +176,9 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+	if err := c.Validate(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	thingID := c.Param("thing_id")
@@ -288,6 +294,9 @@ func (q QueriesHandler) Fetch(c echo.Context) error {
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+	if err := c.Validate(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	thingID := c.Param("thing_id")
