@@ -45,7 +45,7 @@ func TestPipelineDirect(t *testing.T) {
 		Project: pName,
 	})
 	assert.NoError(t, err)
-	a.stateChan.Publish(
+	assert.NoError(t, a.stateChan.Publish(
 		"i1820_fanout_states", // exchange type
 		"",                    // routing key
 		false,
@@ -54,7 +54,7 @@ func TestPipelineDirect(t *testing.T) {
 			ContentType: "application/json",
 			Body:        b,
 		},
-	)
+	))
 	a.Exit()
 
 	var d types.State
