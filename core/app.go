@@ -189,10 +189,6 @@ func (a *Application) consume(msg []byte) {
 func (a *Application) Exit() {
 	a.IsRun = false
 
-	// close insert stream
-	close(a.insertStream)
-	a.insertWG.Wait()
-
 	// disconnect from rabbitmq
 	if err := a.stateChan.Close(); err != nil {
 		log.Error(err)
@@ -200,4 +196,8 @@ func (a *Application) Exit() {
 	if err := a.stateConn.Close(); err != nil {
 		log.Error(err)
 	}
+
+	// close insert stream
+	close(a.insertStream)
+	a.insertWG.Wait()
 }
