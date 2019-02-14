@@ -11,6 +11,11 @@
 package actions
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"time"
 
 	"github.com/I1820/types"
@@ -19,71 +24,94 @@ import (
 const thingID = "5ba3f1a287a142b0a840fae1"
 const projectID = "5ba3f19c87a142b0a840fae0"
 
-func (as *ActionSuite) Test_QueriesResource_List() {
+func (suite *DMTestSuite) Test_QueriesHandler_List() {
 	var results []listResp
 
-	res := as.JSON("/api/projects/%s/things/%s/queries/list", projectID, thingID).Get()
-	as.Equal(200, res.Code)
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things/%s/queries/list", projectID, thingID), nil)
+	suite.NoError(err)
+	suite.engine.ServeHTTP(w, req)
 
-	res.Bind(&results)
+	suite.Equal(200, w.Code)
 
-	as.NotEqual(0, len(results))
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
+
+	suite.NotEqual(0, len(results))
 
 	for _, r := range results {
 		if r.ID == "100" {
-			as.Equal(4, r.Total)
+			suite.Equal(4, r.Total)
 		}
 	}
 }
 
-func (as *ActionSuite) Test_QueriesResource_PFetch() {
+func (suite *DMTestSuite) Test_QueriesHandler_PFetch() {
 	var results []pfetchResp
 
-	var req fetchReq
-	req.Range.To = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
-	req.Range.From = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
-	req.Target = "100"
-	req.Window.Size = 1
+	var freq fetchReq
+	freq.Range.To = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
+	freq.Range.From = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
+	freq.Target = "100"
+	freq.Window.Size = 1
 
-	res := as.JSON("/api/projects/%s/things/%s/queries/pfetch", projectID, thingID).Post(req)
-	as.Equal(200, res.Code)
+	data, err := json.Marshal(freq)
+	suite.NoError(err)
 
-	res.Bind(&results)
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/pfetch", projectID, thingID), bytes.NewReader(data))
+	suite.NoError(err)
+	suite.engine.ServeHTTP(w, req)
 
-	as.Equal(1, len(results))
-	as.Equal(6750.0, results[0].Data)
+	suite.Equal(200, w.Code)
+
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
+
+	suite.Equal(1, len(results))
+	suite.Equal(6750.0, results[0].Data)
 }
 
-func (as *ActionSuite) Test_QueriesResource_Fetch() {
+func (suite *DMTestSuite) Test_QueriesHandler_Fetch() {
 	var results []types.State
 
-	var req fetchReq
-	req.Range.To = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
-	req.Range.From = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
-	req.Target = "101"
-	req.Type = "string"
+	var freq fetchReq
+	freq.Range.To = time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC)
+	freq.Range.From = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC)
+	freq.Target = "101"
+	freq.Type = "string"
 
-	res := as.JSON("/api/projects/%s/things/%s/queries/fetch", projectID, thingID).Post(req)
-	as.Equal(200, res.Code)
+	data, err := json.Marshal(freq)
+	suite.NoError(err)
 
-	res.Bind(&results)
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/fetch", projectID, thingID), bytes.NewReader(data))
+	suite.NoError(err)
+	suite.engine.ServeHTTP(w, req)
 
-	as.Equal(1, len(results))
-	as.Equal("hello", results[0].Value.String)
+	suite.Equal(200, w.Code)
+
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
+
+	suite.Equal(1, len(results))
+	suite.Equal("hello", results[0].Value.String)
 }
 
-func (as *ActionSuite) Test_QueriesResource_Recently() {
+func (suite *DMTestSuite) Test_QueriesHandler_Recently() {
 	var results []types.State
 
-	var req recentlyReq
-	req.Asset = "102"
-	req.Limit = 1
+	var rreq recentlyReq
+	rreq.Asset = "102"
+	rreq.Limit = 1
 
-	res := as.JSON("/api/projects/%s/things/%s/queries/recently", projectID, thingID).Post(req)
-	as.Equal(200, res.Code)
+	data, err := json.Marshal(rreq)
+	suite.NoError(err)
 
-	res.Bind(&results)
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/recently", projectID, thingID), bytes.NewReader(data))
+	suite.NoError(err)
+	suite.engine.ServeHTTP(w, req)
 
-	as.Equal(1, len(results))
-	as.Equal(7100.0, results[0].Value.Number)
+	suite.Equal(200, w.Code)
+
+	suite.Equal(1, len(results))
+	suite.Equal(7100.0, results[0].Value.Number)
 }
