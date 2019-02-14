@@ -64,22 +64,37 @@ func New(databaseURL string, rabbitURL string) *Application {
 	}
 }
 
-// Run runs application. this function creates and connects amqp client.
-// this function also creates mongodb connection.
-func (a *Application) Run() error {
+// rabbitmqConnect connects to the rabbitmq and creates channel. it also provides
+// a fail-safe way by reconnecting on connection failures.
+func (a *Application) rabbitmqConnect() {
 	// Makes a rabbitmq connection
 	conn, err := amqp.Dial(a.rabbitURL)
 	if err != nil {
-		return fmt.Errorf("RabbitMQ connection error: %s", err)
+		log.Fatalf("RabbitMQ connection error: %s", err)
 	}
 	a.stateConn = conn
+
+	// listen to rabbitmq close event
+	go func() {
+		for err := range conn.NotifyClose(make(chan *amqp.Error)) {
+			log.Errorf("RabbitMQ connection is closed: %s", err)
+			a.rabbitmqConnect()
+			return
+		}
+	}()
 
 	// creates a rabbitmq channel
 	ch, err := conn.Channel()
 	if err != nil {
-		return fmt.Errorf("RabbitMQ channel error: %s", err)
+		log.Fatalf("RabbitMQ channel error: %s", err)
 	}
 	a.stateChan = ch
+}
+
+// Run runs application. this function creates and connects amqp client.
+// this function also creates mongodb connection.
+func (a *Application) Run() error {
+	a.rabbitmqConnect()
 
 	// fanout exchange
 	if err := a.stateChan.ExchangeDeclare(
