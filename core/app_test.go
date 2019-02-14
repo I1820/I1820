@@ -68,5 +68,5 @@ func TestPipelineDirect(t *testing.T) {
 	assert.NoError(t, q.Decode(&d))
 
 	assert.Equal(t, d.At.Unix(), ts.Unix())
-	assert.Equal(t, 18.20, d.Value.Number)
+	assert.Equal(t, 18.20, d.Raw)
 }
