@@ -55,6 +55,7 @@ func TestPipelineDirect(t *testing.T) {
 			Body:        b,
 		},
 	))
+	time.Sleep(1 * time.Second) // wait for rabbitmq to publish the message.
 	a.Exit()
 
 	var d types.State
