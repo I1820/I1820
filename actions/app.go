@@ -28,7 +28,7 @@ func App() *echo.Echo {
 	app.GET("/about", AboutHandler)
 	api := app.Group("/api")
 	{
-		pt := api.Group("/projects/{project_id}/things/{thing_id}")
+		pt := api.Group("/projects/:project_id/things/:thing_id")
 		{
 			qh := QueriesHandler{
 				db: connectToDatabase(),
