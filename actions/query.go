@@ -217,7 +217,7 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 								primitive.M{
 									"$subtract": primitive.A{
 										"$at",
-										0,
+										time.Unix(0, 0),
 									},
 								},
 								cs,
@@ -233,7 +233,7 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 			"$addFields": primitive.M{
 				"since": primitive.M{
 					"$add": primitive.A{
-						0,
+						time.Unix(0, 0),
 						primitive.M{
 							"$multiply": primitive.A{
 								"$_id.cluster",
@@ -244,7 +244,7 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 				},
 				"until": primitive.M{
 					"$add": primitive.A{
-						0,
+						time.Unix(0, 0),
 						cs,
 						primitive.M{
 							"$multiply": primitive.A{
