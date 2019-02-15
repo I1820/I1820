@@ -1,0 +1,26 @@
+language: go
+
+go: "1.11"
+
+env:
+  - I1820_TM_DATABSE_URL="mongodb://127.0.0.1:27017" GO111MODULE=on
+
+services:
+  - mongodb
+
+go_import_path: github.com/I1820/tm
+
+before_install:
+  - PKGS=$(go list ./... ) # All the import paths
+  - go get -u golang.org/x/lint/golint   # linter
+  - go get -u github.com/kisielk/errcheck     # errcheck checks that you checked errors.
+
+install:
+  - go mod tidy
+  - go mod download
+
+script:
+  - go vet -v $PKGS                   # go vet is the official Go static analyzer
+  - errcheck -verbose $PKGS           # Check for unchecked errors
+  - golint -set_exit_status $PKGS     # One last linter
+  - go test -v $PKGS
