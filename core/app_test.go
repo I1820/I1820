@@ -20,10 +20,10 @@ import (
 	"time"
 
 	json "github.com/json-iterator/go"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 
 	"github.com/I1820/dm/config"
 	"github.com/I1820/types"
-	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
 )
@@ -59,12 +59,12 @@ func TestPipelineDirect(t *testing.T) {
 	a.Exit()
 
 	var d types.State
-	q := a.db.Collection(fmt.Sprintf("data.%s.%s", pName, tID)).FindOne(context.Background(), bson.NewDocument(
-		bson.EC.SubDocument("at", bson.NewDocument(
-			bson.EC.Time("$gte", ts),
-		)),
-		bson.EC.String("asset", aName),
-	))
+	q := a.db.Collection(fmt.Sprintf("data.%s.%s", pName, tID)).FindOne(context.Background(), primitive.M{
+		"at": primitive.M{
+			"$gte": ts,
+		},
+		"asset": aName,
+	})
 	assert.NoError(t, q.Decode(&d))
 
 	assert.Equal(t, d.At.Unix(), ts.Unix())
