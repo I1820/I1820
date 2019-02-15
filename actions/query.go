@@ -17,13 +17,13 @@ import (
 
 	"github.com/I1820/types"
 	"github.com/labstack/echo/v4"
-	"github.com/mongodb/mongo-go-driver/bson"
-	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 // QueriesHandler handles useful queries on database
 type QueriesHandler struct {
-	db *mgo.Database
+	db *mongo.Database
 }
 
 type listResp struct {
@@ -72,14 +72,14 @@ func (q QueriesHandler) List(c echo.Context) error {
 
 	var results = make([]listResp, 0)
 
-	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$group",
-				bson.EC.String("_id", "$asset"),
-				bson.EC.SubDocumentFromElements("total", bson.EC.Int32("$sum", 1)),
-			),
-		),
-	))
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, primitive.A{
+		primitive.M{
+			"$group": primitive.M{
+				"_id":   "$asset",
+				"total": primitive.M{"$sum": 1},
+			},
+		},
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -126,24 +126,24 @@ func (q QueriesHandler) Recently(c echo.Context) error {
 	thingID := c.Param("thing_id")
 	projectID := c.Param("project_id")
 
-	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$match",
-				bson.EC.String("asset", assetName),
-			),
-		),
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$sort",
-				bson.EC.Int32("at", -1),
-			),
-		),
-		bson.VC.DocumentFromElements(
-			bson.EC.Int64("$skip", offset),
-		),
-		bson.VC.DocumentFromElements(
-			bson.EC.Int64("$limit", limit),
-		),
-	))
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, primitive.A{
+		primitive.M{
+			"$match": primitive.M{
+				"asset": assetName,
+			},
+		},
+		primitive.M{
+			"$sort": primitive.M{
+				"at": -1,
+			},
+		},
+		primitive.M{
+			"$skip": offset,
+		},
+		primitive.M{
+			"$limit": limit,
+		},
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -196,72 +196,72 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 		cs++
 	}
 
-	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
-		bson.VC.DocumentFromElements( // match phase
-			bson.EC.SubDocumentFromElements("$match",
-				bson.EC.String("asset", assetName),
-				bson.EC.SubDocumentFromElements("value.number", bson.EC.Boolean("$exists", true)),
-				bson.EC.SubDocumentFromElements("at",
-					bson.EC.Time("$gt", req.Range.From),
-					bson.EC.Time("$lt", req.Range.To),
-				),
-			),
-		),
-		bson.VC.DocumentFromElements( // group phase
-			bson.EC.SubDocumentFromElements("$group",
-				bson.EC.SubDocumentFromElements("_id",
-					bson.EC.String("asset", "$asset"),
-					bson.EC.SubDocumentFromElements("cluster",
-						bson.EC.SubDocumentFromElements("$floor",
-							bson.EC.ArrayFromElements("$divide",
-								bson.VC.DocumentFromElements(
-									bson.EC.ArrayFromElements("$subtract",
-										bson.VC.String("$at"),
-										bson.VC.DateTime(0),
-									),
-								),
-								bson.VC.Int64(cs),
-							),
-						),
-					),
-				),
-				bson.EC.SubDocumentFromElements("count", bson.EC.Int32("$sum", 1)),
-				bson.EC.SubDocumentFromElements("data", bson.EC.String("$avg", "$value.number")),
-			),
-		),
-		bson.VC.DocumentFromElements( // add fields phase
-			bson.EC.SubDocumentFromElements("$addFields",
-				bson.EC.SubDocumentFromElements("since",
-					bson.EC.ArrayFromElements("$add",
-						bson.VC.DateTime(0),
-						bson.VC.DocumentFromElements(
-							bson.EC.ArrayFromElements("$multiply",
-								bson.VC.String("$_id.cluster"),
-								bson.VC.Int64(cs),
-							),
-						),
-					),
-				),
-				bson.EC.SubDocumentFromElements("until",
-					bson.EC.ArrayFromElements("$add",
-						bson.VC.DateTime(0),
-						bson.VC.Int64(cs),
-						bson.VC.DocumentFromElements(
-							bson.EC.ArrayFromElements("$multiply",
-								bson.VC.String("$_id.cluster"),
-								bson.VC.Int64(cs),
-							),
-						),
-					),
-				),
-			),
-		),
-		bson.VC.DocumentFromElements( // sort phase
-			bson.EC.SubDocumentFromElements("$sort",
-				bson.EC.Int32("since", -1),
-			),
-		),
-	))
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, primitive.A{
+		primitive.M{ // match phase
+			"$match": primitive.M{
+				"asset":        assetName,
+				"value.number": primitive.M{"$exists": true},
+				"at": primitive.M{
+					"$gt": req.Range.From,
+					"$lt": req.Range.To,
+				},
+			},
+		},
+		primitive.M{ // group phase
+			"$group": primitive.M{
+				"_id": primitive.M{
+					"asset": "$asset",
+					"cluster": primitive.M{
+						"$floor": primitive.M{
+							"$divide": primitive.A{
+								primitive.M{
+									"$subtract": primitive.A{
+										"$at",
+										0,
+									},
+								},
+								cs,
+							},
+						},
+					},
+				},
+				"count": primitive.M{"$sum": 1},
+				"data":  primitive.M{"$avg": "$value.number"},
+			},
+		},
+		primitive.M{ // add fields phase
+			"$addFields": primitive.M{
+				"since": primitive.M{
+					"$add": primitive.A{
+						0,
+						primitive.M{
+							"$multiply": primitive.A{
+								"$_id.cluster",
+								cs,
+							},
+						},
+					},
+				},
+				"until": primitive.M{
+					"$add": primitive.A{
+						0,
+						cs,
+						primitive.M{
+							"$multiply": primitive.A{
+								"$_id.cluster",
+								cs,
+							},
+						},
+					},
+				},
+			},
+		},
+		primitive.M{ // sort phase
+			"$sort": primitive.M{
+				"since": -1,
+			},
+		},
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -305,18 +305,18 @@ func (q QueriesHandler) Fetch(c echo.Context) error {
 	assetName := req.Target
 	assetType := req.Type
 
-	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, bson.NewArray(
-		bson.VC.DocumentFromElements(
-			bson.EC.SubDocumentFromElements("$match", // find states of given asset that have given type
-				bson.EC.String("asset", assetName),
-				bson.EC.SubDocumentFromElements(fmt.Sprintf("value.%s", assetType), bson.EC.Boolean("$exists", true)),
-				bson.EC.SubDocumentFromElements("at",
-					bson.EC.Time("$gt", req.Range.From),
-					bson.EC.Time("$lt", req.Range.To),
-				),
-			),
-		),
-	))
+	cur, err := q.db.Collection(fmt.Sprintf("data.%s.%s", projectID, thingID)).Aggregate(ctx, primitive.A{
+		primitive.M{
+			"$match": primitive.M{ // find states of given asset that have given type
+				"asset":                            assetName,
+				fmt.Sprintf("value.%s", assetType): primitive.M{"$exists": true},
+				"at": primitive.M{
+					"$gt": req.Range.From,
+					"$lt": req.Range.To,
+				},
+			},
+		},
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
