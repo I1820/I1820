@@ -21,7 +21,7 @@ install:
   - go mod download
 
 before_script:
-  - mongo i1820 init.js # mongo mock database
+  - mongo i1820 ./.ci/mongo.js # mocks mongo database
 
 script:
   - go vet -v $PKGS                   # go vet is the official Go static analyzer
