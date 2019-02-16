@@ -1,10 +1,13 @@
 package actions
 
 import (
+	"context"
+
 	"github.com/I1820/tm/config"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -26,4 +29,17 @@ func App() *echo.Echo {
 	app.GET("/about", AboutHandler)
 
 	return app
+}
+
+func connectToDatabase() *mongo.Database {
+	// Create mongodb connection
+	url := config.GetConfig().Database.URL
+	client, err := mongo.NewClient(url)
+	if err != nil {
+		log.Fatalf("DB new client error: %s", err)
+	}
+	if err := client.Connect(context.Background()); err != nil {
+		log.Fatalf("DB connection error: %s", err)
+	}
+	return client.Database("i1820")
 }
