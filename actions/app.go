@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -44,10 +44,10 @@ func App() *echo.Echo {
 	return app
 }
 
-func connectToDatabase() *mgo.Database {
+func connectToDatabase() *mongo.Database {
 	// Create mongodb connection
 	url := config.GetConfig().Database.URL
-	client, err := mgo.NewClient(url)
+	client, err := mongo.NewClient(url)
 	if err != nil {
 		log.Fatalf("DB new client error: %s", err)
 	}
