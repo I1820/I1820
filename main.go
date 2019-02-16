@@ -27,7 +27,7 @@ func main() {
 
 	e := actions.App()
 	go func() {
-		if err := e.Start(":1373"); err != http.ErrServerClosed {
+		if err := e.Start(":1995"); err != http.ErrServerClosed {
 			log.Fatalf("API Service failed with %s", err)
 
 		}
