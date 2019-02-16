@@ -15,10 +15,8 @@ import (
 	"net/http"
 
 	"github.com/I1820/types"
-	"github.com/gobuffalo/buffalo"
 	"github.com/labstack/echo/v4"
 
-	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/options"
@@ -262,97 +260,103 @@ func (v ThingsHandler) Activation(c echo.Context) error {
 
 // GeoWithin returns all things that are in the polygon that is given by user.
 // This function is mapped to the path POST /projects/{project_id}/things/geo
-func (v ThingsResource) GeoWithin(c buffalo.Context) error {
+func (v ThingsHandler) GeoWithin(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
 	projectID := c.Param("project_id")
 
 	var rq geoWithinReq
 	if err := c.Bind(&rq); err != nil {
-		return c.Error(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	if err := validate.Struct(rq); err != nil {
-		return c.Error(http.StatusBadRequest, err)
+	if err := c.Validate(rq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	coordinates := bson.NewArray()
+	coordinates := primitive.A{}
 	for _, coordinate := range rq.Coordinates {
-		coordinates.Append(bson.VC.ArrayFromValues(
-			bson.VC.Double(coordinate[1]), // longitude is first in mongo
-			bson.VC.Double(coordinate[0]), // latitude is second in mongo
-		))
+		coordinates = append(coordinates, primitive.A{
+			coordinate[1], // longitude is first in mongo
+			coordinate[0], // latitude is second in mongo
+		})
 	}
 
 	results := make([]types.Thing, 0)
 
-	cur, err := db.Collection("things").Find(c, bson.NewDocument(
-		bson.EC.String("project", projectID),
-		bson.EC.SubDocumentFromElements("location",
-			bson.EC.SubDocumentFromElements("$geoWithin",
-				bson.EC.SubDocumentFromElements("$geometry",
-					bson.EC.String("type", "Polygon"),
-					bson.EC.Array("coordinates", bson.NewArray(bson.VC.Array(coordinates))),
-				),
-			),
-		),
-	))
+	cur, err := v.db.Collection("things").Find(ctx, primitive.M{
+		"project": projectID,
+		"location": primitive.M{
+			"$geoWithin": primitive.M{
+				"$geometry": primitive.M{
+					"type":        "Polygon",
+					"coordinates": primitive.A{coordinates},
+				},
+			},
+		},
+	})
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	for cur.Next(c) {
+	for cur.Next(ctx) {
 		var result types.Thing
 
 		if err := cur.Decode(&result); err != nil {
-			return c.Error(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 
 		results = append(results, result)
 	}
-	if err := cur.Close(c); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err := cur.Close(ctx); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(results))
+	return c.JSON(http.StatusOK, results)
 }
 
 // HaveTags returns all things that have tags that are given by user
 // This function is mapped to the path POST /projeects/{project_id}/things/tags
-func (v ThingsResource) HaveTags(c buffalo.Context) error {
+func (v ThingsHandler) HaveTags(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
 	projectID := c.Param("project_id")
 
 	var rq haveTagReq
 	if err := c.Bind(&rq); err != nil {
-		return c.Error(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
-	if err := validate.Struct(rq); err != nil {
-		return c.Error(http.StatusBadRequest, err)
+	if err := c.Validate(rq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
 	results := make([]types.Thing, 0)
 
-	cur, err := db.Collection("things").Find(c, bson.NewDocument(
-		bson.EC.String("project", projectID),
-		bson.EC.SubDocumentFromElements("tags",
-			bson.EC.Interface("$in", rq.Tags),
-		),
-	))
+	cur, err := v.db.Collection("things").Find(ctx, primitive.M{
+		"project": projectID,
+		"tags": primitive.M{
+			"$in": rq.Tags,
+		},
+	})
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	for cur.Next(c) {
+	for cur.Next(ctx) {
 		var result types.Thing
 
 		if err := cur.Decode(&result); err != nil {
-			return c.Error(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 
 		results = append(results, result)
 	}
-	if err := cur.Close(c); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err := cur.Close(ctx); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.Render(http.StatusOK, r.JSON(results))
+	return c.JSON(http.StatusOK, results)
 }
