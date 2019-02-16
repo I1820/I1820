@@ -27,6 +27,24 @@ func App() *echo.Echo {
 
 	// Routes
 	app.GET("/about", AboutHandler)
+	api := app.Group("/api")
+	{
+		pg := api.Group("/projects/:project_id")
+		{
+			// /projects/{project_id}/things
+			tr := ThingsHandler{
+				db: connectToDatabase(),
+			}
+			pg.GET("/things", tr.List)
+			pg.POST("/things", tr.Create)
+			pg.DELETE("/things", tr.Destroy)
+			pg.GET("/things/:thing_id", tr.Show)
+			pg.PUT("/things/:thing_id", tr.Update)
+			pg.POST("/things/geo", tr.GeoWithin)
+			pg.POST("/things/tags", tr.HaveTags)
+			pg.GET("/things/:thing_id/:t:(?:activate|deactivate)", tr.Activation)
+		}
+	}
 
 	return app
 }
