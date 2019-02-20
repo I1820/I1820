@@ -37,7 +37,7 @@ func App() *echo.Echo {
 			}
 			pg.GET("/things", tr.List)
 			pg.POST("/things", tr.Create)
-			pg.DELETE("/things", tr.Destroy)
+			pg.DELETE("/things/:thing_id", tr.Destroy)
 			pg.GET("/things/:thing_id", tr.Show)
 			pg.PUT("/things/:thing_id", tr.Update)
 			pg.POST("/things/geo", tr.GeoWithin)
