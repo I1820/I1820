@@ -81,20 +81,20 @@ func (q QueriesHandler) List(c echo.Context) error {
 		},
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	for cur.Next(ctx) {
 		var result listResp
 
 		if err := cur.Decode(&result); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		results = append(results, result)
 	}
 	if err := cur.Close(ctx); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, results)
@@ -110,7 +110,7 @@ func (q QueriesHandler) Recently(c echo.Context) error {
 
 	var req recentlyReq
 	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if err := c.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -145,7 +145,7 @@ func (q QueriesHandler) Recently(c echo.Context) error {
 		},
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	results := make([]types.State, 0)
@@ -153,13 +153,13 @@ func (q QueriesHandler) Recently(c echo.Context) error {
 		var result types.State
 
 		if err := cur.Decode(&result); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		results = append(results, result)
 	}
 	if err := cur.Close(ctx); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, results)
@@ -175,7 +175,7 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if err := c.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -263,7 +263,7 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 		},
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	results := make([]pfetchResp, 0)
@@ -271,13 +271,13 @@ func (q QueriesHandler) PartialFetch(c echo.Context) error {
 		var result pfetchResp
 
 		if err := cur.Decode(&result); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		results = append(results, result)
 	}
 	if err := cur.Close(ctx); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, results)
@@ -293,7 +293,7 @@ func (q QueriesHandler) Fetch(c echo.Context) error {
 
 	var req fetchReq
 	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if err := c.Validate(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -318,7 +318,7 @@ func (q QueriesHandler) Fetch(c echo.Context) error {
 		},
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	results := make([]types.State, 0)
@@ -326,13 +326,13 @@ func (q QueriesHandler) Fetch(c echo.Context) error {
 		var result types.State
 
 		if err := cur.Decode(&result); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		results = append(results, result)
 	}
 	if err := cur.Close(ctx); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, results)
