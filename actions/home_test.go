@@ -18,7 +18,7 @@ import (
 	"net/http/httptest"
 )
 
-func (suite *DMTestSuite) Test_AboutHandler() {
+func (suite *TMTestSuite) Test_AboutHandler() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/about", nil)
 	suite.NoError(err)

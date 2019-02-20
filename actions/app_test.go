@@ -20,18 +20,18 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-// DMTestSuite is a test suite for dm component APIs.
-type DMTestSuite struct {
+// TMTestSuite is a test suite for tm component APIs.
+type TMTestSuite struct {
 	suite.Suite
 	engine *echo.Echo
 }
 
-// SetupSuite initiates dm test suite
-func (suite *DMTestSuite) SetupSuite() {
+// SetupSuite initiates tm test suite
+func (suite *TMTestSuite) SetupSuite() {
 	suite.engine = App()
 }
 
-// Let's test dm APIs!
+// Let's test tm APIs!
 func TestService(t *testing.T) {
-	suite.Run(t, new(DMTestSuite))
+	suite.Run(t, new(TMTestSuite))
 }
