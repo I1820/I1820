@@ -29,15 +29,15 @@ var tID = ""
 var t types.Thing
 
 func (suite *TMTestSuite) Test_ThingsHandler() {
-	suite.Test_ThingsHandler_Create()
-	suite.Test_ThingsHandler_Show()
-	suite.Test_ThingsHandler_List()
-	suite.Test_ThingsHandler_GeoWithin()
-	suite.Test_ThingsHandler_Destroy()
+	suite.testThingsHandlerCreate()
+	suite.testThingsHandlerShow()
+	suite.testThingsHandlerList()
+	suite.testThingsHandlerGeoWithin()
+	suite.testThingsHandlerDestroy()
 }
 
 // Create thing (POST /api/projects/{project_id}/things)
-func (suite *TMTestSuite) Test_ThingsHandler_Create() {
+func (suite *TMTestSuite) testThingsHandlerCreate() {
 	// build thing creation request
 	var treq thingReq
 	treq.Name = tName
@@ -59,7 +59,7 @@ func (suite *TMTestSuite) Test_ThingsHandler_Create() {
 }
 
 // Show (GET /api/projects/{project_id}/things/{thing_id}
-func (suite *TMTestSuite) Test_ThingsHandler_Show() {
+func (suite *TMTestSuite) testThingsHandlerShow() {
 	var ts types.Thing
 
 	w := httptest.NewRecorder()
@@ -76,7 +76,7 @@ func (suite *TMTestSuite) Test_ThingsHandler_Show() {
 }
 
 // List (GET /api/projects/{project_id}/things)
-func (suite *TMTestSuite) Test_ThingsHandler_List() {
+func (suite *TMTestSuite) testThingsHandlerList() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things", pID), nil)
 	suite.NoError(err)
@@ -87,7 +87,7 @@ func (suite *TMTestSuite) Test_ThingsHandler_List() {
 }
 
 // GeoWithin (POST /api/projects/{project_id}/things/geo)
-func (suite *TMTestSuite) Test_ThingsHandler_GeoWithin() {
+func (suite *TMTestSuite) testThingsHandlerGeoWithin() {
 	var tg []types.Thing
 
 	// build thing geowithin request
@@ -118,7 +118,7 @@ func (suite *TMTestSuite) Test_ThingsHandler_GeoWithin() {
 }
 
 // Destroy (DELETE /api/projects/{project_id}/things)
-func (suite *TMTestSuite) Test_ThingsHandler_Destroy() {
+func (suite *TMTestSuite) testThingsHandlerDestroy() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("/api/projects/%s/things/%s", pID, tID), nil)
 	suite.NoError(err)
