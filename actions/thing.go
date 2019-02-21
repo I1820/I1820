@@ -248,6 +248,30 @@ func (v ThingsHandler) Destroy(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
+	go func() {
+		b, err := json.Marshal(types.Thing{
+			ID:      id,
+			Project: projectID,
+		})
+		if err != nil {
+			log.Errorf("Thing marshaling error: %s", err)
+		}
+
+		// publish thing cration event into the direct exchange of rabbitmq
+		if err := v.ch.Publish(
+			"i1820_things", // exchange type
+			"remove",       // routing key
+			false,
+			false,
+			amqp.Publishing{
+				ContentType: "application/json",
+				Body:        b,
+			},
+		); err != nil {
+			log.Errorf("Rabbitmq failed to publish: %s", err)
+		}
+	}()
+
 	return c.JSON(http.StatusOK, true)
 }
 
