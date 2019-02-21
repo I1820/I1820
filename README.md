@@ -5,3 +5,10 @@
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/tm)
 
 ## Introduction
+Thing manager manages I1820 Things and their properties. Each thing in I1820 have the following
+properties:
+
+- Assets
+- Connectivities
+- Tags
+- etc.
