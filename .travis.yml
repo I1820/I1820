@@ -3,7 +3,7 @@ language: go
 go: "1.11"
 
 env:
-  - I1820_TM_DATABSE_URL="mongodb://127.0.0.1:27017" GO111MODULE=on
+  - I1820_TM_DATABSE_URL="mongodb://127.0.0.1:27017" GO111MODULE=on I1820_TM_RABBIT_USER=guest I1820_TM_RABBIT_PASS=guest
 
 services:
   - mongodb
