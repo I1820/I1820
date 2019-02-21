@@ -11,11 +11,14 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/I1820/types"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+	"github.com/streadway/amqp"
 
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
@@ -26,6 +29,8 @@ import (
 // ThingsHandler handles existing things
 type ThingsHandler struct {
 	db *mongo.Database
+
+	ch *amqp.Channel
 }
 
 // thing request payload
@@ -106,7 +111,7 @@ func (v ThingsHandler) Create(c echo.Context) error {
 		model = rq.Model
 	}
 
-	// there is no check for project existence
+	// there is no check for project existence!
 
 	t := types.Thing{
 		ID:             primitive.NewObjectID().Hex(),
@@ -129,6 +134,27 @@ func (v ThingsHandler) Create(c echo.Context) error {
 	if _, err := v.db.Collection("things").InsertOne(ctx, t); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
+
+	go func() {
+		b, err := json.Marshal(t)
+		if err != nil {
+			log.Errorf("Thing marshaling error: %s", err)
+		}
+
+		// publish thing cration event into the direct exchange of rabbitmq
+		if err := v.ch.Publish(
+			"i1820_things", // exchange type
+			"create",       // routing key
+			false,
+			false,
+			amqp.Publishing{
+				ContentType: "application/json",
+				Body:        b,
+			},
+		); err != nil {
+			log.Errorf("Rabbitmq failed to publish: %s", err)
+		}
+	}()
 
 	return c.JSON(http.StatusOK, t)
 }
