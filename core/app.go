@@ -20,7 +20,8 @@ import (
 	"sync"
 
 	json "github.com/json-iterator/go"
-	mgo "github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/I1820/types"
@@ -37,8 +38,8 @@ type Application struct {
 	conn *amqp.Connection
 	ch   *amqp.Channel
 
-	session *mgo.Client
-	db      *mgo.Database
+	session *mongo.Client
+	db      *mongo.Database
 
 	// pipeline channels
 	insertStream chan *types.State
@@ -209,7 +210,7 @@ func (a *Application) Run() error {
 	}()
 
 	// Create a mongodb connection
-	session, err := mgo.NewClient(a.databaseURL)
+	session, err := mongo.NewClient(a.databaseURL)
 	if err != nil {
 		return fmt.Errorf("Database client creation for %s error: %s", a.databaseURL, err)
 	}
@@ -251,7 +252,29 @@ func (a *Application) thingCreated(msg []byte) {
 		return
 	}
 
-	fmt.Printf("%+v\n", t)
+	// create data collection with following format
+	// data.project_id.thing_id
+	c := context.Background()
+	cd := a.db.Collection(fmt.Sprintf("data.%s.%s", t.Project, t.ID))
+	if _, err := cd.Indexes().CreateMany(
+		c,
+		[]mongo.IndexModel{
+			mongo.IndexModel{
+				Keys: primitive.M{
+					"at": 1,
+				},
+			},
+			mongo.IndexModel{
+				Keys: primitive.M{
+					"asset": 1,
+				},
+			},
+		},
+	); err != nil {
+		// this error should not happen but in case of it happens you can ignore it safely.
+		log.Errorf("Thing collection creation error: %s", err)
+	}
+	log.Infof("Thing %s collection is created successfully", t.ID)
 }
 
 // Exit closes amqp connection then closes all channels and return from all pipeline stages
