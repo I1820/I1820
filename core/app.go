@@ -168,7 +168,7 @@ func (a *Application) Run() error {
 	}
 
 	// listen to fanout exchange of I1820 things
-	qt, err := a.ch.QueueDeclare(
+	qtc, err := a.ch.QueueDeclare(
 		"dm_thing_create", // name
 		false,             // durable
 		true,              // delete when unused
@@ -180,9 +180,31 @@ func (a *Application) Run() error {
 		return fmt.Errorf("RabbitMQ failed to declare a queue %s", err)
 	}
 
+	qtr, err := a.ch.QueueDeclare(
+		"dm_thing_remove", // name
+		false,             // durable
+		true,              // delete when unused
+		false,             // exclusive
+		false,             // no-wait
+		nil,               // arguments
+	)
+	if err != nil {
+		return fmt.Errorf("RabbitMQ failed to declare a queue %s", err)
+	}
+
 	if err := a.ch.QueueBind(
-		qt.Name,        // queue name
+		qtc.Name,       // queue name
 		"create",       // routing key
+		"i1820_things", // exchange
+		false,
+		nil,
+	); err != nil {
+		return fmt.Errorf("RabbitMQ failed to bind a queue %s", err)
+	}
+
+	if err := a.ch.QueueBind(
+		qtr.Name,       // queue name
+		"remove",       // routing key
 		"i1820_things", // exchange
 		false,
 		nil,
@@ -192,13 +214,13 @@ func (a *Application) Run() error {
 
 	go func() {
 		msgs, err := a.ch.Consume(
-			qt.Name, // queue
-			"",      // consumer
-			true,    // auto ack
-			false,   // exclusive
-			false,   // no local
-			false,   // no wait
-			nil,     // args
+			qtc.Name, // queue
+			"",       // consumer
+			true,     // auto ack
+			false,    // exclusive
+			false,    // no local
+			false,    // no wait
+			nil,      // args
 		)
 		if err != nil {
 			log.Errorf("RabbitMQ failed to consume %s", err)
@@ -206,6 +228,25 @@ func (a *Application) Run() error {
 
 		for msg := range msgs {
 			a.thingCreated(msg.Body)
+		}
+	}()
+
+	go func() {
+		msgs, err := a.ch.Consume(
+			qtr.Name, // queue
+			"",       // consumer
+			true,     // auto ack
+			false,    // exclusive
+			false,    // no local
+			false,    // no wait
+			nil,      // args
+		)
+		if err != nil {
+			log.Errorf("RabbitMQ failed to consume %s", err)
+		}
+
+		for msg := range msgs {
+			a.thingRemoved(msg.Body)
 		}
 	}()
 
@@ -241,6 +282,26 @@ func (a *Application) consume(msg []byte) {
 		return
 	}
 	a.insertStream <- &s
+}
+
+func (a *Application) thingRemoved(msg []byte) {
+	var t types.Thing
+	if err := json.Unmarshal(msg, &t); err != nil {
+		log.WithFields(log.Fields{
+			"component": "dm",
+		}).Errorf("Unmarshal data error: %s", err)
+		return
+	}
+
+	// create data collection with following format
+	// data.project_id.thing_id
+	c := context.Background()
+	cd := a.db.Collection(fmt.Sprintf("data.%s.%s", t.Project, t.ID))
+	if err := cd.Drop(c); err != nil {
+		// this error should not happen but in case of it happens you can ignore it safely.
+		log.Errorf("Thing collection drop error: %s", err)
+	}
+	log.Infof("Thing %s collection is drop successfully", t.ID)
 }
 
 func (a *Application) thingCreated(msg []byte) {
