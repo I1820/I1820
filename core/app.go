@@ -34,8 +34,8 @@ import (
 // - Insert Stage
 type Application struct {
 	// rabbitmq connection
-	stateConn *amqp.Connection
-	stateChan *amqp.Channel
+	conn *amqp.Connection
+	ch   *amqp.Channel
 
 	session *mgo.Client
 	db      *mgo.Database
@@ -64,21 +64,21 @@ func New(databaseURL string, rabbitURL string) *Application {
 	}
 }
 
-// rabbitmqConnect connects to the rabbitmq and creates channel. it also provides
+// connectToRabbitMQ connects to the rabbitmq and creates channel. it also provides
 // a fail-safe way by reconnecting on connection failures.
-func (a *Application) rabbitmqConnect() {
+func (a *Application) connectToRabbitMQ() {
 	// Makes a rabbitmq connection
 	conn, err := amqp.Dial(a.rabbitURL)
 	if err != nil {
 		log.Fatalf("RabbitMQ connection error: %s", err)
 	}
-	a.stateConn = conn
+	a.conn = conn
 
 	// listen to rabbitmq close event
 	go func() {
 		for err := range conn.NotifyClose(make(chan *amqp.Error)) {
 			log.Errorf("RabbitMQ connection is closed: %s", err)
-			a.rabbitmqConnect()
+			a.connectToRabbitMQ()
 			return
 		}
 	}()
@@ -88,16 +88,17 @@ func (a *Application) rabbitmqConnect() {
 	if err != nil {
 		log.Fatalf("RabbitMQ channel error: %s", err)
 	}
-	a.stateChan = ch
+	a.ch = ch
 }
 
 // Run runs application. this function creates and connects amqp client.
 // this function also creates mongodb connection.
 func (a *Application) Run() error {
-	a.rabbitmqConnect()
+	a.connectToRabbitMQ()
 
-	// fanout exchange
-	if err := a.stateChan.ExchangeDeclare(
+	// fanout exchange of I1820 states
+	// redefine of I1820 states exchange just for insurance
+	if err := a.ch.ExchangeDeclare(
 		"i1820_fanout_states",
 		"fanout",
 		true,  // durable
@@ -109,8 +110,8 @@ func (a *Application) Run() error {
 		return fmt.Errorf("RabbitMQ failed to declare an exchange %s", err)
 	}
 
-	// listen to fanout exchange
-	q, err := a.stateChan.QueueDeclare(
+	// listen to fanout exchange of I1820 states
+	qs, err := a.ch.QueueDeclare(
 		"dm",  // name
 		false, // durable
 		true,  // delete when unused
@@ -122,8 +123,8 @@ func (a *Application) Run() error {
 		return fmt.Errorf("RabbitMQ failed to declare a queue %s", err)
 	}
 
-	if err := a.stateChan.QueueBind(
-		q.Name,                // queue name
+	if err := a.ch.QueueBind(
+		qs.Name,               // queue name
 		"",                    // routing key
 		"i1820_fanout_states", // exchange
 		false,
@@ -132,22 +133,78 @@ func (a *Application) Run() error {
 		return fmt.Errorf("RabbitMQ failed to bind a queue %s", err)
 	}
 
-	msgs, err := a.stateChan.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto ack
-		false,  // exclusive
-		false,  // no local
-		false,  // no wait
-		nil,    // args
+	go func() {
+		msgs, err := a.ch.Consume(
+			qs.Name, // queue
+			"",      // consumer
+			true,    // auto ack
+			false,   // exclusive
+			false,   // no local
+			false,   // no wait
+			nil,     // args
+		)
+		if err != nil {
+			log.Errorf("RabbitMQ failed to consume %s", err)
+		}
+
+		for msg := range msgs {
+			a.consume(msg.Body)
+		}
+	}()
+
+	// direct exchange of I1820 things
+	// redefine of I1820 things exchange just for insurance
+	if err := a.ch.ExchangeDeclare(
+		"i1820_things",
+		"direct",
+		true,  // durable
+		false, // auto-deleted
+		false, // internal
+		false, // no-wait
+		nil,   // arguments
+	); err != nil {
+		return fmt.Errorf("RabbitMQ failed to declare an exchange %s", err)
+	}
+
+	// listen to fanout exchange of I1820 things
+	qt, err := a.ch.QueueDeclare(
+		"dm_thing_create", // name
+		false,             // durable
+		true,              // delete when unused
+		false,             // exclusive
+		false,             // no-wait
+		nil,               // arguments
 	)
 	if err != nil {
-		return fmt.Errorf("RabbitMQ failed to consume %s", err)
+		return fmt.Errorf("RabbitMQ failed to declare a queue %s", err)
+	}
+
+	if err := a.ch.QueueBind(
+		qt.Name,        // queue name
+		"create",       // routing key
+		"i1820_things", // exchange
+		false,
+		nil,
+	); err != nil {
+		return fmt.Errorf("RabbitMQ failed to bind a queue %s", err)
 	}
 
 	go func() {
+		msgs, err := a.ch.Consume(
+			qt.Name, // queue
+			"",      // consumer
+			true,    // auto ack
+			false,   // exclusive
+			false,   // no local
+			false,   // no wait
+			nil,     // args
+		)
+		if err != nil {
+			log.Errorf("RabbitMQ failed to consume %s", err)
+		}
+
 		for msg := range msgs {
-			a.consume(msg.Body)
+			a.thingCreated(msg.Body)
 		}
 	}()
 
@@ -185,15 +242,27 @@ func (a *Application) consume(msg []byte) {
 	a.insertStream <- &s
 }
 
+func (a *Application) thingCreated(msg []byte) {
+	var t types.Thing
+	if err := json.Unmarshal(msg, &t); err != nil {
+		log.WithFields(log.Fields{
+			"component": "dm",
+		}).Errorf("Unmarshal data error: %s", err)
+		return
+	}
+
+	fmt.Printf("%+v\n", t)
+}
+
 // Exit closes amqp connection then closes all channels and return from all pipeline stages
 func (a *Application) Exit() {
 	a.IsRun = false
 
 	// disconnect from rabbitmq
-	if err := a.stateChan.Close(); err != nil {
+	if err := a.ch.Close(); err != nil {
 		log.Error(err)
 	}
-	if err := a.stateConn.Close(); err != nil {
+	if err := a.conn.Close(); err != nil {
 		log.Error(err)
 	}
 
