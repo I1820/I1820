@@ -16,6 +16,7 @@ require (
 	github.com/segmentio/ksuid v1.0.2
 	github.com/spf13/afero v1.2.0 // indirect
 	github.com/spf13/viper v1.3.1
+	github.com/streadway/amqp v0.0.0-20190214183023-884228600bc9
 	github.com/stretchr/testify v1.3.0
 	github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
