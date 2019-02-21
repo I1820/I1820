@@ -29,6 +29,11 @@ type Config struct {
 	Database struct {
 		URL string
 	}
+	Rabbit struct {
+		Host string
+		User string
+		Pass string
+	}
 }
 
 var instance Config
