@@ -34,6 +34,7 @@ func (suite *TMTestSuite) Test_ThingsHandler() {
 	suite.testThingsHandlerList()
 	suite.testThingsHandlerGeoWithin()
 	suite.testThingsHandlerDestroy()
+	suite.testThingsHandlerShow404()
 }
 
 // Create thing (POST /api/projects/{project_id}/things)
@@ -126,4 +127,15 @@ func (suite *TMTestSuite) testThingsHandlerDestroy() {
 	suite.engine.ServeHTTP(w, req)
 
 	suite.Equal(200, w.Code)
+}
+
+// Show 404 (GET /api/projects/{project_id}/things/{thing_id}
+func (suite *TMTestSuite) testThingsHandlerShow404() {
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things/%s", pID, tID), nil)
+	suite.NoError(err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	suite.engine.ServeHTTP(w, req)
+
+	suite.Equal(404, w.Code)
 }
