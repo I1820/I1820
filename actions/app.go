@@ -53,6 +53,7 @@ func App() *echo.Echo {
 				db: connectToDatabase(),
 			}
 			pg.GET("/things/:thing_id/assets", ar.List)
+			pg.POST("/things/:thing_id/assets", ar.Create)
 		}
 	}
 
