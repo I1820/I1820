@@ -12,3 +12,6 @@ properties:
 - Connectivities
 - Tags
 - etc.
+
+Things belong to the projects, but this component doesn't validate this relationship so other services
+must verify project identification and existence before calls this project APIs.
