@@ -178,7 +178,7 @@ func (v ThingsHandler) Show(c echo.Context) error {
 
 	if err := dr.Decode(&t); err != nil {
 		if err == mongo.ErrNoDocuments {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Thing %s not found", id))
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Thing %s not found", id))
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
