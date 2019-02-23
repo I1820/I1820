@@ -35,6 +35,7 @@ func (suite *TMTestSuite) Test_ThingsHandler() {
 	suite.testThingsHandlerGeoWithin()
 	suite.testThingsHandlerDestroy()
 	suite.testThingsHandlerShow404()
+	suite.testThingsHandlerList()
 }
 
 // Create thing (POST /api/projects/{project_id}/things)
