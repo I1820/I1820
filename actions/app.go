@@ -47,6 +47,15 @@ func App() *echo.Echo {
 			pg.POST("/things/geo", tr.GeoWithin)
 			pg.POST("/things/tags", tr.HaveTags)
 			pg.GET("/things/:thing_id/:t:(?:activate|deactivate)", tr.Activation)
+
+			// /projects/{project_id}/things/{thing_id}/assets
+			tg := pg.Group("/things/:thing_id")
+			{
+				ar := AssetsHandler{
+					db: connectToDatabase(),
+				}
+				tg.GET("/assets", ar.List)
+			}
 		}
 	}
 
