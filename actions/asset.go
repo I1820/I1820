@@ -91,3 +91,59 @@ func (v AssetsHandler) Create(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, t)
 }
+
+// Show gets the data for a given asset. This function is mapped to
+// the path GET /projects/{project_id}/things/{thing_id}/assets/{asset_name}
+func (v AssetsHandler) Show(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
+	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
+	assetName := c.Param("asset_id")
+
+	var t types.Thing
+
+	dr := v.db.Collection("things").FindOne(ctx, primitive.M{
+		"_id":     thingID,
+		"project": projectID,
+	})
+
+	if err := dr.Decode(&t); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Thing %s not found", thingID))
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, t.Assets[assetName])
+}
+
+// Destroy deletes an asset from the DB and its thing. This function is mapped
+// to the path DELETE /projects/{project_id}/things/{thing_id}/assets/{asset_name}
+func (v AssetsHandler) Destroy(c echo.Context) error {
+	// gets the request context
+	ctx := c.Request().Context()
+
+	thingID := c.Param("thing_id")
+	projectID := c.Param("project_id")
+	assetName := c.Param("asset_id")
+
+	dr := v.db.Collection("things").FindOneAndUpdate(ctx, primitive.M{
+		"_id":     thingID,
+		"project": projectID,
+	}, primitive.M{
+		"$unset": fmt.Sprintf("assets.%s", assetName),
+	}, options.FindOneAndUpdate().SetReturnDocument(options.After))
+
+	var t types.Thing
+
+	if err := dr.Decode(&t); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Thing %s not found", thingID))
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, t)
+}
