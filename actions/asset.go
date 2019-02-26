@@ -133,7 +133,9 @@ func (v AssetsHandler) Destroy(c echo.Context) error {
 		"_id":     thingID,
 		"project": projectID,
 	}, primitive.M{
-		"$unset": fmt.Sprintf("assets.%s", assetName),
+		"$unset": primitive.M{
+			fmt.Sprintf("assets.%s", assetName): "",
+		},
 	}, options.FindOneAndUpdate().SetReturnDocument(options.After))
 
 	var t types.Thing
