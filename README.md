@@ -15,3 +15,9 @@ properties:
 
 Things belong to the projects, but this component doesn't validate this relationship so other services
 must verify project identification and existence before calls this project APIs.
+
+## RabbitMQ
+TM passes thing on thing creation and its identification with its PID on thing deletion on RabbitMQ.
+
+- `i1820_thing` fired thing creation with `create` as a routing key.
+- `i1820_thing` fired thing deletion with `remove` as a routing key.
