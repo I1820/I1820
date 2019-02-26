@@ -54,6 +54,8 @@ func App() *echo.Echo {
 			}
 			pg.GET("/things/:thing_id/assets", ar.List)
 			pg.POST("/things/:thing_id/assets", ar.Create)
+			pg.GET("/things/:thing_id/assets/:asset_id", ar.Show)
+			pg.DELETE("/things/:thing_id/assets/:asset_id", ar.Destroy)
 		}
 	}
 
