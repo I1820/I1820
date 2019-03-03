@@ -95,10 +95,10 @@ func (suite *TMTestSuite) testThingsHandlerGeoWithin() {
 	// build thing geowithin request
 	var greq = geoWithinReq{
 		[][]float64{
-			[]float64{35.806731, 51.398618},
-			[]float64{35.807784, 51.397810},
-			[]float64{35.807827, 51.399516},
-			[]float64{35.806731, 51.398618},
+			{35.806731, 51.398618},
+			{35.807784, 51.397810},
+			{35.807827, 51.399516},
+			{35.806731, 51.398618},
 		},
 	}
 	data, err := json.Marshal(greq)
