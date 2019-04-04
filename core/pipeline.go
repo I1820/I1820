@@ -31,7 +31,8 @@ func (a *Application) insertStage() {
 	}).Info("Insert pipeline stage")
 
 	for d := range a.insertStream {
-		if _, err := a.db.Collection(fmt.Sprintf("data.%s.%s", d.Project, d.ThingID)).InsertOne(context.Background(), *d); err != nil {
+		if _, err :=
+			a.db.Collection(fmt.Sprintf("data.%s.%s", d.Project, d.ThingID)).InsertOne(context.Background(), *d); err != nil {
 			log.WithFields(log.Fields{
 				"component": "dm",
 				"asset":     d.Asset,
