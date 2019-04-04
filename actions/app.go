@@ -3,7 +3,6 @@ package actions
 import (
 	"context"
 
-	"github.com/I1820/dm/config"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -12,13 +11,13 @@ import (
 )
 
 // App creates new instance of Echo and configures it
-func App() *echo.Echo {
+func App(databaseURL string, debug bool) *echo.Echo {
 	app := echo.New()
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
 	app.Pre(middleware.RemoveTrailingSlash())
 
-	if config.GetConfig().Debug {
+	if debug {
 		app.Logger.SetLevel(log.DEBUG)
 	}
 
@@ -32,7 +31,7 @@ func App() *echo.Echo {
 		pt := api.Group("/projects/:project_id/things/:thing_id")
 		{
 			qh := QueriesHandler{
-				db: connectToDatabase(),
+				db: connectToDatabase(databaseURL),
 			}
 			pt.GET("/queries/list", qh.List)
 			pt.POST("/queries/recently", qh.Recently)
@@ -44,9 +43,8 @@ func App() *echo.Echo {
 	return app
 }
 
-func connectToDatabase() *mongo.Database {
+func connectToDatabase(url string) *mongo.Database {
 	// Create mongodb connection
-	url := config.GetConfig().Database.URL
 	client, err := mongo.NewClient(url)
 	if err != nil {
 		log.Fatalf("DB new client error: %s", err)

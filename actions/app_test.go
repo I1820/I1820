@@ -14,6 +14,7 @@
 package actions
 
 import (
+	"os"
 	"testing"
 
 	"github.com/labstack/echo/v4"
@@ -28,7 +29,11 @@ type DMTestSuite struct {
 
 // SetupSuite initiates dm test suite
 func (suite *DMTestSuite) SetupSuite() {
-	suite.engine = App()
+	mongo := os.Getenv("I1820_DM_DATABASE_URL")
+	if mongo == "" {
+		mongo = "mongodb://127.0.0.1:27017"
+	}
+	suite.engine = App(mongo, true)
 }
 
 // Let's test dm APIs!
