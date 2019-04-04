@@ -27,7 +27,7 @@ import (
 func main() {
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
-	e := actions.App()
+	e := actions.App(config.GetConfig().Database.URL, config.GetConfig().Debug)
 	go func() {
 		if err := e.Start(":1373"); err != http.ErrServerClosed {
 			log.Fatalf("API Service failed with %s", err)
