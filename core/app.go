@@ -48,11 +48,11 @@ type Application struct {
 	// count number of stages so `Exit` can wait for all of them
 	insertWG sync.WaitGroup
 
+	IsRun bool
+
 	// configuration parameters
 	rabbitURL   string
 	databaseURL string
-
-	IsRun bool
 }
 
 // New creates new application.
@@ -65,37 +65,42 @@ func New(databaseURL string, rabbitURL string) *Application {
 	}
 }
 
-// connectToRabbitMQ connects to the rabbitmq and creates channel. it also provides
+// rabbitmqConnect connects to the rabbitmq and creates channel. it also provides
 // a fail-safe way by reconnecting on connection failures.
-func (a *Application) connectToRabbitMQ() {
+func (a *Application) rabbitmqConnect() error {
 	// Makes a rabbitmq connection
 	conn, err := amqp.Dial(a.rabbitURL)
 	if err != nil {
-		log.Fatalf("RabbitMQ connection error: %s", err)
+		return fmt.Errorf("rabbitmq connection error: %s", err)
 	}
 	a.conn = conn
 
 	// listen to rabbitmq close event
 	go func() {
-		for err := range conn.NotifyClose(make(chan *amqp.Error)) {
-			log.Errorf("RabbitMQ connection is closed: %s", err)
-			a.connectToRabbitMQ()
-			return
+		<-conn.NotifyClose(make(chan *amqp.Error))
+		log.Errorf("RabbitMQ connection is closed: %s", err)
+		if err := a.rabbitmqConnect(); err != nil {
+			return // exits because there is no other way...
 		}
+		// exits because the new heath checker is coming.
 	}()
 
 	// creates a rabbitmq channel
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("RabbitMQ channel error: %s", err)
+		return fmt.Errorf("rabbitmq channel error: %s", err)
 	}
 	a.ch = ch
+
+	return nil
 }
 
 // Run runs application. this function creates and connects amqp client.
 // this function also creates mongodb connection.
 func (a *Application) Run() error {
-	a.connectToRabbitMQ()
+	if err := a.rabbitmqConnect(); err != nil {
+		return err
+	}
 
 	// fanout exchange of I1820 states
 	// redefine of I1820 states exchange just for insurance
@@ -253,13 +258,13 @@ func (a *Application) Run() error {
 	// Create a mongodb connection
 	session, err := mongo.NewClient(a.databaseURL)
 	if err != nil {
-		return fmt.Errorf("Database client creation for %s error: %s", a.databaseURL, err)
+		return fmt.Errorf("database client creation for %s error: %s", a.databaseURL, err)
 	}
 	a.session = session
 
 	// Connect to the mongodb
 	if err := a.session.Connect(context.Background()); err != nil {
-		return fmt.Errorf("DB connection error: %s", err)
+		return fmt.Errorf("db connection error: %s", err)
 	}
 	a.db = a.session.Database("i1820")
 
@@ -320,12 +325,12 @@ func (a *Application) thingCreated(msg []byte) {
 	if _, err := cd.Indexes().CreateMany(
 		c,
 		[]mongo.IndexModel{
-			mongo.IndexModel{
+			{
 				Keys: primitive.M{
 					"at": 1,
 				},
 			},
-			mongo.IndexModel{
+			{
 				Keys: primitive.M{
 					"asset": 1,
 				},
