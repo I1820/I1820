@@ -60,7 +60,11 @@ func (suite *DMTestSuite) Test_QueriesHandler_PFetch() {
 	suite.NoError(err)
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/pfetch", projectID, thingID), bytes.NewReader(data))
+	req, err := http.NewRequest(
+		"POST",
+		fmt.Sprintf("/api/projects/%s/things/%s/queries/pfetch", projectID, thingID),
+		bytes.NewReader(data),
+	)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -86,7 +90,11 @@ func (suite *DMTestSuite) Test_QueriesHandler_Fetch() {
 	suite.NoError(err)
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/fetch", projectID, thingID), bytes.NewReader(data))
+	req, err := http.NewRequest(
+		"POST",
+		fmt.Sprintf("/api/projects/%s/things/%s/queries/fetch", projectID, thingID),
+		bytes.NewReader(data),
+	)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -110,7 +118,11 @@ func (suite *DMTestSuite) Test_QueriesHandler_Recently() {
 	suite.NoError(err)
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/%s/queries/recently", projectID, thingID), bytes.NewReader(data))
+	req, err := http.NewRequest(
+		"POST",
+		fmt.Sprintf("/api/projects/%s/things/%s/queries/recently", projectID, thingID),
+		bytes.NewReader(data),
+	)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
