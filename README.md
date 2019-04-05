@@ -1,8 +1,6 @@
 # Data Manager
-[![Travis branch](https://img.shields.io/travis/com/I1820/dm/master.svg?style=flat-square)](https://travis-ci.com/I1820/dm)
-[![Go Report](https://goreportcard.com/badge/github.com/I1820/dm?style=flat-square)](https://goreportcard.com/report/github.com/I1820/dm)
+[![CircleCI](https://circleci.com/gh/I1820/dm.svg?style=svg)](https://circleci.com/gh/I1820/dm)
 [![Echo](https://img.shields.io/badge/powered%20by-echo-blue.svg?style=flat-square)](https://echo.labstack.com/)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2cda8cad3c7b46879da2544c1057c91f)](https://www.codacy.com/app/i1820/dm?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=I1820/dm&amp;utm_campaign=Badge_Grade)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/dm)
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/788e58cf0f57cb358f7f)
 
