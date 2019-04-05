@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/I1820/dm/actions"
@@ -39,8 +40,8 @@ func main() {
 		log.Fatalf("Core Application failed with %s", err)
 	}
 
-	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	fmt.Println("18.20 As always ... left me alone")
