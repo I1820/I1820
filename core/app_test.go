@@ -16,25 +16,51 @@ package core
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
 	json "github.com/json-iterator/go"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 
-	"github.com/I1820/dm/config"
 	"github.com/I1820/types"
 	"github.com/streadway/amqp"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
+
+// TestSuite is a test suite for core.
+type TestSuite struct {
+	suite.Suite
+
+	databaseURL string
+	rabbitURL   string
+}
+
+// SetupSuite initiates a test suite
+func (suite *TestSuite) SetupSuite() {
+	suite.rabbitURL = os.Getenv("I1820_DM_CORE_BROKER_ADDR")
+	if suite.rabbitURL == "" {
+		suite.rabbitURL = "amqp://admin:admin@localhost:5672/"
+	}
+
+	suite.databaseURL = os.Getenv("I1820_DM_DATABASE_URL")
+	if suite.databaseURL == "" {
+		suite.databaseURL = "mongodb://127.0.0.1:27017"
+	}
+}
+
+// Let's test!
+func TestCore(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}
 
 const tID = "el-thing" // ThingID
 const aName = "memory" // Asset Name
 const pName = "her"    // Project Name
 
-func TestPipelineDirect(t *testing.T) {
-	a := New(config.GetConfig().Database.URL, fmt.Sprintf("amqp://%s:%s@%s/", config.GetConfig().Core.Broker.User, config.GetConfig().Core.Broker.Pass, config.GetConfig().Core.Broker.Host))
-	assert.NoError(t, a.Run())
+func (suite *TestSuite) TestPipelineDirect() {
+	a := New(suite.databaseURL, suite.rabbitURL)
+	suite.NoError(a.Run())
 	ts := time.Now()
 
 	b, err := json.Marshal(types.State{
@@ -44,8 +70,8 @@ func TestPipelineDirect(t *testing.T) {
 		ThingID: tID,
 		Project: pName,
 	})
-	assert.NoError(t, err)
-	assert.NoError(t, a.ch.Publish(
+	suite.NoError(err)
+	suite.NoError(a.ch.Publish(
 		"i1820_fanout_states", // exchange type
 		"",                    // routing key
 		false,
@@ -65,8 +91,8 @@ func TestPipelineDirect(t *testing.T) {
 		},
 		"asset": aName,
 	})
-	assert.NoError(t, q.Decode(&d))
+	suite.NoError(q.Decode(&d))
 
-	assert.Equal(t, d.At.Unix(), ts.Unix())
-	assert.Equal(t, 18.20, d.Raw)
+	suite.Equal(d.At.Unix(), ts.Unix())
+	suite.Equal(18.20, d.Raw)
 }
