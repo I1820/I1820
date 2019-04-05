@@ -29,6 +29,12 @@ jobs:
       - image: rabbitmq:latest
     steps:
       - checkout
+      - run:
+          name: Install mongodb client
+          command: sudo apt install -y mongodb-clients || true
+      - run:
+          name: Mock database
+          command: mongo i1820 .ci/mongo.js
       - run: go test ./...
 
   coverage:
