@@ -21,21 +21,22 @@ import (
 	"time"
 
 	"github.com/I1820/dm/actions"
-	"github.com/I1820/dm/config"
 	"github.com/I1820/dm/core"
 )
 
 func main() {
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
-	e := actions.App(config.GetConfig().Database.URL, config.GetConfig().Debug)
+	cfg := config()
+
+	e := actions.App(cfg.Database.URL, cfg.Debug)
 	go func() {
 		if err := e.Start(":1373"); err != http.ErrServerClosed {
 			log.Fatalf("API Service failed with %s", err)
 
 		}
 	}()
-	app := core.New(config.GetConfig().Database.URL, fmt.Sprintf("amqp://%s:%s@%s/", config.GetConfig().Core.Broker.User, config.GetConfig().Core.Broker.Pass, config.GetConfig().Core.Broker.Host))
+	app := core.New(cfg.Database.URL, cfg.Core.Broker.Addr)
 	if err := app.Run(); err != nil {
 		log.Fatalf("Core Application failed with %s", err)
 	}
