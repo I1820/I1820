@@ -1,27 +1,24 @@
 # This is a multi-stage Dockerfile and requires >= Docker 17.05
 # https://docs.docker.com/engine/userguide/eng-image/multistage-build/
-FROM gobuffalo/buffalo:v0.12.4 as builder
+FROM golang:1.12-alpine3.9 as builder
 
-RUN mkdir -p "$GOPATH/src/github.com/I1820/link"
-WORKDIR $GOPATH/src/github.com/I1820/link
+WORKDIR /app
+
+RUN apk --no-cache add git ca-certificates git gcc g++ libc-dev
 
 COPY . .
-RUN dep ensure
-RUN buffalo build --static -o /bin/app
+RUN go build -o /bin/app
 
-FROM alpine:latest
+FROM alpine:3.9
 
 WORKDIR /bin/
 
 COPY --from=builder /bin/app .
 
 # Comment out to run the binary in "production" mode:
-# ENV GO_ENV=production
+ENV i1820_link_services_http_debug=false
 
-# Bind the app to 0.0.0.0 so it can be seen from outside the container
-ENV ADDR=0.0.0.0
-
-EXPOSE 1374
+EXPOSE 1372
 
 # Metadata
 ARG BUILD_DATE
