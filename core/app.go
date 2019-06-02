@@ -57,7 +57,7 @@ type Model interface {
 }
 
 // New creates new application. this function creates mqtt client
-func New(pmURL string, dbURL string, brokerURL string) *Application {
+func New(pmURL string, dbURL string, brokerURL string) (*Application, error) {
 
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -72,7 +72,7 @@ func New(pmURL string, dbURL string, brokerURL string) *Application {
 	// create a mongodb connection
 	session, err := mgo.NewClient(dbURL)
 	if err != nil {
-		logrus.Fatalf("db new client error: %s", err)
+		return nil, err
 	}
 	a.session = session
 
@@ -86,7 +86,7 @@ func New(pmURL string, dbURL string, brokerURL string) *Application {
 	a.decodeStream = make(chan types.Data)
 	a.insertStream = make(chan types.Data)
 
-	return &a
+	return &a, nil
 }
 
 // RegisterProtocol registers protocol p on application a
@@ -124,7 +124,7 @@ func (a *Application) Models() []string {
 }
 
 // Run runs application. this function connects mqtt client and then register its topic
-func (a *Application) Run() {
+func (a *Application) Run() error {
 	// Create an MQTT client
 	/*
 		Port: 1883
@@ -147,12 +147,12 @@ func (a *Application) Run() {
 
 	// Connect to the MQTT Server.
 	if t := a.cli.Connect(); t.Wait() && t.Error() != nil {
-		logrus.Fatalf("mqtt session error: %s", t.Error())
+		return t.Error()
 	}
 
 	// Connect to the mongodb
 	if err := a.session.Connect(context.Background()); err != nil {
-		logrus.Fatalf("db connection error: %s", err)
+		return err
 	}
 	a.db = a.session.Database("i1820")
 
@@ -162,4 +162,6 @@ func (a *Application) Run() {
 		go a.decode()
 		go a.insert()
 	}
+
+	return nil
 }
