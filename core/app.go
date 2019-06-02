@@ -151,7 +151,7 @@ func (a *Application) Run() error {
 		// subscribe to protocols topics
 		for _, p := range a.protocols {
 			// use $share/i1820-link in front of the mqtt topic for group subscription
-			if t := a.cli.Subscribe(fmt.Sprintf("%s", p.RxTopic()), 0, a.mqttHandler(p)); t.Error() != nil {
+			if t := a.cli.Subscribe(p.RxTopic(), 0, a.mqttHandler(p)); t.Error() != nil {
 				logrus.Fatalf("mqtt subscribe error: %s", t.Error())
 			}
 		}

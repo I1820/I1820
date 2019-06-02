@@ -69,7 +69,7 @@ func (a *Application) decode() {
 	}).Info("decode pipeline stage has started")
 
 	for d := range a.decodeStream {
-		// run decode when data is comming from thing with project and it needs decode
+		// run decode when data is coming from thing with project and it needs decode
 		if d.Project != "" && d.Data == nil {
 			if d.Model != "generic" {
 				m, ok := a.models[d.Model]
