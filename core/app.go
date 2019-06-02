@@ -165,16 +165,16 @@ func (a *Application) Run() error {
 
 	// connect to the mongodb (change database here!)
 	ctxc, donec := context.WithTimeout(context.Background(), 10*time.Second)
+	defer donec()
 	if err := a.session.Connect(ctxc); err != nil {
 		return err
 	}
-	defer donec()
 	// is the mongo really there?
 	ctxp, donep := context.WithTimeout(context.Background(), 2*time.Second)
+	defer donep()
 	if err := a.session.Ping(ctxp, readpref.Primary()); err != nil {
 		return err
 	}
-	defer donep()
 	a.db = a.session.Database("i1820")
 
 	// pipeline stages
