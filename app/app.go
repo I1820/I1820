@@ -37,8 +37,6 @@ func init() {
 type Application struct {
 	cli paho.Client
 
-	Logger *logrus.Logger
-
 	protocols []Protocol
 	models    map[string]Model
 
@@ -75,8 +73,6 @@ type Model interface {
 func New() *Application {
 	a := Application{}
 
-	a.Logger = logrus.New()
-
 	a.protocols = make([]Protocol, 0)
 	a.models = make(map[string]Model)
 
@@ -86,7 +82,7 @@ func New() *Application {
 	url := envy.Get("DB_URL", "mongodb://127.0.0.1:27017")
 	session, err := mgo.NewClient(url)
 	if err != nil {
-		a.Logger.Fatalf("DB new client error: %s", err)
+		logrus.Fatalf("db new client error: %s", err)
 	}
 	a.session = session
 
@@ -151,8 +147,8 @@ func (a *Application) Run() {
 	opts.SetOnConnectHandler(func(client paho.Client) {
 		// Subscribe to protocols topics
 		for _, p := range a.protocols {
-			if t := a.cli.Subscribe(fmt.Sprintf("$share/i1820-link/%s", p.RxTopic()), 0, a.mqttHandler(p)); t.Error() != nil {
-				a.Logger.Fatalf("MQTT subscribe error: %s", t.Error())
+			if t := a.cli.Subscribe(fmt.Sprintf("%s", p.RxTopic()), 0, a.mqttHandler(p)); t.Error() != nil {
+				logrus.Fatalf("mqtt subscribe error: %s", t.Error())
 			}
 		}
 	})
@@ -160,12 +156,12 @@ func (a *Application) Run() {
 
 	// Connect to the MQTT Server.
 	if t := a.cli.Connect(); t.Wait() && t.Error() != nil {
-		a.Logger.Fatalf("MQTT session error: %s", t.Error())
+		logrus.Fatalf("mqtt session error: %s", t.Error())
 	}
 
 	// Connect to the mongodb
 	if err := a.session.Connect(context.Background()); err != nil {
-		a.Logger.Fatalf("DB connection error: %s", err)
+		logrus.Fatalf("db connection error: %s", err)
 	}
 	a.db = a.session.Database("i1820")
 

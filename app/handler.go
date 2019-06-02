@@ -24,17 +24,17 @@ func (a *Application) mqttHandler(p Protocol) paho.MessageHandler {
 	return func(client paho.Client, message paho.Message) {
 		d, err := marshaler(message.Payload())
 		if err != nil {
-			a.Logger.WithFields(logrus.Fields{
-				"component": "uplink",
+			logrus.WithFields(logrus.Fields{
+				"component": "link",
 				"topic":     message.Topic(),
-			}).Errorf("Marshal error %s", err)
+			}).Errorf("marshal error %s", err)
 			return
 		}
 		d.Protocol = p.Name()
-		a.Logger.WithFields(logrus.Fields{
-			"component": "uplink",
+		logrus.WithFields(logrus.Fields{
+			"component": "link",
 			"topic":     message.Topic(),
-		}).Infof("Marshal on %v", d)
+		}).Infof("marshal on %v", d)
 		a.projectStream <- d
 	}
 }
