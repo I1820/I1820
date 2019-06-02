@@ -28,10 +28,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 // Application is a main component of uplink that consists of
 // uplink protocols and mqtt client
 type Application struct {
@@ -62,6 +58,9 @@ type Model interface {
 
 // New creates new application. this function creates mqtt client
 func New(pmURL string, dbURL string, brokerURL string) *Application {
+
+	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
+
 	a := Application{}
 
 	a.protocols = make([]protocols.Protocol, 0)
@@ -79,7 +78,7 @@ func New(pmURL string, dbURL string, brokerURL string) *Application {
 
 	a.opts = paho.NewClientOptions()
 	a.opts.AddBroker(brokerURL)
-	a.opts.SetClientID(fmt.Sprintf("I1820-link-%d", rand.Intn(1024)))
+	a.opts.SetClientID(fmt.Sprintf("I1820-link-%d", rnd.Intn(1024)))
 	a.opts.SetOrderMatters(false)
 
 	// pipeline channels
