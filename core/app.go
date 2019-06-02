@@ -26,8 +26,10 @@ import (
 	pmclient "github.com/I1820/pm/client"
 	"github.com/I1820/types"
 	paho "github.com/eclipse/paho.mqtt.golang"
-	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // Application is a main component of uplink that consists of
@@ -45,8 +47,8 @@ type Application struct {
 	pm pmclient.PM
 
 	// database connection
-	session *mgo.Client
-	db      *mgo.Database
+	session *mongo.Client
+	db      *mongo.Database
 
 	// is core application running?
 	IsRun bool
@@ -77,7 +79,7 @@ func New(pmURL string, dbURL string, brokerURL string) (*Application, error) {
 	a.pm = pmclient.New(pmURL)
 
 	// create a mongodb connection
-	session, err := mgo.NewClient(dbURL)
+	session, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
 	if err != nil {
 		return nil, err
 	}
@@ -162,9 +164,17 @@ func (a *Application) Run() error {
 	}
 
 	// connect to the mongodb (change database here!)
-	if err := a.session.Connect(context.Background()); err != nil {
+	ctxc, donec := context.WithTimeout(context.Background(), 10*time.Second)
+	if err := a.session.Connect(ctxc); err != nil {
 		return err
 	}
+	defer donec()
+	// is the mongo really there?
+	ctxp, donep := context.WithTimeout(context.Background(), 2*time.Second)
+	if err := a.session.Ping(ctxp, readpref.Primary()); err != nil {
+		return err
+	}
+	defer donep()
 	a.db = a.session.Database("i1820")
 
 	// pipeline stages

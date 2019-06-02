@@ -21,9 +21,10 @@ import (
 
 	"github.com/I1820/types"
 	paho "github.com/eclipse/paho.mqtt.golang"
-	"github.com/mongodb/mongo-go-driver/bson"
+
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // TestSuite is a test suite for core.
@@ -79,12 +80,12 @@ func (suite *TestSuite) TestPipeline() {
 	time.Sleep(1 * time.Second)
 
 	var d types.Data
-	q := a.db.Collection("data").FindOne(context.Background(), bson.NewDocument(
-		bson.EC.SubDocument("timestamp", bson.NewDocument(
-			bson.EC.Time("$gte", ts),
-		)),
-		bson.EC.String("thingid", "el-thing"),
-	))
+	q := a.db.Collection("data").FindOne(context.Background(), bson.M{
+		"timestamp": bson.M{
+			"$gte": ts,
+		},
+		"thingid": "el-thing",
+	})
 	suite.NoError(q.Decode(&d))
 
 	suite.Equal(d.Timestamp.Unix(), ts.Unix())
