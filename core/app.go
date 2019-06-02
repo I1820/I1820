@@ -18,8 +18,10 @@ import (
 	"fmt"
 	"math/rand"
 	"runtime"
+	"sync"
 	"time"
 
+	"github.com/I1820/link/models"
 	"github.com/I1820/link/protocols"
 	pmclient "github.com/I1820/pm/client"
 	"github.com/I1820/types"
@@ -31,29 +33,34 @@ import (
 // Application is a main component of uplink that consists of
 // uplink protocols and mqtt client
 type Application struct {
+	// mqtt configuration
 	cli  paho.Client
 	opts *paho.ClientOptions
 
+	// models and protocols
 	protocols []protocols.Protocol
-	models    map[string]Model
+	models    map[string]models.Model
 
+	// pm connection
 	pm pmclient.PM
 
+	// database connection
 	session *mgo.Client
 	db      *mgo.Database
+
+	// is core application running?
+	IsRun bool
+
+	// in order to close the pipeline nicely
+	// count number of stages so `Exit` can wait for all of them
+	projectWG sync.WaitGroup
+	decodeWG  sync.WaitGroup
+	insertWG  sync.WaitGroup
 
 	// pipeline channels
 	projectStream chan types.Data
 	decodeStream  chan types.Data
 	insertStream  chan types.Data
-}
-
-// Model is a decoder/encoder interface like generic (based on user scripts) or aolab
-type Model interface {
-	Decode([]byte) interface{}
-	Encode(interface{}) []byte
-
-	Name() string
 }
 
 // New creates new application. this function creates mqtt client
@@ -64,7 +71,7 @@ func New(pmURL string, dbURL string, brokerURL string) (*Application, error) {
 	a := Application{}
 
 	a.protocols = make([]protocols.Protocol, 0)
-	a.models = make(map[string]Model)
+	a.models = make(map[string]models.Model)
 
 	// creates a pm communication link
 	a.pm = pmclient.New(pmURL)
@@ -91,6 +98,9 @@ func New(pmURL string, dbURL string, brokerURL string) (*Application, error) {
 
 // RegisterProtocol registers protocol p on application a
 func (a *Application) RegisterProtocol(p protocols.Protocol) {
+	if a.IsRun {
+		return // there is no way to add protocols in runtime
+	}
 	a.protocols = append(a.protocols, p)
 }
 
@@ -106,7 +116,7 @@ func (a *Application) Protocols() []string {
 }
 
 // RegisterModel registers model m on application a
-func (a *Application) RegisterModel(m Model) {
+func (a *Application) RegisterModel(m models.Model) {
 	a.models[m.Name()] = m
 }
 
@@ -159,9 +169,35 @@ func (a *Application) Run() error {
 	// pipeline stages
 	for i := 0; i < runtime.NumCPU(); i++ {
 		go a.project()
+		a.projectWG.Add(1)
 		go a.decode()
+		a.decodeWG.Add(1)
 		go a.insert()
+		a.insertWG.Add(1)
+
 	}
 
+	a.IsRun = true
+
 	return nil
+}
+
+// Exit closes amqp connection then closes all channels and return from all pipeline stages
+func (a *Application) Exit() {
+	a.IsRun = false
+
+	// close project stream
+	close(a.projectStream)
+	a.projectWG.Wait()
+
+	// close decode stream
+	close(a.decodeStream)
+	a.decodeWG.Wait()
+
+	// close insert stream
+	close(a.insertStream)
+	a.insertWG.Wait()
+
+	// disconnect aftere 10ms
+	a.cli.Disconnect(10)
 }
