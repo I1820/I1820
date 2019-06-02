@@ -4,10 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	linkapp "github.com/I1820/link/app"
-	"github.com/I1820/link/models/aolab"
-	"github.com/I1820/link/protocols/lan"
-	"github.com/I1820/link/protocols/lora"
+	"github.com/I1820/link/core"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
 	"github.com/gobuffalo/buffalo/middleware/ssl"
@@ -25,7 +22,7 @@ import (
 // application is being run. Default is "development".
 var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
-var linkApp *linkapp.Application
+var linkApp *core.Application
 
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
@@ -95,13 +92,6 @@ func App() *buffalo.App {
 				return next(c)
 			}
 		})
-
-		// LinkApp
-		linkApp = linkapp.New()
-		linkApp.RegisterProtocol(lora.Protocol{})
-		linkApp.RegisterProtocol(lan.Protocol{})
-		linkApp.RegisterModel(aolab.Model{})
-		linkApp.Run()
 
 		// Routes
 		app.GET("/about", AboutHandler)
