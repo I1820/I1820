@@ -51,7 +51,7 @@ func (m ModelsResource) Create(c buffalo.Context) error {
 	}
 	model, ok := sym.(models.Model)
 	if !ok {
-		return c.Error(http.StatusBadRequest, fmt.Errorf("Model is required"))
+		return c.Error(http.StatusBadRequest, fmt.Errorf("model is required"))
 	}
 	// TODO synchronous issues?
 	linkApp.RegisterModel(model)

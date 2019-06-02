@@ -13,7 +13,7 @@
 
 package aolab
 
-// Log represents data that is comming from aolab nodes
+// Log represents data that is coming from aolab nodes
 type Log struct {
 	// TODO
 	//	Timestamp time.Time

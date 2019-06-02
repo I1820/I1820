@@ -14,7 +14,7 @@
 package isrc
 
 // Model reperesents ISRC model. this model for marshaling
-// and unmarshaling of data is created originaly by
+// and unmarshaling of data is created originally by
 // Iranian Space Research Center
 type Model struct{}
 

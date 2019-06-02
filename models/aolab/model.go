@@ -15,11 +15,10 @@ package aolab
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Model reperesents AoLab model. this model for marshaling
-// and unmarshaling of data is created originaly by
+// and unmarshaling of data is created originally by
 // Amirkabir University IoT Lab
 type Model struct{}
 
@@ -32,7 +31,6 @@ func (m Model) Name() string {
 func (m Model) Decode(d []byte) interface{} {
 	var l Log
 	if err := json.Unmarshal(d, &l); err != nil {
-		fmt.Println(err)
 		return nil
 	}
 	return l
