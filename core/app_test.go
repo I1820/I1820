@@ -15,13 +15,14 @@ package core
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/I1820/types"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -29,20 +30,48 @@ import (
 type TestSuite struct {
 	suite.Suite
 
-	addr string
-	pm   *pm.PM
+	dbURL     string
+	pmURL     string
+	brokerURL string
 }
 
-func TestPipeline(t *testing.T) {
-	a := New()
-	a.Run()
+// SetupSuite initiates a test suite
+func (suite *TestSuite) SetupSuite() {
+	suite.brokerURL = os.Getenv("I1820_LINK_CORE_BROKER_ADDR")
+	if suite.brokerURL == "" {
+		suite.brokerURL = "tcp://127.0.0.1:1883"
+	}
+
+	// on the CI tests we assume that this service is not available
+	suite.pmURL = os.Getenv("I1820_LINK_PM_URL")
+	if suite.pmURL == "" {
+		suite.pmURL = "http://127.0.0.1:8080"
+	}
+
+	suite.dbURL = os.Getenv("I1820_LINK_DATABASE_URL")
+	if suite.dbURL == "" {
+		suite.dbURL = "mongodb://127.0.0.1:27017"
+	}
+}
+
+// Let's test!
+func TestCore(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}
+
+const tID = "el-thing" // ThingID
+
+func (suite *TestSuite) TestPipeline() {
+	a, err := New(suite.pmURL, suite.dbURL, suite.brokerURL)
+	suite.Require().NoError(err)
+	suite.Require().NoError(a.Run())
 	ts := time.Now()
 
 	a.projectStream <- types.Data{
 		Raw:       []byte("Hello"),
 		Data:      nil,
 		Timestamp: ts,
-		ThingID:   "el-thing",
+		ThingID:   tID,
 		RxInfo:    nil,
 		TxInfo:    nil,
 		Project:   "",
@@ -56,14 +85,31 @@ func TestPipeline(t *testing.T) {
 		)),
 		bson.EC.String("thingid", "el-thing"),
 	))
-	assert.NoError(t, q.Decode(&d))
+	suite.NoError(q.Decode(&d))
 
-	assert.Equal(t, d.Timestamp.Unix(), ts.Unix())
+	suite.Equal(d.Timestamp.Unix(), ts.Unix())
 }
 
 func BenchmarkPipeline(b *testing.B) {
-	a := New()
-	a.Run()
+	brokerURL := os.Getenv("I1820_LINK_CORE_BROKER_ADDR")
+	if brokerURL == "" {
+		brokerURL = "tcp://127.0.0.1:1883"
+	}
+
+	// on the CI tests we assume that this service is not available
+	pmURL := os.Getenv("I1820_LINK_PM_URL")
+	if pmURL == "" {
+		pmURL = "http://127.0.0.1:8080"
+	}
+
+	dbURL := os.Getenv("I1820_LINK_DATABASE_URL")
+	if dbURL == "" {
+		dbURL = "mongodb://127.0.0.1:27017"
+	}
+
+	a, err := New(pmURL, dbURL, brokerURL)
+	require.NoError(b, err)
+	require.NoError(b, a.Run())
 
 	wait := make(chan struct{})
 	a.cli.Subscribe("i1820/project/her/raw", 0, func(client paho.Client, message paho.Message) {
