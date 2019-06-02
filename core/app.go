@@ -136,7 +136,7 @@ func (a *Application) Run() error {
 		AutoReconnect: True
 	*/
 	a.opts.SetOnConnectHandler(func(client paho.Client) {
-		// Subscribe to protocols topics
+		// subscribe to protocols topics
 		for _, p := range a.protocols {
 			if t := a.cli.Subscribe(fmt.Sprintf("%s", p.RxTopic()), 0, a.mqttHandler(p)); t.Error() != nil {
 				logrus.Fatalf("mqtt subscribe error: %s", t.Error())
@@ -145,12 +145,12 @@ func (a *Application) Run() error {
 	})
 	a.cli = paho.NewClient(a.opts)
 
-	// Connect to the MQTT Server.
+	// connect to the MQTT Server
 	if t := a.cli.Connect(); t.Wait() && t.Error() != nil {
 		return t.Error()
 	}
 
-	// Connect to the mongodb
+	// connect to the mongodb (change database here!)
 	if err := a.session.Connect(context.Background()); err != nil {
 		return err
 	}
