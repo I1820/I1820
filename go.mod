@@ -8,7 +8,6 @@ require (
 	github.com/I1820/pm v0.0.0-20180822070609-4e23e86213c0
 	github.com/I1820/types v0.0.0-20180817183007-74de8fd84956
 	github.com/Microsoft/go-winio v0.4.10 // indirect
-	github.com/buger/jsonparser v0.0.0-20180808090653-f4dd9f5a6b44 // indirect
 	github.com/codegangsta/negroni v1.0.0 // indirect
 	github.com/docker/distribution v0.0.0-20170726174610-edc3ab29cdff // indirect
 	github.com/docker/go-connections v0.3.0 // indirect
@@ -32,7 +31,6 @@ require (
 	github.com/markbates/refresh v1.4.2 // indirect
 	github.com/markbates/willie v1.0.7 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.1 // indirect
-	github.com/mongodb/mongo-go-driver v0.0.12
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
@@ -46,4 +44,5 @@ require (
 	github.com/unrolled/secure v0.0.0-20180618144512-8287f3899c8e
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
+	go.mongodb.org/mongo-driver v1.0.2
 )
