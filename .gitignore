@@ -19,19 +19,3 @@ config.yml
 
 # binary
 link
-
-# gobuffalo
-vendor/
-**/*.log
-**/*.sqlite
-.idea/
-bin/
-tmp/
-node_modules/
-.sass-cache/
-*-packr.go
-public/assets/
-link
-.vscode/
-.grifter/
-.env
