@@ -1,8 +1,7 @@
 # Link
-[![Travis branch](https://img.shields.io/travis/com/I1820/link/master.svg?style=flat-square)](https://travis-ci.com/I1820/link)
-[![Go Report](https://goreportcard.com/badge/github.com/I1820/link?style=flat-square)](https://goreportcard.com/report/github.com/I1820/link)
-[![Buffalo](https://img.shields.io/badge/powered%20by-buffalo-blue.svg?style=flat-square)](http://gobuffalo.io)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1bdf3a4f0b294e9e92f15211ba894ef4)](https://www.codacy.com/app/i1820/link?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=I1820/link&amp;utm_campaign=Badge_Grade)
+[![CircleCI](https://circleci.com/gh/I1820/link.svg?style=svg)](https://circleci.com/gh/I1820/link)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/link)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/i1820/link.svg?style=flat-square)
 
 ## Introduction
 
