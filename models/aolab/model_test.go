@@ -15,7 +15,7 @@ package aolab
 
 import "testing"
 
-var (
+const (
 	rawLog = `{
 		"type": "multisensor",
 		"device": "hasht",
