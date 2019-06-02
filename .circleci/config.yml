@@ -20,6 +20,8 @@ jobs:
       - image: circleci/golang:latest
       - image: mongo:latest
       - image: erlio/docker-vernemq:latest
+        environment:
+          DOCKER_VERNEMQ_ALLOW_ANONYMOUS: on
     steps:
       - checkout
       - run: go test ./...
