@@ -27,6 +27,9 @@ type Config struct {
 	PM struct {
 		URL string
 	}
+	Database struct {
+		URL string
+	}
 	Core struct {
 		Broker struct {
 			Addr string
@@ -41,6 +44,8 @@ func config() Config {
 ### and it use 2-space as tab.
 pm: # pm communicates with pm component
   url: http://127.0.0.1:8080
+database:
+  url: mongodb://127.0.0.1:27017
 core: # core broker
   broker:
     addr: tcp://127.0.0.1:1883
