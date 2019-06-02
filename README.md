@@ -1,7 +1,7 @@
 # Link
 [![CircleCI](https://circleci.com/gh/I1820/link.svg?style=svg)](https://circleci.com/gh/I1820/link)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/link)
-![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/i1820/link.svg?style=flat-square)
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/i1820/link.svg?style=flat-square)](https://hub.docker.com/r/i1820/link)
 
 ## Introduction
 
