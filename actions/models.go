@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"plugin"
 
-	linkapp "github.com/I1820/link/app"
+	"github.com/I1820/link/models"
 	"github.com/gobuffalo/buffalo"
 )
 
@@ -49,7 +49,7 @@ func (m ModelsResource) Create(c buffalo.Context) error {
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
-	model, ok := sym.(linkapp.Model)
+	model, ok := sym.(models.Model)
 	if !ok {
 		return c.Error(http.StatusBadRequest, fmt.Errorf("Model is required"))
 	}
