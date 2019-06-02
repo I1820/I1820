@@ -5,13 +5,13 @@ go 1.12
 require (
 	dmitri.shuralyov.com/text/kebabcase v0.0.0-20180217051803-40e40b42552a
 	docker.io/go-docker v1.0.0
-	github.com/BurntSushi/toml v0.3.0
+	github.com/BurntSushi/toml v0.3.1
 	github.com/I1820/lanserver v0.0.0-20180821042104-4ea976932c7b
 	github.com/I1820/pm v0.0.0-20180822070609-4e23e86213c0
 	github.com/I1820/types v0.0.0-20180817183007-74de8fd84956
 	github.com/Microsoft/go-winio v0.4.10
 	github.com/ajg/form v0.0.0-20160822230020-523a5da1a92f
-	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973
+	github.com/beorn7/perks v1.0.0
 	github.com/buger/jsonparser v0.0.0-20180808090653-f4dd9f5a6b44
 	github.com/cockroachdb/cockroach-go v0.0.0-20180212155653-59c0560478b7
 	github.com/davecgh/go-spew v1.1.1
@@ -25,7 +25,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/go-resty/resty v1.8.0
 	github.com/go-sql-driver/mysql v1.4.0
-	github.com/go-stack/stack v1.7.0
+	github.com/go-stack/stack v1.8.0
 	github.com/gobuffalo/buffalo v0.12.6
 	github.com/gobuffalo/envy v1.6.4
 	github.com/gobuffalo/fizz v1.0.9
@@ -39,9 +39,10 @@ require (
 	github.com/gobuffalo/uuid v2.0.3+incompatible
 	github.com/gobuffalo/validate v2.0.3+incompatible
 	github.com/gobuffalo/x v0.0.0-20180816203319-dc54d929c4a2
-	github.com/gogo/protobuf v0.0.0-20170307180453-100ba4e88506
-	github.com/golang/protobuf v1.2.0
+	github.com/gogo/protobuf v1.2.1
+	github.com/golang/protobuf v1.3.1
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
+	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.6.2
 	github.com/gorilla/securecookie v1.1.1
@@ -70,10 +71,10 @@ require (
 	github.com/phayes/freeport v0.0.0-20171002181615-b8543db493a5
 	github.com/pkg/errors v0.8.0
 	github.com/pmezard/go-difflib v1.0.0
-	github.com/prometheus/client_golang v0.0.0-20180821135428-29e6500a95d6
-	github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910
-	github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e
-	github.com/prometheus/procfs v0.0.0-20180725123919-05ee40e3a273
+	github.com/prometheus/client_golang v0.9.3
+	github.com/prometheus/client_model v0.0.0-20190129233127-fd36f4220a90
+	github.com/prometheus/common v0.4.0
+	github.com/prometheus/procfs v0.0.0-20190507164030-5867b95ac084
 	github.com/rs/cors v1.5.0
 	github.com/serenize/snaker v0.0.0-20171204205717-a683aaf2d516
 	github.com/sergi/go-diff v1.0.0
@@ -84,19 +85,20 @@ require (
 	github.com/shurcooL/highlight_go v0.0.0-20170515013102-78fb10f4a5f8
 	github.com/shurcooL/octicon v0.0.0-20180602230221-c42b0e3b24d9
 	github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95
-	github.com/sirupsen/logrus v1.0.6
+	github.com/sirupsen/logrus v1.2.0
 	github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e
+	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.2.2
 	github.com/unrolled/secure v0.0.0-20180618144512-8287f3899c8e
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c
 	github.com/xdg/stringprep v1.0.0
-	golang.org/x/crypto v0.0.0-20180820150726-614d502a4dac
-	golang.org/x/net v0.0.0-20180821023952-922f4815f713
-	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
-	golang.org/x/sys v0.0.0-20180821140842-3b58ed4ad339
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+	golang.org/x/net v0.0.0-20190522155817-f3200d17e092
+	golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4
+	golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a
 	golang.org/x/text v0.3.0
 	google.golang.org/appengine v1.1.0
 	gopkg.in/russross/blackfriday.v1 v1.5.1
-	gopkg.in/yaml.v2 v2.2.1
+	gopkg.in/yaml.v2 v2.2.2
 )
