@@ -11,7 +11,7 @@
  * +===============================================
  */
 
-package app
+package core
 
 import (
 	"context"

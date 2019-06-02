@@ -11,7 +11,7 @@
  * +===============================================
  */
 
-package app
+package core
 
 import (
 	"context"
@@ -20,10 +20,10 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/I1820/link/protocols"
 	pmclient "github.com/I1820/pm/client"
 	"github.com/I1820/types"
 	paho "github.com/eclipse/paho.mqtt.golang"
-	"github.com/gobuffalo/envy"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/sirupsen/logrus"
 )
@@ -35,9 +35,10 @@ func init() {
 // Application is a main component of uplink that consists of
 // uplink protocols and mqtt client
 type Application struct {
-	cli paho.Client
+	cli  paho.Client
+	opts *paho.ClientOptions
 
-	protocols []Protocol
+	protocols []protocols.Protocol
 	models    map[string]Model
 
 	pm pmclient.PM
@@ -51,16 +52,6 @@ type Application struct {
 	insertStream  chan types.Data
 }
 
-// Protocol is a uplink/downlink protocol like lan or lora
-type Protocol interface {
-	TxTopic() string
-	RxTopic() string
-
-	Name() string
-
-	Marshal([]byte) (types.Data, error)
-}
-
 // Model is a decoder/encoder interface like generic (based on user scripts) or aolab
 type Model interface {
 	Decode([]byte) interface{}
@@ -70,21 +61,26 @@ type Model interface {
 }
 
 // New creates new application. this function creates mqtt client
-func New() *Application {
+func New(pmURL string, dbURL string, brokerURL string) *Application {
 	a := Application{}
 
-	a.protocols = make([]Protocol, 0)
+	a.protocols = make([]protocols.Protocol, 0)
 	a.models = make(map[string]Model)
 
-	a.pm = pmclient.New(envy.Get("PM_URL", "http://127.0.0.1:8080"))
+	// creates a pm communication link
+	a.pm = pmclient.New(pmURL)
 
-	// Create a mongodb connection
-	url := envy.Get("DB_URL", "mongodb://127.0.0.1:27017")
-	session, err := mgo.NewClient(url)
+	// create a mongodb connection
+	session, err := mgo.NewClient(dbURL)
 	if err != nil {
 		logrus.Fatalf("db new client error: %s", err)
 	}
 	a.session = session
+
+	a.opts = paho.NewClientOptions()
+	a.opts.AddBroker(brokerURL)
+	a.opts.SetClientID(fmt.Sprintf("I1820-link-%d", rand.Intn(1024)))
+	a.opts.SetOrderMatters(false)
 
 	// pipeline channels
 	a.projectStream = make(chan types.Data)
@@ -95,7 +91,7 @@ func New() *Application {
 }
 
 // RegisterProtocol registers protocol p on application a
-func (a *Application) RegisterProtocol(p Protocol) {
+func (a *Application) RegisterProtocol(p protocols.Protocol) {
 	a.protocols = append(a.protocols, p)
 }
 
@@ -140,11 +136,7 @@ func (a *Application) Run() {
 		MaxReconnectInterval 10 (minutes)
 		AutoReconnect: True
 	*/
-	opts := paho.NewClientOptions()
-	opts.AddBroker(envy.Get("BROKER_URL", "tcp://127.0.0.1:1883"))
-	opts.SetClientID(fmt.Sprintf("I1820-link-%d", rand.Intn(1024)))
-	opts.SetOrderMatters(false)
-	opts.SetOnConnectHandler(func(client paho.Client) {
+	a.opts.SetOnConnectHandler(func(client paho.Client) {
 		// Subscribe to protocols topics
 		for _, p := range a.protocols {
 			if t := a.cli.Subscribe(fmt.Sprintf("%s", p.RxTopic()), 0, a.mqttHandler(p)); t.Error() != nil {
@@ -152,7 +144,7 @@ func (a *Application) Run() {
 			}
 		}
 	})
-	a.cli = paho.NewClient(opts)
+	a.cli = paho.NewClient(a.opts)
 
 	// Connect to the MQTT Server.
 	if t := a.cli.Connect(); t.Wait() && t.Error() != nil {

@@ -11,7 +11,7 @@
  * +===============================================
  */
 
-package app
+package core
 
 import (
 	"context"
@@ -22,7 +22,16 @@ import (
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
+
+// TestSuite is a test suite for core.
+type TestSuite struct {
+	suite.Suite
+
+	addr string
+	pm   *pm.PM
+}
 
 func TestPipeline(t *testing.T) {
 	a := New()
