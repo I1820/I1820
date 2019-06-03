@@ -24,7 +24,8 @@ import (
 
 // Config holds all link component configurations
 type Config struct {
-	PM struct {
+	Debug bool
+	PM    struct {
 		URL string
 	}
 	Database struct {
@@ -42,6 +43,7 @@ func config() Config {
 	var defaultConfig = []byte(`
 ### configuration is in the YAML format
 ### and it use 2-space as tab.
+debug: true
 pm: # pm communicates with pm component
   url: http://127.0.0.1:8080
 database:
