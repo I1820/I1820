@@ -16,11 +16,8 @@ package actions
 import (
 	"net/http"
 
-	"github.com/gobuffalo/buffalo"
+	"github.com/labstack/echo/v4"
 )
-
-// DownlinkResource represents downlink handling
-type DownlinkResource struct{}
 
 type sendReq struct {
 	Data          interface{} `json:"data" binding:"required"`
@@ -37,10 +34,10 @@ type sendReq struct {
 // SendHandler handles downlink send request from applications
 // This function is mapped to the path
 // POST /send
-func SendHandler(c buffalo.Context) error {
+func SendHandler(c echo.Context) error {
 	var req sendReq
 	if err := c.Bind(&req); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	/*
@@ -113,10 +110,10 @@ func SendHandler(c buffalo.Context) error {
 
 		c.JSON(http.StatusOK, raw)
 	*/
-	return c.Render(http.StatusOK, r.JSON("18.20 is leaving us"))
+	return c.JSON(http.StatusNotImplemented, "downlink is under construction")
 }
 
-func sendRawHandler(c buffalo.Context) error {
+func sendRawHandler(c echo.Context) error {
 	/*
 		c.Header("Content-Type", "application/json")
 
@@ -169,5 +166,5 @@ func sendRawHandler(c buffalo.Context) error {
 
 		c.JSON(http.StatusOK, raw)
 	*/
-	return c.Render(http.StatusOK, r.JSON("18.20 is leaving us"))
+	return c.JSON(http.StatusNotImplemented, "downlink is under construction")
 }
