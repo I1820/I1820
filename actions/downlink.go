@@ -20,11 +20,13 @@ import (
 )
 
 type sendReq struct {
-	Data          interface{} `json:"data" binding:"required"`
-	ThingID       string      `json:"thing_id" binding:"required"`
-	ApplicationID string      `json:"application_id" binding:"required"` // The ApplicationID can be retrieved using the API or from the web-interface, this is not the AppEUI!
-	FPort         int         `json:"fport"`
-	Confirmed     bool        `json:"confirmed"`
+	Data    interface{} `json:"data" binding:"required"`
+	ThingID string      `json:"thing_id" binding:"required"`
+	// The ApplicationID can be retrieved using the API or from the web-interface,
+	// this is not the AppEUI!
+	ApplicationID string `json:"application_id" binding:"required"`
+	FPort         int    `json:"fport"`
+	Confirmed     bool   `json:"confirmed"`
 
 	SegmentSize  int   `json:"ss"`
 	RepeatNumber int   `json:"rn"`
@@ -87,7 +89,11 @@ func SendHandler(c echo.Context) error {
 
 		go func() {
 
-			req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/devices/%s/push", Config.LanServer.URL, r.ThingID), bytes.NewReader(lan))
+			req, err := http.NewRequest(
+				"POST",
+				fmt.Sprintf("%s/api/devices/%s/push", Config.LanServer.URL, r.ThingID),
+				bytes.NewReader(lan)
+			)
 			if err != nil {
 				c.AbortWithError(http.StatusInternalServerError, err)
 				return

@@ -22,6 +22,7 @@ func App(debug bool) *echo.Echo {
 		api.POST("/models", mh.Create)
 
 		api.POST("/send", SendHandler)
+		api.POST("/sendraw", sendRawHandler)
 	}
 
 	return e

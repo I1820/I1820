@@ -43,7 +43,7 @@ func main() {
 	core.RegisterProtocol(lan.Protocol{})
 	core.RegisterModel(aolab.Model{})
 	if err := core.Run(); err != nil {
-		logrus.Fatal("Core Service failed with %s", err)
+		logrus.Fatalf("Core Service failed with %s", err)
 	}
 
 	e := actions.App(cfg.Debug)

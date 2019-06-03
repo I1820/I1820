@@ -13,7 +13,7 @@ import (
 
 // ModelsHandler handles models of core application
 type ModelsHandler struct {
-	linkApp core.Application
+	linkApp *core.Application
 }
 
 // List returns list of loaded models. This function is mapped to the path
@@ -57,7 +57,7 @@ func (m ModelsHandler) Create(c echo.Context) error {
 	}
 	model, ok := sym.(models.Model)
 	if !ok {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "please upload a valid Model")
 	}
 	// TODO synchronous issues?
 	m.linkApp.RegisterModel(model)
