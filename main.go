@@ -11,7 +11,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/I1820/link/actions"
 	"github.com/I1820/link/core"
@@ -25,22 +32,39 @@ func main() {
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
 	// load configuration
-	c := config()
+	cfg := config()
 
 	// creates the core application and registers the defaults
-	linkApp, err := core.New(c.PM.URL, c.Database.URL, c.Core.Broker.Addr)
+	core, err := core.New(cfg.PM.URL, cfg.Database.URL, cfg.Core.Broker.Addr)
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	linkApp.RegisterProtocol(lora.Protocol{})
-	linkApp.RegisterProtocol(lan.Protocol{})
-	linkApp.RegisterModel(aolab.Model{})
-	if err := linkApp.Run(); err != nil {
-		logrus.Fatal(err)
+	core.RegisterProtocol(lora.Protocol{})
+	core.RegisterProtocol(lan.Protocol{})
+	core.RegisterModel(aolab.Model{})
+	if err := core.Run(); err != nil {
+		logrus.Fatal("Core Service failed with %s", err)
 	}
 
-	buffaloApp := actions.App()
-	if err := buffaloApp.Serve(); err != nil {
-		logrus.Fatal(err)
+	e := actions.App(cfg.Debug)
+	go func() {
+		if err := e.Start(":1373"); err != http.ErrServerClosed {
+			log.Fatalf("API Service failed with %s", err)
+
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	fmt.Println("18.20 As always ... left me alone")
+
+	core.Exit()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		log.Printf("API Service failed on exit: %s", err)
 	}
 }

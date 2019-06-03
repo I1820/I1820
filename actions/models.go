@@ -6,54 +6,60 @@ import (
 	"net/http"
 	"plugin"
 
+	"github.com/I1820/link/core"
 	"github.com/I1820/link/models"
-	"github.com/gobuffalo/buffalo"
+	"github.com/labstack/echo/v4"
 )
 
-// ModelsResource represetns model plugins route collection
-type ModelsResource struct {
-	buffalo.Resource
+// ModelsHandler handles models of core application
+type ModelsHandler struct {
+	linkApp core.Application
 }
 
 // List returns list of loaded models. This function is mapped to the path
 // GET /models
-func (m ModelsResource) List(c buffalo.Context) error {
-	return c.Render(http.StatusOK, r.JSON(linkApp.Models()))
+func (m ModelsHandler) List(c echo.Context) error {
+	return c.JSON(http.StatusOK, m.linkApp.Models())
 }
 
 // Create creates model based on given go plugin.
 // https://golang.org/pkg/plugin/
 // This function is mapped to the path
 // POST /models
-func (m ModelsResource) Create(c buffalo.Context) error {
-	f, err := c.File("model.so")
+func (m ModelsHandler) Create(c echo.Context) error {
+	fh, err := c.FormFile("model.so")
 	if err != nil {
-		return c.Error(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	f, err := fh.Open()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	if err := ioutil.WriteFile(fmt.Sprintf("./upload/%s", f.Filename), b, 0644); err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err := ioutil.WriteFile(fmt.Sprintf("./upload/%s", fh.Filename), b, 0644); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	p, err := plugin.Open(fmt.Sprintf("./upload/%s", f.Filename))
+	p, err := plugin.Open(fmt.Sprintf("./upload/%s", fh.Filename))
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	sym, err := p.Lookup("Model")
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	model, ok := sym.(models.Model)
 	if !ok {
-		return c.Error(http.StatusBadRequest, fmt.Errorf("model is required"))
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	// TODO synchronous issues?
-	linkApp.RegisterModel(model)
-	return c.Render(http.StatusOK, r.JSON(model.Name()))
+	m.linkApp.RegisterModel(model)
+	return c.JSON(http.StatusOK, model.Name())
 }
