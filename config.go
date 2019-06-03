@@ -28,12 +28,6 @@ type Config struct {
 	Database struct {
 		URL string
 	}
-
-	Core struct {
-		Broker struct {
-			Addr string
-		}
-	}
 }
 
 // config reads configuration with viper
@@ -44,9 +38,6 @@ func config() Config {
 debug: true
 database:
   url: mongodb://127.0.0.1:27017
-core: # recieves data from rabbitmq and stores them into database
-  broker:
-    addr: amqp://admin:admin@127.0.0.1:5672
 `)
 	var instance Config
 

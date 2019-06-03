@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/I1820/dm/actions"
-	"github.com/I1820/dm/core"
 )
 
 func main() {
@@ -36,18 +35,12 @@ func main() {
 
 		}
 	}()
-	app := core.New(cfg.Database.URL, cfg.Core.Broker.Addr)
-	if err := app.Run(); err != nil {
-		log.Fatalf("Core Application failed with %s", err)
-	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	fmt.Println("18.20 As always ... left me alone")
-
-	app.Exit()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
