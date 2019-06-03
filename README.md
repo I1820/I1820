@@ -12,4 +12,4 @@ This service also sends data into bottom layer (protocols) after
 encoding them using user selected encoder.
 
 Link uses MQTT for communicating with the bottom layer and this communication can be customized
-using Protocol interface which defined in `app/app.go`.
+using Protocol interface which defined in `protocols/protocol.go`.
