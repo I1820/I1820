@@ -30,6 +30,9 @@ func App(databaseURL string, debug bool) *echo.Echo {
 	// validator
 	app.Validator = &DefaultValidator{validator.New()}
 
+	// prometheus middleware
+	app.Use(NewPrometheusMiddleware("i1820_dm"))
+
 	// routes
 	app.GET("/about", AboutHandler)
 	api := app.Group("/api")
