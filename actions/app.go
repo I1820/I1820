@@ -51,6 +51,7 @@ func App(databaseURL string, debug bool) *echo.Echo {
 }
 
 func connectToDatabase(url string) *mongo.Database {
+	// register custom codec registry to handle empty interfaces
 	rb := bson.NewRegistryBuilder()
 	rb.RegisterTypeMapEntry(bsontype.EmbeddedDocument, reflect.TypeOf(bson.M{}))
 
