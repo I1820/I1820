@@ -1,8 +1,7 @@
 # Data Manager
-[![CircleCI](https://circleci.com/gh/I1820/dm.svg?style=svg)](https://circleci.com/gh/I1820/dm)
-[![Echo](https://img.shields.io/badge/powered%20by-echo-blue.svg?style=flat-square)](https://echo.labstack.com/)
+[![Drone (cloud)](https://img.shields.io/drone/build/I1820/dm.svg?style=flat-square)](https://cloud.drone.io/I1820/dm)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/dm)
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/788e58cf0f57cb358f7f)
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/i1820/dm.svg?style=flat-square)](https://hub.docker.com/r/i1820/dm)
 
 ## Introduction
 DM is a Data Manager component of the I1820 platform. It handles data that are coming from RabbitMQ and stores them.
