@@ -9,80 +9,62 @@
  */
 /* eslint-env mongo */
 
-var thingID = "5ba3f1a287a142b0a840fae1";
-var projectID = "5ba3f19c87a142b0a840fae0";
-var collection = "data." + projectID +  "." + thingID;
+var thingID = "el-thing";
+var projectID = "el-project";
+var collection = "data";
 
 db[collection].insert([{
-  raw: 7100,
-  value: {
-    number: 7100,
+  raw: new BinData(0, "o2MxMDAZG1hjMTAxGRnOZWNvdW50YjE3"),
+  data: {
+    100: 7000,
+    101: 6606,
+    count: "17"
   },
-  at: new ISODate("2018-09-27T21:52:06.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "102"
+  timestamp: new ISODate("2018-11-11T09:47:20.902Z"),
+  thingid : "0000000000000073",
+  rxinfo: [
+    { mac : "b827ebffff70c80a", name : "5cf0f70f7064c500094b5e31", time : new ISODate("0001-01-01T00:00:00Z"), rssi : new NumberLong(-57), lorasnr : 7 }
+  ],
+  txinfo: {
+    frequency: new NumberLong(868300000),
+    adr: false,
+    coderate: "4/5"
+  },
+  project : projectID,
 }, {
-  raw: 7000,
-  value: {
-    number: 7000,
+  raw: new BinData(0, "o2MxMDAZG1hjMTAxGRnOZWNvdW50YjE3"),
+  data: {
+    100: 7000,
+    101: 6606,
+    count: "17"
   },
-  at: new ISODate("2018-09-26T21:52:06.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "102"
+  timestamp: new ISODate("2018-11-11T09:47:21.902Z"),
+  thingid : "0000000000000073",
+  rxinfo: [
+    { mac : "b827ebffff70c80a", name : "5cf0f70f7064c500094b5e31", time : new ISODate("0001-01-01T00:00:00Z"), rssi : new NumberLong(-57), lorasnr : 7 }
+  ],
+  txinfo: {
+    frequency: new NumberLong(868300000),
+    adr: false,
+    coderate: "4/5"
+  },
+  project : projectID,
 }, {
-  raw: 7000,
-  value: {
-    number: 7000,
+  raw: new BinData(0, "o2MxMDAZG1hjMTAxGRnOZWNvdW50YjE3"),
+  data: {
+    100: 7000,
+    101: 6606,
+    count: "17"
   },
-  at: new ISODate("2018-09-26T21:52:06.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "100"
-}, {
-  raw: 6500,
-  value: {
-    number: 6500,
+  timestamp: new ISODate("2018-11-11T09:47:22.902Z"),
+  thingid : "0000000000000073",
+  rxinfo: [
+    { mac : "b827ebffff70c80a", name : "5cf0f70f7064c500094b5e31", time : new ISODate("0001-01-01T00:00:00Z"), rssi : new NumberLong(-57), lorasnr : 7 }
+  ],
+  txinfo: {
+    frequency: new NumberLong(868300000),
+    adr: false,
+    coderate: "4/5"
   },
-  at: new ISODate("2018-09-26T21:52:07.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "100"
-}, {
-  raw: 7000,
-  value: {
-    number: 7000,
-  },
-  at: new ISODate("2018-09-26T21:52:08.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "100"
-}, {
-  raw: 6500,
-  value: {
-    number: 6500,
-  },
-  at: new ISODate("2018-09-26T21:52:09.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "100"
-}, {
-  raw: 6500,
-  value: {
-    number: 6500,
-  },
-  at: new ISODate("2018-09-26T21:52:09.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "101"
-}, {
-  raw: "hello",
-  value: {
-    string: "hello",
-  },
-  at: new ISODate("2018-09-26T21:52:09.443+03:30"),
-  project: projectID,
-  thing_id: thingID,
-  asset: "101"
+  project : projectID,
 }]);
