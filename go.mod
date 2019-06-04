@@ -6,7 +6,7 @@ require (
 	docker.io/go-docker v1.0.0 // indirect
 	github.com/I1820/lanserver v0.0.0-20180821042104-4ea976932c7b
 	github.com/I1820/pm v0.0.0-20180822070609-4e23e86213c0
-	github.com/I1820/types v1.0.0
+	github.com/I1820/types v1.0.2
 	github.com/Microsoft/go-winio v0.4.10 // indirect
 	github.com/docker/distribution v0.0.0-20170726174610-edc3ab29cdff // indirect
 	github.com/docker/go-connections v0.3.0 // indirect

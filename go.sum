@@ -9,6 +9,8 @@ github.com/I1820/pm v0.0.0-20180822070609-4e23e86213c0 h1:ntKzi9bipLDplTsN+A2Iqj
 github.com/I1820/pm v0.0.0-20180822070609-4e23e86213c0/go.mod h1:jOrK6H50kuHLHy15bVfzymMiIm4fzBw48d+TLBoXKcE=
 github.com/I1820/types v1.0.0 h1:y9t+5IhYmqZG82yRrs9KWPees9G0JswvZG3vFboNMo4=
 github.com/I1820/types v1.0.0/go.mod h1:U1dDRDNi4ffjX0qrS+eW8ZfRJKIp6DiVZevwX3xskjU=
+github.com/I1820/types v1.0.2 h1:Be9XYxpjox543cqL2MQQo4ijOZOhAl08ebZCQarTpiM=
+github.com/I1820/types v1.0.2/go.mod h1:n2z/rx5BlBuluO+r3jABG+hKZcyU0yHAbtAs8eMU7x8=
 github.com/Microsoft/go-winio v0.4.10 h1:NrhPZI+cp3Fjmm5t/PZkVuir43JIRLZG/PSKK7atSfw=
 github.com/Microsoft/go-winio v0.4.10/go.mod h1:VhR8bwka0BXejwEJY73c50VrPtXAaKcyvVC4A4RozmA=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
