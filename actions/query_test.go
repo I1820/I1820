@@ -22,13 +22,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const thingID = "el-thing"
+const thingID = "0000000000000073"
+const projectID = "el-project"
 
 func (suite *DMTestSuite) Test_QueriesHandler_List() {
 	var results []listResp
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/queries/list", thingID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/queries/list", projectID), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -40,7 +41,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_List() {
 	suite.NotEqual(0, len(results))
 
 	for _, r := range results {
-		if r.ID == "0000000000000073" {
+		if r.ID == thingID {
 			suite.Equal(3, r.Total)
 		}
 	}
@@ -74,7 +75,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_Fetch() {
 	suite.Equal(1, len(results))
 
 	record := results[0]
-	suite.Equal("0000000000000073", record.ThingID)
+	suite.Equal(thingID, record.ThingID)
 	suite.Equal(7000, record.Data.(map[string]interface{})["100"])
 	suite.Equal(6606, record.Data.(map[string]interface{})["101"])
 	suite.Equal("17", record.Data.(map[string]interface{})["count"])

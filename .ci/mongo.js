@@ -9,7 +9,6 @@
  */
 /* eslint-env mongo */
 
-var thingID = "el-thing";
 var projectID = "el-project";
 var collection = "data";
 
