@@ -3,4 +3,4 @@
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/types)
 
 ## Introduction
-Some data types are common in all platform components, so we define them in one place instead of copying them from one component to another.
+DRY is a good engineering principle. Here we define common I1820 data types.
