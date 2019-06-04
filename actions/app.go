@@ -39,6 +39,8 @@ func App(databaseURL string, debug bool) *echo.Echo {
 		}
 
 		api.GET("/queries/projects/:project_id/list", qh.List)
+		api.GET("/queries/things/:thing_id/parsed", qh.LastParsed)
+		api.GET("/queries/things/:thing_id/fetcht", qh.FetchSingle)
 		api.POST("/queries/fetch", qh.Fetch)
 	}
 
