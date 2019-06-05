@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -58,19 +59,19 @@ func connectToDatabase(url string) *mongo.Database {
 	// create mongodb connection
 	client, err := mongo.NewClient(options.Client().ApplyURI(url).SetRegistry(rb.Build()))
 	if err != nil {
-		log.Fatalf("db new client error: %s", err)
+		logrus.Fatalf("db new client error: %s", err)
 	}
 	// connect to the mongodb (change database here!)
 	ctxc, donec := context.WithTimeout(context.Background(), 10*time.Second)
 	defer donec()
 	if err := client.Connect(ctxc); err != nil {
-		log.Fatalf("db connection error: %s", err)
+		logrus.Fatalf("db connection error: %s", err)
 	}
 	// is the mongo really there?
 	ctxp, donep := context.WithTimeout(context.Background(), 2*time.Second)
 	defer donep()
 	if err := client.Ping(ctxp, readpref.Primary()); err != nil {
-		log.Fatalf("db ping error: %s", err)
+		logrus.Fatalf("db ping error: %s", err)
 	}
 	return client.Database("i1820")
 }

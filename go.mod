@@ -28,7 +28,7 @@ require (
 	github.com/prometheus/procfs v0.0.2 // indirect
 	github.com/prometheus/tsdb v0.8.0 // indirect
 	github.com/rogpeppe/fastuuid v1.1.0 // indirect
-	github.com/sirupsen/logrus v1.4.2 // indirect
+	github.com/sirupsen/logrus v1.4.2
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

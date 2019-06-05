@@ -13,7 +13,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,6 +20,7 @@ import (
 	"time"
 
 	"github.com/I1820/dm/actions"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -31,8 +31,7 @@ func main() {
 	e := actions.App(cfg.Database.URL, cfg.Debug)
 	go func() {
 		if err := e.Start(":1373"); err != http.ErrServerClosed {
-			log.Fatalf("API Service failed with %s", err)
-
+			logrus.Fatalf("API Service failed with %s", err)
 		}
 	}()
 
@@ -45,6 +44,6 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
-		log.Printf("API Service failed on exit: %s", err)
+		logrus.Printf("API Service failed on exit: %s", err)
 	}
 }
