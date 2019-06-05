@@ -14,7 +14,7 @@ steps:
     I1820_LINK_DATABASE_URL: "mongodb://database:27017"
   commands:
   - go build
-  - go test -v
+  - go test -v ./...
 
 services:
 - name: database
