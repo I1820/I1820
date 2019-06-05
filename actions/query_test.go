@@ -29,7 +29,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_List() {
 	var results []listResp
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/queries/list", projectID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/querues/projects/%s/list", projectID), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -42,7 +42,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_List() {
 
 	for _, r := range results {
 		if r.ID == thingID {
-			suite.Equal(3, r.Total)
+			suite.Equal(4, r.Total)
 		}
 	}
 }
@@ -77,8 +77,8 @@ func (suite *DMTestSuite) Test_QueriesHandler_Fetch() {
 	suite.Equal(nil, results[0].Data)
 	record := results[1]
 	suite.Equal(thingID, record.ThingID)
-	suite.Equal(7000, record.Data.(map[string]interface{})["100"])
-	suite.Equal(6606, record.Data.(map[string]interface{})["101"])
+	suite.Equal(7000.0, record.Data.(map[string]interface{})["100"])
+	suite.Equal(6606.0, record.Data.(map[string]interface{})["101"])
 	suite.Equal("19", record.Data.(map[string]interface{})["count"])
 }
 
@@ -91,7 +91,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_FetchSingle() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf("/queries/things/%s/fetch?since=%d&until=%d", thingID, since, until),
+		fmt.Sprintf("/api/queries/things/%s/fetch?since=%d&until=%d", thingID, since, until),
 		nil,
 	)
 	suite.NoError(err)
@@ -107,8 +107,8 @@ func (suite *DMTestSuite) Test_QueriesHandler_FetchSingle() {
 	suite.Equal(nil, results[0].Data)
 	record := results[1]
 	suite.Equal(thingID, record.ThingID)
-	suite.Equal(7000, record.Data.(map[string]interface{})["100"])
-	suite.Equal(6606, record.Data.(map[string]interface{})["101"])
+	suite.Equal(7000.0, record.Data.(map[string]interface{})["100"])
+	suite.Equal(6606.0, record.Data.(map[string]interface{})["101"])
 	suite.Equal("19", record.Data.(map[string]interface{})["count"])
 }
 
@@ -118,7 +118,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_LastParsed() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf("/queries/things/%s/parsed", thingID),
+		fmt.Sprintf("api//queries/things/%s/parsed", thingID),
 		nil,
 	)
 	suite.NoError(err)
