@@ -29,7 +29,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_List() {
 	var results []listResp
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/querues/projects/%s/list", projectID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/queries/projects/%s/list", projectID), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
