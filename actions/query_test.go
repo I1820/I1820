@@ -128,5 +128,5 @@ func (suite *DMTestSuite) Test_QueriesHandler_LastParsed() {
 	suite.Equal(200, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &last))
-	suite.Equal(time.Date(2018, time.September, 11, 9, 47, 22, 902, time.UTC), last)
+	suite.Equal(time.Date(2018, time.December, 11, 9, 47, 22, 902*1000*1000, time.UTC), last)
 }
