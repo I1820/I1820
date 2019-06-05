@@ -72,11 +72,61 @@ func (suite *DMTestSuite) Test_QueriesHandler_Fetch() {
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 
-	suite.Equal(1, len(results))
+	suite.Equal(4, len(results))
 
-	record := results[0]
+	suite.Equal(nil, results[0].Data)
+	record := results[1]
 	suite.Equal(thingID, record.ThingID)
 	suite.Equal(7000, record.Data.(map[string]interface{})["100"])
 	suite.Equal(6606, record.Data.(map[string]interface{})["101"])
-	suite.Equal("17", record.Data.(map[string]interface{})["count"])
+	suite.Equal("19", record.Data.(map[string]interface{})["count"])
+}
+
+func (suite *DMTestSuite) Test_QueriesHandler_FetchSingle() {
+	var results []types.Data
+
+	since := time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC).Unix()
+	until := time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC).Unix()
+
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest(
+		"GET",
+		fmt.Sprintf("/queries/things/%s/fetch?since=%d&until=%d", thingID, since, until),
+		nil,
+	)
+	suite.NoError(err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	suite.engine.ServeHTTP(w, req)
+
+	suite.Equal(200, w.Code)
+
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
+
+	suite.Equal(4, len(results))
+
+	suite.Equal(nil, results[0].Data)
+	record := results[1]
+	suite.Equal(thingID, record.ThingID)
+	suite.Equal(7000, record.Data.(map[string]interface{})["100"])
+	suite.Equal(6606, record.Data.(map[string]interface{})["101"])
+	suite.Equal("19", record.Data.(map[string]interface{})["count"])
+}
+
+func (suite *DMTestSuite) Test_QueriesHandler_LastParsed() {
+	var last time.Time
+
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest(
+		"GET",
+		fmt.Sprintf("/queries/things/%s/parsed", thingID),
+		nil,
+	)
+	suite.NoError(err)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	suite.engine.ServeHTTP(w, req)
+
+	suite.Equal(200, w.Code)
+
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &last))
+	suite.Equal(time.Date(2018, time.September, 11, 9, 47, 22, 902, time.UTC), last)
 }
