@@ -118,7 +118,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_LastParsed() {
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf("api//queries/things/%s/parsed", thingID),
+		fmt.Sprintf("/api/queries/things/%s/parsed", thingID),
 		nil,
 	)
 	suite.NoError(err)
