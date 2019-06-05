@@ -10,6 +10,7 @@ steps:
 - name: seed
   image: mongo
   commands:
+    - mongo --host database i1820 mongodb/data_collection_index.js
     - mongo --host database i1820 .ci/mongo.js
 - name: test
   image: golang
