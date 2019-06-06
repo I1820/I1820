@@ -21,5 +21,5 @@ services:
   image: mongo:latest
 - name: broker
   image: erlio/docker-vernemq:latest
-  environment:	
+  environment:
     DOCKER_VERNEMQ_ALLOW_ANONYMOUS: on
