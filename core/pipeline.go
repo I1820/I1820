@@ -77,20 +77,22 @@ func (a *Application) decode() {
 					logrus.WithFields(logrus.Fields{
 						"component": "link",
 					}).Errorf("model %s not found (setting the model will improves performance)", d.Model)
+					// data will be parsed in project docker and pushed into mqtt parsed channel
 				} else {
 					d.Data = m.Decode(d.Raw)
-				}
-				// Publish parsed data
-				b, err := json.Marshal(d)
-				if err != nil {
+
+					// publish parsed data
+					b, err := json.Marshal(d)
+					if err != nil {
+						logrus.WithFields(logrus.Fields{
+							"component": "link",
+						}).Errorf("marshal data error: %s", err)
+					}
+					a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, false, b)
 					logrus.WithFields(logrus.Fields{
 						"component": "link",
-					}).Errorf("marshal data error: %s", err)
+					}).Infof("publish parsed data: %s", d.Project)
 				}
-				a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, false, b)
-				logrus.WithFields(logrus.Fields{
-					"component": "link",
-				}).Infof("publish parsed data: %s", d.Project)
 			}
 		}
 		a.insertStream <- d
