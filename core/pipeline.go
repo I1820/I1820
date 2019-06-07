@@ -58,6 +58,7 @@ func (a *Application) project() {
 
 		a.decodeStream <- d
 	}
+	a.projectWG.Done()
 }
 
 func (a *Application) decode() {
@@ -97,6 +98,7 @@ func (a *Application) decode() {
 		}
 		a.insertStream <- d
 	}
+	a.decodeWG.Done()
 }
 
 func (a *Application) insert() {
@@ -118,4 +120,5 @@ func (a *Application) insert() {
 			}).Infof("insert into mongodb: %#v", d)
 		}
 	}
+	a.insertWG.Done()
 }
