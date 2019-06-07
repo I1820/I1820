@@ -25,8 +25,6 @@ import (
 const tName = "0000000000000073"
 const pID = "kj"
 
-var t models.Thing
-
 func (suite *TMTestSuite) Test_ThingsHandler() {
 	suite.testThingsHandlerCreate()
 	suite.testThingsHandlerShow()
@@ -38,6 +36,8 @@ func (suite *TMTestSuite) Test_ThingsHandler() {
 
 // Create thing (POST /api/projects/{project_id}/things)
 func (suite *TMTestSuite) testThingsHandlerCreate() {
+	var t models.Thing
+
 	// build thing creation request
 	var treq thingReq
 	treq.Name = tName
@@ -60,7 +60,7 @@ func (suite *TMTestSuite) testThingsHandlerCreate() {
 
 // Show (GET /api/things/{thing_id}
 func (suite *TMTestSuite) testThingsHandlerShow() {
-	var ts models.Thing
+	var t models.Thing
 
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", fmt.Sprintf("/api/things/%s", tName), nil)
@@ -70,13 +70,15 @@ func (suite *TMTestSuite) testThingsHandlerShow() {
 
 	suite.Equal(200, w.Code)
 
-	suite.NoError(json.Unmarshal(w.Body.Bytes(), &ts))
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &t))
 
-	suite.Equal(ts, t)
+	suite.Equal(tName, t.Name)
 }
 
 // List (GET /api/projects/{project_id}/things)
 func (suite *TMTestSuite) testThingsHandlerList() {
+	var ts []models.Thing
+
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things", pID), nil)
 	suite.NoError(err)
@@ -84,6 +86,10 @@ func (suite *TMTestSuite) testThingsHandlerList() {
 	suite.engine.ServeHTTP(w, req)
 
 	suite.Equal(200, w.Code)
+
+	suite.NoError(json.Unmarshal(w.Body.Bytes(), &ts))
+
+	suite.Equal(1, len(ts))
 }
 
 // Destroy (DELETE /api/things/{thing_id})
