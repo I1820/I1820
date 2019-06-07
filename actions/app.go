@@ -3,7 +3,6 @@ package actions
 import (
 	"context"
 
-	"github.com/I1820/tm/config"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -12,32 +11,34 @@ import (
 )
 
 // App creates new instance of Echo and configures it
-func App() *echo.Echo {
+func App(debug bool, databaseURL string) *echo.Echo {
 	app := echo.New()
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
 	app.Pre(middleware.RemoveTrailingSlash())
 
-	if config.GetConfig().Debug {
+	if debug {
 		app.Logger.SetLevel(log.DEBUG)
 	}
 
-	// Validator
+	// validator
 	app.Validator = &DefaultValidator{validator.New()}
 
-	// Routes
+	// prometheus middleware
+	app.Use(NewPrometheusMiddleware("i1820_tm"))
+
+	// routes
 	app.GET("/about", AboutHandler)
 	api := app.Group("/api")
 	{
 		tr := ThingsHandler{
-			db: connectToDatabase(),
+			db: connectToDatabase(databaseURL),
 		}
 
 		pg := api.Group("/projects/:project_id")
 		{
 			pg.GET("/things", tr.List)
 			pg.POST("/things", tr.Create)
-			pg.POST("/things/geo", tr.GeoWithin)
 		}
 		api.DELETE("/things/:thing_id", tr.Destroy)
 		api.GET("/things/:thing_id", tr.Show)
@@ -48,9 +49,8 @@ func App() *echo.Echo {
 	return app
 }
 
-func connectToDatabase() *mongo.Database {
+func connectToDatabase(url string) *mongo.Database {
 	// Create mongodb connection
-	url := config.GetConfig().Database.URL
 	client, err := mongo.NewClient(url)
 	if err != nil {
 		log.Fatalf("DB new client error: %s", err)

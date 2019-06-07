@@ -14,6 +14,7 @@
 package actions
 
 import (
+	"os"
 	"testing"
 
 	"github.com/labstack/echo/v4"
@@ -28,7 +29,11 @@ type TMTestSuite struct {
 
 // SetupSuite initiates tm test suite
 func (suite *TMTestSuite) SetupSuite() {
-	suite.engine = App()
+	mongo := os.Getenv("I1820_TM_DATABASE_URL")
+	if mongo == "" {
+		mongo = "mongodb://127.0.0.1:27017"
+	}
+	suite.engine = App(true, mongo)
 }
 
 // Let's test tm APIs!

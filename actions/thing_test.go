@@ -19,20 +19,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/I1820/types"
+	"github.com/I1820/tm/models"
 )
 
 const tName = "0000000000000073"
 const pID = "kj"
 
-var tID = ""
-var t types.Thing
+var t models.Thing
 
 func (suite *TMTestSuite) Test_ThingsHandler() {
 	suite.testThingsHandlerCreate()
 	suite.testThingsHandlerShow()
 	suite.testThingsHandlerList()
-	suite.testThingsHandlerGeoWithin()
 	suite.testThingsHandlerDestroy()
 	suite.testThingsHandlerShow404()
 	suite.testThingsHandlerList()
@@ -57,15 +55,15 @@ func (suite *TMTestSuite) testThingsHandlerCreate() {
 	suite.Equal(200, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &t))
-	tID = t.ID
+	suite.Equal(tName, t.Name)
 }
 
-// Show (GET /api/projects/{project_id}/things/{thing_id}
+// Show (GET /api/things/{thing_id}
 func (suite *TMTestSuite) testThingsHandlerShow() {
-	var ts types.Thing
+	var ts models.Thing
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things/%s", pID, tID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/things/%s", tName), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -88,41 +86,10 @@ func (suite *TMTestSuite) testThingsHandlerList() {
 	suite.Equal(200, w.Code)
 }
 
-// GeoWithin (POST /api/projects/{project_id}/things/geo)
-func (suite *TMTestSuite) testThingsHandlerGeoWithin() {
-	var tg []types.Thing
-
-	// build thing geowithin request
-	var greq = geoWithinReq{
-		[][]float64{
-			{35.806731, 51.398618},
-			{35.807784, 51.397810},
-			{35.807827, 51.399516},
-			{35.806731, 51.398618},
-		},
-	}
-	data, err := json.Marshal(greq)
-	suite.NoError(err)
-
-	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things/geo", pID), bytes.NewReader(data))
-	suite.NoError(err)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	suite.engine.ServeHTTP(w, req)
-
-	suite.Equal(200, w.Code)
-
-	suite.NoError(json.Unmarshal(w.Body.Bytes(), &tg))
-
-	suite.Equal(len(tg), 1) // one thing must be found in given location
-	suite.Equal(tg[0], t)
-
-}
-
-// Destroy (DELETE /api/projects/{project_id}/things)
+// Destroy (DELETE /api/things/{thing_id})
 func (suite *TMTestSuite) testThingsHandlerDestroy() {
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/api/projects/%s/things/%s", pID, tID), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/api/things/%s", tName), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -130,10 +97,10 @@ func (suite *TMTestSuite) testThingsHandlerDestroy() {
 	suite.Equal(200, w.Code)
 }
 
-// Show 404 (GET /api/projects/{project_id}/things/{thing_id}
+// Show 404 (GET /api/things/{thing_id}
 func (suite *TMTestSuite) testThingsHandlerShow404() {
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things/%s", pID, tID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/api/things/%s", tName), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
