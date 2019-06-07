@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/I1820/tm/actions"
@@ -25,16 +26,17 @@ import (
 func main() {
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
-	e := actions.App()
+	cfg := config()
+
+	e := actions.App(cfg.Debug, cfg.Database.URL)
 	go func() {
 		if err := e.Start(":1995"); err != http.ErrServerClosed {
 			log.Fatalf("API Service failed with %s", err)
-
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	fmt.Println("18.20 As always ... left me alone")
