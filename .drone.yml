@@ -10,7 +10,7 @@ steps:
 - name: seed
   image: mongo
   commands:
-    - mongo --host database i1820 mongodb/devices_collection_index.js
+    - mongo --host database i1820 mongodb/things_collection_index.js
 - name: test
   image: golang
   environment:
