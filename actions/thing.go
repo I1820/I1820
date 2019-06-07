@@ -49,20 +49,20 @@ func (v ThingsHandler) List(c echo.Context) error {
 		"project": projectID,
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	for cur.Next(ctx) {
 		var result models.Thing
 
 		if err := cur.Decode(&result); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		results = append(results, result)
 	}
 	if err := cur.Close(ctx); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, results)
@@ -78,11 +78,11 @@ func (v ThingsHandler) Create(c echo.Context) error {
 
 	var rq thingReq
 	if err := c.Bind(&rq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if err := c.Validate(rq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	// read more about thing model in I1820 platform website
@@ -110,7 +110,7 @@ func (v ThingsHandler) Create(c echo.Context) error {
 	*/
 
 	if _, err := v.db.Collection("things").InsertOne(ctx, t); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, t)
@@ -137,7 +137,7 @@ func (v ThingsHandler) Show(c echo.Context) error {
 		if err == mongo.ErrNoDocuments {
 			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 		}
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, t)
@@ -154,11 +154,11 @@ func (v ThingsHandler) Update(c echo.Context) error {
 
 	var rq thingReq
 	if err := c.Bind(&rq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if err := c.Validate(rq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	dr := v.db.Collection("things").FindOneAndUpdate(ctx, bson.M{
@@ -175,7 +175,7 @@ func (v ThingsHandler) Update(c echo.Context) error {
 		if err == mongo.ErrNoDocuments {
 			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 		}
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, t)
@@ -193,7 +193,7 @@ func (v ThingsHandler) Destroy(c echo.Context) error {
 	if _, err := v.db.Collection("things").DeleteOne(ctx, bson.M{
 		"name": id,
 	}); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, true)
@@ -224,7 +224,7 @@ func (v ThingsHandler) Activation(c echo.Context) error {
 		if err == mongo.ErrNoDocuments {
 			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 		}
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, t)
