@@ -122,7 +122,6 @@ func (v ThingsHandler) Show(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
 
-	projectID := c.Param("project_id")
 	id := c.Param("thing_id")
 
 	var t models.Thing
@@ -130,7 +129,6 @@ func (v ThingsHandler) Show(c echo.Context) error {
 	dr := v.db.Collection("things").FindOne(ctx, bson.M{
 		"status":  true,
 		"name":    id,
-		"project": projectID,
 	})
 
 	if err := dr.Decode(&t); err != nil {
