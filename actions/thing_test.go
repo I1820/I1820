@@ -28,10 +28,10 @@ const pID = "kj"
 func (suite *TMTestSuite) Test_ThingsHandler() {
 	suite.testThingsHandlerCreate()
 	suite.testThingsHandlerShow()
-	suite.testThingsHandlerList()
+	suite.testThingsHandlerList(1)
 	suite.testThingsHandlerDestroy()
 	suite.testThingsHandlerShow404()
-	suite.testThingsHandlerList()
+	suite.testThingsHandlerList(0)
 }
 
 // Create thing (POST /api/projects/{project_id}/things)
@@ -76,7 +76,7 @@ func (suite *TMTestSuite) testThingsHandlerShow() {
 }
 
 // List (GET /api/projects/{project_id}/things)
-func (suite *TMTestSuite) testThingsHandlerList() {
+func (suite *TMTestSuite) testThingsHandlerList(count int) {
 	var ts []models.Thing
 
 	w := httptest.NewRecorder()
@@ -89,7 +89,7 @@ func (suite *TMTestSuite) testThingsHandlerList() {
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &ts))
 
-	suite.Equal(1, len(ts))
+	suite.Equal(count, len(ts))
 }
 
 // Destroy (DELETE /api/things/{thing_id})
