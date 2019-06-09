@@ -127,8 +127,8 @@ func (v ThingsHandler) Show(c echo.Context) error {
 	var t models.Thing
 
 	dr := v.db.Collection("things").FindOne(ctx, bson.M{
-		"status":  true,
-		"name":    id,
+		"status": true,
+		"name":   id,
 	})
 
 	if err := dr.Decode(&t); err != nil {
