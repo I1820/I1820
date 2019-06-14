@@ -2,7 +2,6 @@ module github.com/I1820/tm
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/I1820/types v1.0.1
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
@@ -11,8 +10,8 @@ require (
 	github.com/labstack/echo/v4 v4.0.0
 	github.com/labstack/gommon v0.2.8
 	github.com/leodido/go-urn v1.1.0 // indirect
-	github.com/mongodb/mongo-go-driver v0.3.0
 	github.com/prometheus/client_golang v0.9.3
+	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/afero v1.2.0 // indirect
 	github.com/spf13/viper v1.3.1
 	github.com/stretchr/testify v1.3.0
