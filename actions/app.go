@@ -2,11 +2,15 @@ package actions
 
 import (
 	"context"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -50,13 +54,22 @@ func App(debug bool, databaseURL string) *echo.Echo {
 }
 
 func connectToDatabase(url string) *mongo.Database {
-	// Create mongodb connection
-	client, err := mongo.NewClient(url)
+	// create mongodb connection
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
-		log.Fatalf("DB new client error: %s", err)
+		logrus.Fatalf("db new client error: %s", err)
 	}
-	if err := client.Connect(context.Background()); err != nil {
-		log.Fatalf("DB connection error: %s", err)
+	// connect to the mongodb (change database here!)
+	ctxc, donec := context.WithTimeout(context.Background(), 10*time.Second)
+	defer donec()
+	if err := client.Connect(ctxc); err != nil {
+		logrus.Fatalf("db connection error: %s", err)
+	}
+	// is the mongo really there?
+	ctxp, donep := context.WithTimeout(context.Background(), 2*time.Second)
+	defer donep()
+	if err := client.Ping(ctxp, readpref.Primary()); err != nil {
+		logrus.Fatalf("db ping error: %s", err)
 	}
 	return client.Database("i1820")
 }
