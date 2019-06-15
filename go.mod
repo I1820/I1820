@@ -2,7 +2,6 @@ module github.com/I1820/pm
 
 require (
 	docker.io/go-docker v1.0.0
-	github.com/I1820/types v1.0.1
 	github.com/Microsoft/go-winio v0.4.11 // indirect
 	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
 	github.com/buger/jsonparser v0.0.0-20180910192245-6acdf747ae99 // indirect
@@ -45,7 +44,6 @@ require (
 	github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d // indirect
 	github.com/rs/cors v1.6.0
 	github.com/satori/go.uuid v1.2.0 // indirect
-	github.com/segmentio/ksuid v1.0.2
 	github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
 	github.com/stretchr/testify v1.3.0
 	github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 // indirect
