@@ -28,7 +28,7 @@ import (
 const (
 	runnerImage string                = "i1820/elrunner"
 	redisImage  string                = "redis:alpine"
-	network     container.NetworkMode = "i1820"
+	network     container.NetworkMode = "i1820_projects"
 )
 
 var dockerClient *client.Client
