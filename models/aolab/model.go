@@ -33,7 +33,7 @@ func (m Model) Decode(d []byte) interface{} {
 	if err := json.Unmarshal(d, &l); err != nil {
 		return nil
 	}
-	return l
+	return l.States
 }
 
 // Encode given object with aolab structure
