@@ -25,7 +25,7 @@ import (
 // Config holds all link component configurations
 type Config struct {
 	Debug bool
-	PM    struct {
+	TM    struct {
 		URL string
 	}
 	Database struct {
@@ -44,7 +44,7 @@ func config() Config {
 ### configuration is in the YAML format
 ### and it use 2-space as tab.
 debug: true
-pm: # pm communicates with pm component
+tm: # pm communicates with pm component
   url: http://127.0.0.1:8080
 database:
   url: mongodb://127.0.0.1:27017
