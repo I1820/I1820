@@ -2,23 +2,23 @@ kind: pipeline
 name: default
 
 steps:
-- name: lint
-  image: golang
-  commands:
-    - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.16.0
-    - golangci-lint run --enable-all
-- name: seed
-  image: mongo
-  commands:
-    - mongo --host database i1820 mongodb/things_collection_index.js
-- name: test
-  image: golang
-  environment:
-    I1820_TM_DATABASE_URL: "mongodb://database:27017"
-  commands:
-  - go build
-  - go test -v ./...
+  - name: lint
+    image: golang
+    commands:
+      - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.16.0
+      - golangci-lint run --enable-all
+  - name: seed
+    image: mongo
+    commands:
+      - mongo --host database i1820 mongodb/things_collection_index.js
+  - name: test
+    image: golang
+    environment:
+      I1820_TM_DATABASE_URL: "mongodb://database:27017"
+    commands:
+      - go build
+      - go test -v ./...
 
 services:
-- name: database
-  image: mongo:latest
+  - name: database
+    image: mongo:latest
