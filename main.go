@@ -35,7 +35,7 @@ func main() {
 	cfg := config()
 
 	// creates the core application and registers the defaults
-	core, err := core.New(cfg.PM.URL, cfg.Database.URL, cfg.Core.Broker.Addr)
+	core, err := core.New(cfg.TM.URL, cfg.Database.URL, cfg.Core.Broker.Addr)
 	if err != nil {
 		logrus.Fatal(err)
 	}
