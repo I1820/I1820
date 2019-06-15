@@ -32,11 +32,11 @@ func (a *Application) project() {
 
 	for d := range a.projectStream {
 		// find the thing in I1820/pm
-		t, err := a.pm.ThingsShow(d.ThingID)
+		t, err := a.tm.Show(d.ThingID)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"component": "link",
-			}).Errorf("pm things-show: %s", err)
+			}).Errorf("tm show: %s", err)
 		} else {
 			d.Project = t.Project
 			d.Model = t.Model

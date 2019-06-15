@@ -23,7 +23,7 @@ import (
 
 	"github.com/I1820/link/models"
 	"github.com/I1820/link/protocols"
-	pmclient "github.com/I1820/pm/client"
+	tmclient "github.com/I1820/tm/client"
 	"github.com/I1820/types"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"
@@ -44,7 +44,7 @@ type Application struct {
 	models    map[string]models.Model
 
 	// pm connection
-	pm pmclient.PM
+	tm tmclient.TMService
 
 	// database connection
 	session *mongo.Client
@@ -66,7 +66,7 @@ type Application struct {
 }
 
 // New creates new application. this function creates mqtt client
-func New(pmURL string, dbURL string, brokerURL string) (*Application, error) {
+func New(tmURL string, dbURL string, brokerURL string) (*Application, error) {
 
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -75,8 +75,8 @@ func New(pmURL string, dbURL string, brokerURL string) (*Application, error) {
 	a.protocols = make([]protocols.Protocol, 0)
 	a.models = make(map[string]models.Model)
 
-	// creates a pm communication link
-	a.pm = pmclient.New(pmURL)
+	// creates a tm communication link based on HTTP
+	a.tm = tmclient.New(tmURL)
 
 	// create a mongodb connection
 	session, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
