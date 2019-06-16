@@ -35,7 +35,7 @@ type listResp struct {
 
 type fetchReq struct {
 	ThingIDs []string `json:"thing_ids" validate:"required"`
-	Since    int64    `json:"since" validate:"required"`
+	Since    int64    `json:"since"`
 	Until    int64    `json:"until"`
 	Limit    int64    `json:"limit"`
 	Offset   int64    `json:"offset"`
