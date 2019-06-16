@@ -244,20 +244,8 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 
 	var p models.Project
 
-	// do not remove a project before all of its things have been removed
-	cur, err := db.Collection("things").Find(c, bson.NewDocument(
-		bson.EC.String("project", projectID),
-	), findopt.OptLimit(1))
-	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
-	}
-	if cur.Next(c) {
-		// there is a thing recod :joy:
-		return c.Error(http.StatusBadRequest, fmt.Errorf("This project has some things, remove them first"))
-	}
-
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.String("_id", projectID),
+		bson.EC.String("name", projectID),
 	))
 
 	if err := dr.Decode(&p); err != nil {
