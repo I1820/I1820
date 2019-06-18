@@ -42,7 +42,7 @@ func (a *Application) project() {
 			d.Model = t.Model
 		}
 
-		if d.Project != "" {
+		if d.Project != "" && d.Model == "generic" {
 			// publish raw data
 			b, err := json.Marshal(d)
 			if err != nil {
