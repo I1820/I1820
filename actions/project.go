@@ -135,7 +135,7 @@ func (v ProjectsResource) Recreate(c buffalo.Context) error {
 	var p models.Project
 
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.String("_id", projectID),
+		bson.EC.String("name", projectID),
 	))
 
 	if err := dr.Decode(&p); err != nil {
@@ -159,7 +159,7 @@ func (v ProjectsResource) Recreate(c buffalo.Context) error {
 	}
 
 	du := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
-		bson.EC.String("_id", projectID),
+		bson.EC.String("name", projectID),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$set", bson.EC.Interface("runner", p.Runner)),
 	), findopt.ReturnDocument(mongoopt.After))
@@ -182,7 +182,7 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 	var p models.Project
 
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.String("_id", projectID),
+		bson.EC.String("name", projectID),
 	))
 
 	if err := dr.Decode(&p); err != nil {
@@ -222,7 +222,7 @@ func (v ProjectsResource) Update(c buffalo.Context) error {
 	var p models.Project
 
 	dr := db.Collection("projects").FindOneAndUpdate(c, bson.NewDocument(
-		bson.EC.String("_id", projectID),
+		bson.EC.String("name", projectID),
 	), bson.NewDocument(
 		bson.EC.SubDocumentFromElements("$set", bson.EC.String("name", name)),
 	), findopt.ReturnDocument(mongoopt.After))
@@ -262,7 +262,7 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 
 	// remove project entity from database
 	if _, err := db.Collection("projects").DeleteOne(c, bson.NewDocument(
-		bson.EC.String("_id", projectID),
+		bson.EC.String("name", projectID),
 	)); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}

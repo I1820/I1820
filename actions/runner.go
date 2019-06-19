@@ -36,7 +36,7 @@ func RunnersHandler(c buffalo.Context) error {
 	var p models.Project
 
 	dr := db.Collection("projects").FindOne(c, bson.NewDocument(
-		bson.EC.String("_id", projectID),
+		bson.EC.String("name", projectID),
 	))
 
 	if err := dr.Decode(&p); err != nil {
