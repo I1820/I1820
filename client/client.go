@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/I1820/tm/models"
-	"github.com/go-resty/resty"
+	"github.com/go-resty/resty/v2"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -30,7 +30,7 @@ func (e Error) Error() string {
 	return fmt.Sprintf("(%d): %s", e.Code, e.Message)
 }
 
-// TMClient is way for connecting with tm service
+// TMService is way for connecting with tm service
 type TMService struct {
 	cli *resty.Client
 	c   *cache.Cache
