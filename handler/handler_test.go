@@ -33,7 +33,7 @@ func (suite *TMTestSuite) SetupSuite() {
 			DB: db,
 		},
 	}
-	th.Register(suite.engine.Group("/"))
+	th.Register(suite.engine.Group(""))
 	suite.engine.GET("/about", AboutHandler)
 }
 
