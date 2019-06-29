@@ -1,4 +1,4 @@
-package models
+package model
 
 // Thing contains thing identification and its parent project
 type Thing struct {
