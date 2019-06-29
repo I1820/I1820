@@ -1,4 +1,4 @@
-package actions
+package router
 
 // Copied code from https://github.com/0neSe7en/echo-prometheus
 import (

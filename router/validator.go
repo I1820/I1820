@@ -1,17 +1,4 @@
-/*
- *
- * In The Name of God
- *
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 02-02-2019
- * |
- * | File Name:     validator.go
- * +===============================================
- */
-
-package actions
+package router
 
 import (
 	"gopkg.in/go-playground/validator.v9"
