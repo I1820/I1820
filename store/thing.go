@@ -26,14 +26,14 @@ const collection = "things"
 
 // Things stores and retrieves things collection
 type Things struct {
-	db *mongo.Database
+	DB *mongo.Database
 }
 
 // GetByProjectID returns all things that are associated with given project identification
 func (ts Things) GetByProjectID(ctx context.Context, pid string) ([]model.Thing, error) {
 	var things []model.Thing
 
-	cur, err := ts.db.Collection(collection).Find(ctx, bson.M{
+	cur, err := ts.DB.Collection(collection).Find(ctx, bson.M{
 		"project": pid,
 	})
 	if err != nil {
@@ -60,7 +60,7 @@ func (ts Things) GetByProjectID(ctx context.Context, pid string) ([]model.Thing,
 func (ts Things) GetByName(ctx context.Context, id string) (model.Thing, error) {
 	var t model.Thing
 
-	dr := ts.db.Collection(collection).FindOne(ctx, bson.M{
+	dr := ts.DB.Collection(collection).FindOne(ctx, bson.M{
 		"status": true,
 		"name":   id,
 	})
@@ -77,7 +77,7 @@ func (ts Things) GetByName(ctx context.Context, id string) (model.Thing, error) 
 
 // Create creates the given thing in things collection
 func (ts Things) Create(ctx context.Context, t model.Thing) error {
-	if _, err := ts.db.Collection(collection).InsertOne(ctx, t); err != nil {
+	if _, err := ts.DB.Collection(collection).InsertOne(ctx, t); err != nil {
 		return err
 	}
 	return nil
@@ -94,7 +94,7 @@ func (ts Things) Update(ctx context.Context, id string, m *string, s *bool) (mod
 		set["status"] = *s
 	}
 
-	dr := ts.db.Collection(collection).FindOneAndUpdate(ctx, bson.M{
+	dr := ts.DB.Collection(collection).FindOneAndUpdate(ctx, bson.M{
 		"name": id,
 	}, bson.M{
 		"$set": set,
@@ -114,7 +114,7 @@ func (ts Things) Update(ctx context.Context, id string, m *string, s *bool) (mod
 
 // Remove removes the given thing from the things collection
 func (ts Things) Remove(ctx context.Context, id string) error {
-	if _, err := ts.db.Collection("things").DeleteOne(ctx, bson.M{
+	if _, err := ts.DB.Collection("things").DeleteOne(ctx, bson.M{
 		"name": id,
 	}); err != nil {
 		return err
