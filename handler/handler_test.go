@@ -1,22 +1,12 @@
-/*
- *
- * In The Name of God
- *
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 01-02-2019
- * |
- * | File Name:     app_test.go
- * +===============================================
- */
-
-package actions
+package handler
 
 import (
 	"os"
 	"testing"
 
+	"github.com/I1820/tm/db"
+	"github.com/I1820/tm/router"
+	"github.com/I1820/tm/store"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 )
@@ -33,7 +23,18 @@ func (suite *TMTestSuite) SetupSuite() {
 	if mongo == "" {
 		mongo = "mongodb://127.0.0.1:27017"
 	}
-	suite.engine = App(true, mongo)
+	db, err := db.New(mongo, "i1820")
+	suite.NoError(err)
+
+	suite.engine = router.App(true, "i1820_tm")
+
+	th := ThingsHandler{
+		Store: store.Things{
+			DB: db,
+		},
+	}
+	th.Register(suite.engine.Group("/"))
+	suite.engine.GET("/about", AboutHandler)
 }
 
 // Let's test tm APIs!

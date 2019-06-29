@@ -8,7 +8,7 @@
  * +===============================================
  */
 
-package actions
+package handler
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/I1820/tm/models"
+	"github.com/I1820/tm/model"
 )
 
 const tName = "0000000000000073"
@@ -36,7 +36,7 @@ func (suite *TMTestSuite) Test_ThingsHandler() {
 
 // Create thing (POST /api/projects/{project_id}/things)
 func (suite *TMTestSuite) testThingsHandlerCreate() {
-	var t models.Thing
+	var t model.Thing
 
 	// build thing creation request
 	var treq thingReq
@@ -47,7 +47,7 @@ func (suite *TMTestSuite) testThingsHandlerCreate() {
 	suite.NoError(err)
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", fmt.Sprintf("/api/projects/%s/things", pID), bytes.NewReader(data))
+	req, err := http.NewRequest("POST", fmt.Sprintf("/projects/%s/things", pID), bytes.NewReader(data))
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -60,10 +60,10 @@ func (suite *TMTestSuite) testThingsHandlerCreate() {
 
 // Show (GET /api/things/{thing_id}
 func (suite *TMTestSuite) testThingsHandlerShow() {
-	var t models.Thing
+	var t model.Thing
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/things/%s", tName), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -77,10 +77,10 @@ func (suite *TMTestSuite) testThingsHandlerShow() {
 
 // List (GET /api/projects/{project_id}/things)
 func (suite *TMTestSuite) testThingsHandlerList(count int) {
-	var ts []models.Thing
+	var ts []model.Thing
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/projects/%s/things", pID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/projects/%s/things", pID), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -95,7 +95,7 @@ func (suite *TMTestSuite) testThingsHandlerList(count int) {
 // Destroy (DELETE /api/things/{thing_id})
 func (suite *TMTestSuite) testThingsHandlerDestroy() {
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/api/things/%s", tName), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("/things/%s", tName), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
@@ -106,7 +106,7 @@ func (suite *TMTestSuite) testThingsHandlerDestroy() {
 // Show 404 (GET /api/things/{thing_id}
 func (suite *TMTestSuite) testThingsHandlerShow404() {
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/api/things/%s", tName), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)
 	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)

@@ -1,17 +1,4 @@
-/*
- *
- * In The Name of God
- *
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 01-02-2019
- * |
- * | File Name:     home_test.go
- * +===============================================
- */
-
-package actions
+package handler
 
 import (
 	"net/http"

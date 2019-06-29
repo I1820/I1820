@@ -6,23 +6,20 @@
  * +===============================================
  */
 
-package actions
+package handler
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/I1820/tm/models"
+	"github.com/I1820/tm/model"
+	"github.com/I1820/tm/store"
 	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/bson"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ThingsHandler handles existing things
 type ThingsHandler struct {
-	db *mongo.Database
+	Store store.Things
 }
 
 // thing request payload
@@ -43,25 +40,8 @@ func (v ThingsHandler) List(c echo.Context) error {
 
 	projectID := c.Param("project_id")
 
-	results := make([]models.Thing, 0)
-
-	cur, err := v.db.Collection("things").Find(ctx, bson.M{
-		"project": projectID,
-	})
+	results, err := v.Store.GetByProjectID(ctx, projectID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	for cur.Next(ctx) {
-		var result models.Thing
-
-		if err := cur.Decode(&result); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-		}
-
-		results = append(results, result)
-	}
-	if err := cur.Close(ctx); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
@@ -86,17 +66,16 @@ func (v ThingsHandler) Create(c echo.Context) error {
 	}
 
 	// read more about thing model in I1820 platform website
-	model := "generic"
-	if rq.Model != "" {
-		model = rq.Model
+	if rq.Model == "" {
+		rq.Model = "generic"
 	}
 
 	// there is no check for project existence!
-	// but sajjad checks it
+	// but sjd-backend checks it
 
-	t := models.Thing{
+	t := model.Thing{
 		Name:   rq.Name,
-		Model:  model,
+		Model:  rq.Model,
 		Status: true,
 
 		Project: projectID,
@@ -108,8 +87,7 @@ func (v ThingsHandler) Create(c echo.Context) error {
 		t.Location.Type = "Point"
 		t.Location.Coordinates = []float64{rq.Location.Longitude, rq.Location.Latitude}
 	*/
-
-	if _, err := v.db.Collection("things").InsertOne(ctx, t); err != nil {
+	if err := v.Store.Create(ctx, t); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
@@ -124,18 +102,12 @@ func (v ThingsHandler) Show(c echo.Context) error {
 
 	id := c.Param("thing_id")
 
-	var t models.Thing
-
-	dr := v.db.Collection("things").FindOne(ctx, bson.M{
-		"status": true,
-		"name":   id,
-	})
-
-	if err := dr.Decode(&t); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
-		}
+	t, err := v.Store.GetByName(ctx, id)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if t.Name == "" {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 	}
 
 	return c.JSON(http.StatusOK, t)
@@ -159,25 +131,20 @@ func (v ThingsHandler) Update(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	dr := v.db.Collection("things").FindOneAndUpdate(ctx, bson.M{
-		"name": id,
-	}, bson.M{
-		"$set": bson.M{
-			"model": rq.Model,
-		},
-	}, options.FindOneAndUpdate().SetReturnDocument(options.After))
+	// read more about thing model in I1820 platform website
+	if rq.Model == "" {
+		rq.Model = "generic"
+	}
 
-	var t models.Thing
-
-	if err := dr.Decode(&t); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
-		}
+	t, err := v.Store.Update(ctx, id, &rq.Model, nil)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if t.Name == "" {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 	}
 
 	return c.JSON(http.StatusOK, t)
-
 }
 
 // Destroy deletes a thing from the DB and its project. This function is mapped
@@ -188,9 +155,7 @@ func (v ThingsHandler) Destroy(c echo.Context) error {
 
 	id := c.Param("thing_id")
 
-	if _, err := v.db.Collection("things").DeleteOne(ctx, bson.M{
-		"name": id,
-	}); err != nil {
+	if err := v.Store.Remove(ctx, id); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
@@ -210,20 +175,26 @@ func (v ThingsHandler) Activation(c echo.Context) error {
 		status = true
 	}
 
-	dr := v.db.Collection("things").FindOneAndUpdate(ctx, bson.M{
-		"name": id,
-	}, bson.M{
-		"$set": bson.M{"status": status},
-	}, options.FindOneAndUpdate().SetReturnDocument(options.After))
-
-	var t models.Thing
-
-	if err := dr.Decode(&t); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
-		}
+	t, err := v.Store.Update(ctx, id, nil, &status)
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if t.Name == "" {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 	}
 
 	return c.JSON(http.StatusOK, t)
+}
+
+// Register registers the routes of things handler on given echo group
+func (v ThingsHandler) Register(g *echo.Group) {
+	pg := g.Group("/projects/:project_id")
+	{
+		pg.GET("/things", v.List)
+		pg.POST("/things", v.Create)
+	}
+	g.DELETE("/things/:thing_id", v.Destroy)
+	g.GET("/things/:thing_id", v.Show)
+	g.PUT("/things/:thing_id", v.Update)
+	g.GET("/things/:thing_id/:t:(?:activate|deactivate)", v.Activation)
 }
