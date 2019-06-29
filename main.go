@@ -20,7 +20,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/I1820/tm/actions"
+	"github.com/I1820/tm/db"
+	"github.com/I1820/tm/handler"
+	"github.com/I1820/tm/router"
+	"github.com/I1820/tm/store"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -28,10 +32,27 @@ func main() {
 
 	cfg := config()
 
-	e := actions.App(cfg.Debug, cfg.Database.URL)
+	e := router.App(cfg.Debug, "i1820_tm")
+
+	// routes
+	db, err := db.New(cfg.Database.URL, "i1820")
+	logrus.Fatal(err)
+
+	th := handler.ThingsHandler{
+		Store: store.Things{
+			DB: db,
+		},
+	}
+
+	e.GET("/about", handler.AboutHandler)
+	api := e.Group("/api")
+	{
+		th.Register(api)
+	}
+
 	go func() {
 		if err := e.Start(":1995"); err != http.ErrServerClosed {
-			log.Fatalf("API Service failed with %s", err)
+			logrus.Fatalf("API Service failed with %s", err)
 		}
 	}()
 
