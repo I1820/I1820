@@ -15,7 +15,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/I1820/tm/models"
+	"github.com/I1820/pm/model"
 	"github.com/go-resty/resty/v2"
 	"github.com/patrickmn/go-cache"
 )
@@ -53,8 +53,8 @@ func New(url string) TMService {
 }
 
 // List lists existing things
-func (tm TMService) List() ([]models.Thing, error) {
-	var ts []models.Thing
+func (tm TMService) List() ([]model.Thing, error) {
+	var ts []model.Thing
 
 	resp, err := tm.cli.R().
 		SetResult(&ts).
@@ -72,13 +72,13 @@ func (tm TMService) List() ([]models.Thing, error) {
 }
 
 // Show shows thing information by name
-func (tm TMService) Show(name string) (models.Thing, error) {
+func (tm TMService) Show(name string) (model.Thing, error) {
 	// check cache first
 	if t, found := tm.c.Get(name); found {
-		return t.(models.Thing), nil
+		return t.(model.Thing), nil
 	}
 
-	var t models.Thing
+	var t model.Thing
 	resp, err := tm.cli.R().
 		SetResult(&t).
 		SetPathParams(map[string]string{
@@ -102,8 +102,8 @@ func (tm TMService) Show(name string) (models.Thing, error) {
 }
 
 // Delete deletes thing by name
-func (tm TMService) Delete(name string) (models.Thing, error) {
-	var t models.Thing
+func (tm TMService) Delete(name string) (model.Thing, error) {
+	var t model.Thing
 
 	resp, err := tm.cli.R().
 		SetResult(&t).
