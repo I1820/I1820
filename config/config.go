@@ -11,7 +11,7 @@
  * +===============================================
  */
 
-package main
+package config
 
 import (
 	"bytes"
@@ -30,15 +30,8 @@ type Config struct {
 	}
 }
 
-// config reads configuration with viper
-func config() Config {
-	var defaultConfig = []byte(`
-### configuration is in the YAML format
-### and it use 2-space as tab.
-debug: true
-database:
-  url: mongodb://127.0.0.1:27017
-`)
+// New reads configuration with viper
+func New() Config {
 	var instance Config
 
 	v := viper.New()
@@ -46,7 +39,7 @@ database:
 	v.AddConfigPath(".")
 	v.SetConfigName("config.default")
 
-	if err := v.ReadConfig(bytes.NewReader(defaultConfig)); err != nil {
+	if err := v.ReadConfig(bytes.NewBufferString(Default)); err != nil {
 		log.Fatalf("Fatal error loading **default** config file: %s \n", err)
 	}
 

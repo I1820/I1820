@@ -20,6 +20,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/I1820/tm/config"
 	"github.com/I1820/tm/db"
 	"github.com/I1820/tm/handler"
 	"github.com/I1820/tm/router"
@@ -30,7 +31,7 @@ import (
 func main() {
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
-	cfg := config()
+	cfg := config.New()
 
 	e := router.App(cfg.Debug, "i1820_tm")
 
