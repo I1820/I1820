@@ -15,10 +15,9 @@ package config
 
 import (
 	"bytes"
-	"fmt"
-	"log"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -40,28 +39,23 @@ func New() Config {
 	v.SetConfigName("config.default")
 
 	if err := v.ReadConfig(bytes.NewBufferString(Default)); err != nil {
-		log.Fatalf("Fatal error loading **default** config file: %s \n", err)
+		logrus.Fatalf("fatal error loading **default** config file: %s \n", err)
 	}
 
 	v.SetConfigName("config")
 
 	if err := v.MergeInConfig(); err != nil {
-		switch err.(type) {
-		default:
-			log.Fatalf("Fatal error loading config file: %s \n", err)
-		case viper.ConfigFileNotFoundError:
-			log.Printf("No config file found. Using defaults and environment variables")
-		}
+		logrus.Warnf("no config file found, using defaults and environment variables")
 	}
 
 	v.SetEnvPrefix("i1820_tm")
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	v.AutomaticEnv()
 
 	if err := v.UnmarshalExact(&instance); err != nil {
-		log.Printf("configuration: %s", err)
+		logrus.Fatalf("unmarshaling error: %s", err)
 	}
-	fmt.Printf("Following configuration is loaded:\n%+v\n", instance)
+	logrus.Infof("following configuration is loaded:\n%+v", instance)
 
 	return instance
 }
