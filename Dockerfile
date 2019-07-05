@@ -32,6 +32,4 @@ LABEL org.i1820.build-date=$BUILD_DATE
 LABEL org.i1820.build-commit-sha=$BUILD_COMMIT
 LABEL org.i1820.build-commit-msg=$BUILD_COMMIT_MSG
 
-# Comment out to run the migrations before running the binary:
-# CMD /bin/app migrate; /bin/app
-CMD ["/bin/app"]
+ENTRYPOINT ["/bin/app"]
