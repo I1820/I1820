@@ -15,7 +15,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/I1820/pm/model"
+	"github.com/I1820/tm/model"
 	"github.com/go-resty/resty/v2"
 	"github.com/patrickmn/go-cache"
 )
