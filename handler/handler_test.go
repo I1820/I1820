@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"os"
 	"testing"
 
+	"github.com/I1820/tm/config"
 	"github.com/I1820/tm/db"
 	"github.com/I1820/tm/router"
 	"github.com/I1820/tm/store"
@@ -19,11 +19,8 @@ type TMTestSuite struct {
 
 // SetupSuite initiates tm test suite
 func (suite *TMTestSuite) SetupSuite() {
-	mongo := os.Getenv("I1820_TM_DATABASE_URL")
-	if mongo == "" {
-		mongo = "mongodb://127.0.0.1:27017"
-	}
-	db, err := db.New(mongo, "i1820")
+	cfg := config.New()
+	db, err := db.New(cfg.Database.URL, "i1820")
 	suite.NoError(err)
 
 	suite.engine = router.App(true, "i1820_tm")
