@@ -37,7 +37,9 @@ func main() {
 
 	// routes
 	db, err := db.New(cfg.Database.URL, "i1820")
-	logrus.Fatal(err)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	th := handler.ThingsHandler{
 		Store: store.Things{
