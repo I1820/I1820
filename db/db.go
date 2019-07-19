@@ -3,8 +3,11 @@ package db
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -12,8 +15,12 @@ import (
 
 // New creates a new mongodb connection and tests it
 func New(url string, db string) (*mongo.Database, error) {
+	// register custom codec registry to handle empty interfaces
+	rb := bson.NewRegistryBuilder()
+	rb.RegisterTypeMapEntry(bsontype.EmbeddedDocument, reflect.TypeOf(bson.M{}))
+
 	// create mongodb connection
-	client, err := mongo.NewClient(options.Client().ApplyURI(url))
+	client, err := mongo.NewClient(options.Client().ApplyURI(url).SetRegistry(rb.Build()))
 	if err != nil {
 		return nil, fmt.Errorf("db new client error: %s", err)
 	}
