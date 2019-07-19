@@ -25,11 +25,6 @@ type QueriesHandler struct {
 	Store store.Data
 }
 
-type listResp struct {
-	ID    string `json:"id" bson:"_id"`
-	Total int    `json:"total"`
-}
-
 type fetchReq struct {
 	ThingIDs []string `json:"thing_ids" validate:"required"`
 	Since    int64    `json:"since"`

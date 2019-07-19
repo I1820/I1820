@@ -26,7 +26,7 @@ const thingID = "0000000000000073"
 const projectID = "el-project"
 
 func (suite *DMTestSuite) Test_QueriesHandler_List() {
-	var results []listResp
+	var results map[string]int
 
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", fmt.Sprintf("/queries/projects/%s/list", projectID), nil)
@@ -38,13 +38,7 @@ func (suite *DMTestSuite) Test_QueriesHandler_List() {
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 
-	suite.NotEqual(0, len(results))
-
-	for _, r := range results {
-		if r.ID == thingID {
-			suite.Equal(4, r.Total)
-		}
-	}
+	suite.Equal(results[thingID], 4)
 }
 
 func (suite *DMTestSuite) Test_QueriesHandler_Fetch() {
