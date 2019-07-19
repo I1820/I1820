@@ -19,16 +19,39 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/I1820/dm/actions"
+	"github.com/I1820/dm/config"
+	"github.com/I1820/dm/db"
+	"github.com/I1820/dm/handler"
+	"github.com/I1820/dm/router"
+	"github.com/I1820/dm/store"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	fmt.Println("18.20 at Sep 07 2016 7:20 IR721")
 
-	cfg := config()
+	cfg := config.New()
 
-	e := actions.App(cfg.Database.URL, cfg.Debug)
+	e := router.App(cfg.Debug, "i1820_dm")
+
+	// routes
+	db, err := db.New(cfg.Database.URL, "i1820")
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	qh := handler.QueriesHandler{
+		Store: store.Data{
+			DB: db,
+		},
+	}
+
+	e.GET("/about", handler.AboutHandler)
+	api := e.Group("/api")
+	{
+		qh.Register(api)
+	}
+
 	go func() {
 		if err := e.Start(":1373"); err != http.ErrServerClosed {
 			logrus.Fatalf("API Service failed with %s", err)
