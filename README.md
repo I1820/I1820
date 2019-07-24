@@ -4,9 +4,8 @@
 [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/i1820/dm.svg?style=flat-square)](https://hub.docker.com/r/i1820/dm)
 
 ## Introduction
-DM is a Data Manager component of the I1820 platform. It handles data that are coming from RabbitMQ and stores them.
-It also has some useful built-in queries that can returns data from the database (MongoDB).
-We plan to create [Grafana](https://grafana.com/) plugin for it.
+DM is a Data Manager component of the I1820 platform.
+It has some useful built-in queries that can returns data from the database (MongoDB) to the API backend.
 
 ## Profiler
 Enable MongoDB buit-in profiler:
@@ -22,6 +21,7 @@ which is located in the database where you executed the `setProfileLevel` comman
 ```
 db.system.profile.find().pretty()
 ```
+
 ## Up and Running
 To build this module from source do the following steps
 
