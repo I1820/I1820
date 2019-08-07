@@ -23,6 +23,8 @@ func App(debug bool, name string) *echo.Echo {
 
 	// prometheus middleware
 	app.Use(NewPrometheusMiddleware(name))
+	// prometheus metrics endpoint
+	app.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	return app
 }
