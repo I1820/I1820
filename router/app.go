@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/labstack/gommon/log"
 	"gopkg.in/go-playground/validator.v9"
 )
