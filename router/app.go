@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/labstack/gommon/log"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -23,6 +25,8 @@ func App(debug bool, name string) *echo.Echo {
 
 	// prometheus middleware
 	app.Use(NewPrometheusMiddleware(name))
+	// prometheus metrics endpoint
+	app.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	return app
 }
