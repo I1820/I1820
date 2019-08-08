@@ -14,7 +14,7 @@ func App(debug bool) *echo.Echo {
 	// prometheus middleware
 	e.Use(NewPrometheusMiddleware("i1820_link"))
 	// prometheus metrics endpoint
-	app.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	// Routes
 	e.GET("/about", AboutHandler)
