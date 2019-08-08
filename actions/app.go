@@ -2,6 +2,7 @@ package actions
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // App is where all routes and middleware for buffalo
@@ -12,6 +13,8 @@ func App(debug bool) *echo.Echo {
 
 	// prometheus middleware
 	e.Use(NewPrometheusMiddleware("i1820_link"))
+	// prometheus metrics endpoint
+	app.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	// Routes
 	e.GET("/about", AboutHandler)
