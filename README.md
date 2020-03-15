@@ -1,7 +1,4 @@
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/i1820/i1820.svg?style=flat-square)](https://hub.docker.com/r/i1820/i1820)
 [![Drone (cloud)](https://img.shields.io/drone/build/I1820/I1820.svg?style=flat-square)](https://cloud.drone.io/I1820/I1820)
-[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/I1820/I1820)
-
 
 ## Link
 Link component of I1820 platfrom. This service collects
