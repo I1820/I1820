@@ -21,6 +21,7 @@ func Execute() {
 		Use:   "link",
 		Short: "Who receives ingress data from LoRa server and many more",
 	}
+	root.Println("13 Feb 2020, Best Day Ever")
 
 	server.Register(root, cfg)
 
