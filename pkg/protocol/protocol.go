@@ -1,4 +1,4 @@
-package protocols
+package protocol
 
 import "github.com/I1820/types"
 
