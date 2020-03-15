@@ -14,7 +14,7 @@
 package mqtt
 
 import (
-	"github.com/I1820/link/protocol"
+	"github.com/I1820/link/pkg/protocol"
 	"github.com/I1820/types"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"
