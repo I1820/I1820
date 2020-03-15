@@ -24,21 +24,26 @@ import (
 type (
 	// Config holds all link component configurations
 	Config struct {
-		Debug bool
-		TM    struct {
-			URL string
-		}
+		Debug    bool
+		TM       TM
 		Database Database
-		Core     struct {
-			Broker struct {
-				Addr string
-			}
-		}
+		MQTT     MQTT
+	}
+
+	// TM holds I1820 Things Manager configuration
+	TM struct {
+		URL string
 	}
 
 	// Database holds database configuration
 	Database struct {
-		URL string
+		URL  string
+		Name string
+	}
+
+	// MQTT holds MQTT configuration
+	MQTT struct {
+		Addr string
 	}
 )
 
