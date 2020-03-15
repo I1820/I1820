@@ -7,9 +7,9 @@
 
 Link component of I1820 platfrom. This service collects
 raw data from bottom layer (protocols), stores them into mongo database
-and decodes them using user selected decoder.
+and decodes them using user's selected decoder.
 This service also sends data into bottom layer (protocols) after
-encoding them using user selected encoder.
+encoding them using user's selected encoder.
 
 Link uses MQTT for communicating with the bottom layer and this communication can be customized
-using Protocol interface which defined in `protocols/protocol.go`.
+using Protocol's interface which is defined in `protocols/protocol.go`.
