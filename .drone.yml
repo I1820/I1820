@@ -1,0 +1,25 @@
+kind: pipeline
+name: default
+type: docker
+
+steps:
+  - name: lint
+    image: golangci/golangci-lint
+    commands:
+      - golangci-lint run --enable-all
+  - name: test
+    image: golang
+    environment:
+      I1820_LINK_CORE_BROKER_ADDR: "tcp://broker:1883"
+      I1820_LINK_DATABASE_URL: "mongodb://database:27017"
+    commands:
+      - go build
+      - go test -v ./...
+
+services:
+  - name: database
+    image: mongo:latest
+  - name: broker
+    image: erlio/docker-vernemq:latest
+    environment:
+      DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "on"
