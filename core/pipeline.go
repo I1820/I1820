@@ -110,7 +110,7 @@ func (a *Application) insert() {
 	}).Info("insert pipeline stage has started")
 
 	for d := range a.insertStream {
-		if _, err := a.db.Collection("data").InsertOne(context.Background(), d); err != nil {
+		if err := a.Store.Insert(context.Background(), d); err != nil {
 			logrus.WithFields(logrus.Fields{
 				"component": "link",
 			}).Errorf("insert into mongodb error: %s", err)

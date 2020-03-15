@@ -14,41 +14,26 @@
 package core
 
 import (
-	"context"
-	"fmt"
-	"math/rand"
 	"runtime"
 	"sync"
-	"time"
 
-	"github.com/I1820/link/models"
-	"github.com/I1820/link/protocols"
+	"github.com/I1820/link/pkg/model"
+	"github.com/I1820/link/store"
 	tmclient "github.com/I1820/tm/client"
 	"github.com/I1820/types"
-	paho "github.com/eclipse/paho.mqtt.golang"
-	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // Application is a main component of uplink that consists of
-// uplink protocols and mqtt client
+// uplink protocol and mqtt client
 type Application struct {
-	// mqtt configuration
-	cli  paho.Client
-	opts *paho.ClientOptions
+	// model and protocol
+	models map[string]model.Model
 
-	// models and protocols
-	protocols []protocols.Protocol
-	models    map[string]models.Model
+	// tm connection
+	TMService tmclient.TMService
 
-	// pm connection
-	tm tmclient.TMService
-
-	// database connection
-	session *mongo.Client
-	db      *mongo.Database
+	// data store
+	Store *store.Data
 
 	// is core application running?
 	IsRun bool
@@ -65,60 +50,21 @@ type Application struct {
 	insertStream  chan types.Data
 }
 
-// New creates new application. this function creates mqtt client
-func New(tmURL string, dbURL string, brokerURL string) (*Application, error) {
+// New creates new application.
+func New(tm tmclient.TMService, st *store.Data) *Application {
+	return &Application{
+		models:    make(map[string]model.Model),
+		TMService: tm,
+		Store:     st,
 
-	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	a := Application{}
-
-	a.protocols = make([]protocols.Protocol, 0)
-	a.models = make(map[string]models.Model)
-
-	// creates a tm communication link based on HTTP
-	a.tm = tmclient.New(tmURL)
-
-	// create a mongodb connection
-	session, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
-	if err != nil {
-		return nil, err
+		projectStream: make(chan types.Data),
+		decodeStream:  make(chan types.Data),
+		insertStream:  make(chan types.Data),
 	}
-	a.session = session
-
-	a.opts = paho.NewClientOptions()
-	a.opts.AddBroker(brokerURL)
-	a.opts.SetClientID(fmt.Sprintf("I1820-link-%d", rnd.Intn(1024)))
-	a.opts.SetOrderMatters(false)
-
-	// pipeline channels
-	a.projectStream = make(chan types.Data)
-	a.decodeStream = make(chan types.Data)
-	a.insertStream = make(chan types.Data)
-
-	return &a, nil
-}
-
-// RegisterProtocol registers protocol p on application a
-func (a *Application) RegisterProtocol(p protocols.Protocol) {
-	if a.IsRun {
-		return // there is no way to add protocols in runtime
-	}
-	a.protocols = append(a.protocols, p)
-}
-
-// Protocols returns list of registered protocol's names
-func (a *Application) Protocols() []string {
-	names := make([]string, len(a.protocols))
-
-	for i, p := range a.protocols {
-		names[i] = p.Name()
-	}
-
-	return names
 }
 
 // RegisterModel registers model m on application a
-func (a *Application) RegisterModel(m models.Model) {
+func (a *Application) RegisterModel(m model.Model) {
 	a.models[m.Name()] = m
 }
 
@@ -137,46 +83,6 @@ func (a *Application) Models() []string {
 
 // Run runs application. this function connects mqtt client and then register its topic
 func (a *Application) Run() error {
-	// Create an MQTT client
-	/*
-		Port: 1883
-		CleanSession: True
-		Order: True
-		KeepAlive: 30 (seconds)
-		ConnectTimeout: 30 (seconds)
-		MaxReconnectInterval 10 (minutes)
-		AutoReconnect: True
-	*/
-	a.opts.SetOnConnectHandler(func(client paho.Client) {
-		// subscribe to protocols topics
-		for _, p := range a.protocols {
-			// use $share/i1820-link in front of the mqtt topic for group subscription
-			if t := a.cli.Subscribe(p.RxTopic(), 0, a.mqttHandler(p)); t.Error() != nil {
-				logrus.Fatalf("mqtt subscribe error: %s", t.Error())
-			}
-		}
-	})
-	a.cli = paho.NewClient(a.opts)
-
-	// connect to the MQTT Server
-	if t := a.cli.Connect(); t.Wait() && t.Error() != nil {
-		return t.Error()
-	}
-
-	// connect to the mongodb (change database here!)
-	ctxc, donec := context.WithTimeout(context.Background(), 10*time.Second)
-	defer donec()
-	if err := a.session.Connect(ctxc); err != nil {
-		return err
-	}
-	// is the mongo really there?
-	ctxp, donep := context.WithTimeout(context.Background(), 2*time.Second)
-	defer donep()
-	if err := a.session.Ping(ctxp, readpref.Primary()); err != nil {
-		return err
-	}
-	a.db = a.session.Database("i1820")
-
 	// pipeline stages
 	for i := 0; i < runtime.NumCPU(); i++ {
 		go a.project()
@@ -208,7 +114,4 @@ func (a *Application) Exit() {
 	// close insert stream
 	close(a.insertStream)
 	a.insertWG.Wait()
-
-	// disconnect aftere 10ms
-	a.cli.Disconnect(10)
 }
