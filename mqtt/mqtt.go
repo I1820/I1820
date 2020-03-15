@@ -5,9 +5,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/I1820/link/config"
-	"github.com/I1820/link/pkg/protocol"
-	"github.com/I1820/types"
+	"github.com/I1820/I1820/config"
+	"github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/pkg/protocol"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"
 )
@@ -18,7 +18,7 @@ type Service struct {
 
 	protocols []protocol.Protocol
 
-	channel chan types.Data
+	channel chan model.Data
 
 	IsRun bool
 }
@@ -41,7 +41,7 @@ func New(cfg config.MQTT) *Service {
 
 		protocols: make([]protocol.Protocol, 0),
 
-		channel: make(chan types.Data),
+		channel: make(chan model.Data),
 
 		IsRun: false,
 	}
@@ -49,7 +49,7 @@ func New(cfg config.MQTT) *Service {
 
 // Channel returns a channel for consuming the received data
 // Consuming this channel makes MQTT service work
-func (s *Service) Channel() <-chan types.Data {
+func (s *Service) Channel() <-chan model.Data {
 	return s.channel
 }
 

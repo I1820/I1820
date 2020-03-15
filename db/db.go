@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/I1820/link/config"
+	"github.com/I1820/I1820/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

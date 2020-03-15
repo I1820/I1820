@@ -10,7 +10,7 @@
 
 package main
 
-import "github.com/I1820/link/cmd"
+import "github.com/I1820/I1820/cmd"
 
 func main() {
 	cmd.Execute()

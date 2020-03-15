@@ -3,8 +3,8 @@ package cmd
 import (
 	"os"
 
-	"github.com/I1820/link/cmd/server"
-	"github.com/I1820/link/config"
+	"github.com/I1820/I1820/cmd/link"
+	"github.com/I1820/I1820/config"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -18,12 +18,12 @@ func Execute() {
 	cfg := config.New()
 
 	var root = &cobra.Command{
-		Use:   "link",
-		Short: "Who receives ingress data from LoRa server and many more",
+		Use:   "I1820",
+		Short: "I1820, IoT Platform that can be used with LoRa, Zigbee and ...",
 	}
 	root.Println("13 Feb 2020, Best Day Ever")
 
-	server.Register(root, cfg)
+	link.Register(root, cfg)
 
 	if err := root.Execute(); err != nil {
 		logrus.Errorf("failed to execute root command: %s", err.Error())

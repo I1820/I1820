@@ -17,10 +17,10 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/I1820/link/pkg/model"
-	"github.com/I1820/link/store"
-	tmclient "github.com/I1820/tm/client"
-	"github.com/I1820/types"
+	types "github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/pkg/model"
+	"github.com/I1820/I1820/store"
+	"github.com/I1820/tm/client"
 )
 
 // Application is a main component of uplink that consists of
@@ -30,7 +30,7 @@ type Application struct {
 	models map[string]model.Model
 
 	// tm connection
-	TMService tmclient.TMService
+	TMService client.TMService
 
 	// data store
 	Store *store.Data

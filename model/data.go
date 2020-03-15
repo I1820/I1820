@@ -11,7 +11,7 @@
  * +===============================================
  */
 
-package types
+package model
 
 import "time"
 

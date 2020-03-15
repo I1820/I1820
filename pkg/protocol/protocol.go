@@ -1,6 +1,6 @@
 package protocol
 
-import "github.com/I1820/types"
+import "github.com/I1820/I1820/model"
 
 // Protocol is a uplink/downlink protocol like lan or lora
 type Protocol interface {
@@ -9,5 +9,5 @@ type Protocol interface {
 
 	Name() string
 
-	Marshal([]byte) (types.Data, error)
+	Marshal([]byte) (model.Data, error)
 }
