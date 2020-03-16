@@ -19,6 +19,7 @@ import (
 
 	types "github.com/I1820/I1820/model"
 	"github.com/I1820/I1820/pkg/model"
+	"github.com/I1820/I1820/rabbitmq"
 	"github.com/I1820/I1820/store"
 	"github.com/I1820/tm/client"
 )
@@ -48,10 +49,14 @@ type Application struct {
 	projectStream chan types.Data
 	decodeStream  chan types.Data
 	insertStream  chan types.Data
+
+	// RabbitMQ Producer
+	rawProducer    *rabbitmq.Producer
+	parsedProducer *rabbitmq.Producer
 }
 
 // New creates new application.
-func New(tm tmclient.TMService, st *store.Data) *Application {
+func New(tm client.TMService, st *store.Data, rpr, ppr *rabbitmq.Producer) *Application {
 	return &Application{
 		models:    make(map[string]model.Model),
 		TMService: tm,
@@ -60,6 +65,9 @@ func New(tm tmclient.TMService, st *store.Data) *Application {
 		projectStream: make(chan types.Data),
 		decodeStream:  make(chan types.Data),
 		insertStream:  make(chan types.Data),
+
+		rawProducer:    rpr,
+		parsedProducer: ppr,
 	}
 }
 

@@ -21,12 +21,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Namespace of I1820
+const Namespace = "I1820"
+
 type (
 	// Config holds all link component configurations
 	Config struct {
 		Debug    bool
 		TM       TM
 		Database Database
+		Rabbitmq Rabbitmq
 		MQTT     MQTT
 	}
 
@@ -37,13 +41,22 @@ type (
 
 	// Database holds database configuration
 	Database struct {
-		URL  string
-		Name string
+		URL  string `mapstructure:"url"`
+		Name string `mapstructure:"name"`
 	}
 
 	// MQTT holds MQTT configuration
 	MQTT struct {
-		Addr string
+		Addr string `mapstructure:"addr"`
+	}
+
+	Rabbitmq struct {
+		Host string `mapstructure:"host"`
+		Port int    `mapstructure:"port"`
+		User string `mapstructure:"user"`
+		Pass string `mapstructure:"pass"`
+
+		RetryThreshold int `mapstructure:"retry-threshold"`
 	}
 )
 

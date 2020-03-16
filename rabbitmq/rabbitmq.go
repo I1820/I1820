@@ -34,8 +34,7 @@ type Connection struct {
 }
 
 // CreateConnection creates a RabbitMQ connection
-func CreateConnection(cfg config.Rabbitmq) *Connection {
-	name := fmt.Sprintf("%s-%s", config.Namespace, "sms")
+func CreateConnection(cfg config.Rabbitmq, name string) *Connection {
 	addr := fmt.Sprintf(
 		"amqp://%s:%s@%s:%d/",
 		cfg.User,

@@ -17,8 +17,8 @@ type Producer struct {
 }
 
 // NewProducer create new instance of RabbitMQ producer
-func NewProducer(cfg config.Rabbitmq) *Producer {
-	c := CreateConnection(cfg)
+func NewProducer(cfg config.Rabbitmq, name string) *Producer {
+	c := CreateConnection(cfg, fmt.Sprintf("%s-%s", config.Namespace, name))
 	p := &Producer{
 		AMPQChannel: c.Chann,
 		Conn:        c.Conn,
@@ -34,6 +34,9 @@ func (p *Producer) Queue(d model.Data) error {
 		return fmt.Errorf("failed to marshal json %w", err)
 	}
 
+	// When you want a single message to be delivered to a single queue,
+	// you can publish to the default exchange with the routingKey of the queue name.
+	// This is because every declared queue gets an implicit route to the default exchange.
 	if err := p.AMPQChannel.Channel.Publish(
 		"",
 		p.queueName,

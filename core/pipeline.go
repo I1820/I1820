@@ -15,8 +15,6 @@ package core
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"runtime"
 
 	"github.com/sirupsen/logrus"
@@ -32,7 +30,7 @@ func (a *Application) project() {
 
 	for d := range a.projectStream {
 		// find the thing in I1820/pm
-		t, err := a.tm.Show(d.ThingID)
+		t, err := a.TMService.Show(d.ThingID)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"component": "link",
@@ -44,13 +42,11 @@ func (a *Application) project() {
 
 		if d.Project != "" && d.Model == "generic" {
 			// publish raw data
-			b, err := json.Marshal(d)
-			if err != nil {
+			if err := a.rawProducer.Queue(d); err != nil {
 				logrus.WithFields(logrus.Fields{
 					"component": "link",
-				}).Errorf("marshal data error: %s", err)
+				}).Errorf("rabbitmq produce: %s", err)
 			}
-			a.cli.Publish(fmt.Sprintf("i1820/project/%s/raw", d.Project), 0, false, b)
 			logrus.WithFields(logrus.Fields{
 				"component": "link",
 			}).Infof("publish raw data: %s", d.Project)
@@ -83,13 +79,11 @@ func (a *Application) decode() {
 					d.Data = m.Decode(d.Raw)
 
 					// publish parsed data
-					b, err := json.Marshal(d)
-					if err != nil {
+					if err := a.parsedProducer.Queue(d); err != nil {
 						logrus.WithFields(logrus.Fields{
 							"component": "link",
-						}).Errorf("marshal data error: %s", err)
+						}).Errorf("rabbitmq produce: %s", err)
 					}
-					a.cli.Publish(fmt.Sprintf("i1820/project/%s/data", d.Project), 0, false, b)
 					logrus.WithFields(logrus.Fields{
 						"component": "link",
 					}).Infof("publish parsed data: %s", d.Project)
