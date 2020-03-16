@@ -22,7 +22,7 @@ func New(db *mongo.Database) *Data {
 
 // Insert given instance of data into database
 func (d *Data) Insert(ctx context.Context, i model.Data) error {
-	if _, err := d.DB.Collection("data").InsertOne(ctx, i); err != nil {
+	if _, err := d.DB.Collection(Collection).InsertOne(ctx, i); err != nil {
 		return err
 	}
 	return nil
