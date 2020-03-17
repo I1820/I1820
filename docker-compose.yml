@@ -1,0 +1,35 @@
+---
+version: "3"
+
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./.docker/data:/data/db
+
+  rabbitmq:
+    # management panel can be accessed with guest/guest
+    image: rabbitmq:management
+    restart: always
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  vernemq:
+    image: vernemq/vernemq
+    restart: always
+    ulimits:
+      nofile:
+        soft: 8192
+        hard: 65536
+    ports:
+      - 1883:1883
+      - 8888:8888
+    environment:
+      - DOCKER_VERNEMQ_ACCEPT_EULA=yes
+      - DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on
+      - DOCKER_VERNEMQ_LISTENER.tcp.max_connections=10000
+      - DOCKER_VERNEMQ_LISTENER.tcp.nr_of_acceptors=100
