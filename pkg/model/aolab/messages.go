@@ -13,16 +13,17 @@
 
 package aolab
 
-// Log represents data that is coming from aolab nodes
+import "time"
+
+// Log represents data that is coming from AoLab nodes
 type Log struct {
-	// TODO
-	//	Timestamp time.Time
-	Type   string
-	Device string
-	States map[string]interface{}
+	Timestamp time.Time
+	Type      string
+	Device    string
+	States    map[string]interface{}
 }
 
-// Notification represents data that is going to aolab nodes
+// Notification represents data that is going to AoLab nodes
 type Notification struct {
 	Type     string
 	Device   string
