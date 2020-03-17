@@ -27,16 +27,15 @@ const Namespace = "I1820"
 type (
 	// Config holds all link component configurations
 	Config struct {
-		Debug    bool
-		TM       TM
-		Database Database
-		Rabbitmq Rabbitmq
-		MQTT     MQTT
+		TM       TM       `mapstructure:"tm"`
+		Database Database `mapstructure:"database"`
+		Rabbitmq Rabbitmq `mapstructure:"rabbitmq"`
+		MQTT     MQTT     `mapstrcuture:"mqtt"`
 	}
 
 	// TM holds I1820 Things Manager configuration
 	TM struct {
-		URL string
+		URL string `mapstructure:"url"`
 	}
 
 	// Database holds database configuration
@@ -50,6 +49,7 @@ type (
 		Addr string `mapstructure:"addr"`
 	}
 
+	// Rabbitmq holds Rabbitmq configuration
 	Rabbitmq struct {
 		Host string `mapstructure:"host"`
 		Port int    `mapstructure:"port"`
