@@ -26,13 +26,13 @@ func main(cfg config.Config) {
 	msvc.Register(lan.Protocol{})
 
 	if err := msvc.Run(); err != nil {
-		logrus.Fatalf("MQTT service failed with %s", err)
+		logrus.Fatalf("MQTT service failed with %s", err.Error())
 	}
 
 	// create a data store
 	db, err := db.New(cfg.Database)
 	if err != nil {
-		logrus.Fatalf("Database failed with %s", err)
+		logrus.Fatalf("Database failed with %s", err.Error())
 	}
 	st := store.New(db)
 
@@ -47,8 +47,14 @@ func main(cfg config.Config) {
 	core := core.New(tm, st, rpr, ppr)
 	core.RegisterModel(aolab.Model{})
 	if err := core.Run(); err != nil {
-		logrus.Fatalf("Core Service failed with %s", err)
+		logrus.Fatalf("Core Service failed with %s", err.Error())
 	}
+
+	go func() {
+		for d := range msvc.Channel() {
+			core.Handle(d)
+		}
+	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

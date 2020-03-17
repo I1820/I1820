@@ -107,6 +107,10 @@ func (a *Application) Run() error {
 	return nil
 }
 
+func (a *Application) Handle(d types.Data) {
+	a.projectStream <- d
+}
+
 // Exit closes amqp connection then closes all channels and return from all pipeline stages
 func (a *Application) Exit() {
 	a.IsRun = false
