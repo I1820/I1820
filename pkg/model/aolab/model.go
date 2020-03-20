@@ -30,9 +30,11 @@ func (m Model) Name() string {
 // Decode given data with aolab structure
 func (m Model) Decode(d []byte) interface{} {
 	var l Log
+
 	if err := json.Unmarshal(d, &l); err != nil {
 		return nil
 	}
+
 	return l.States
 }
 
@@ -42,9 +44,11 @@ func (m Model) Encode(o interface{}) []byte {
 	if !ok {
 		return nil
 	}
+
 	b, err := json.Marshal(n)
 	if err != nil {
 		return nil
 	}
+
 	return b
 }

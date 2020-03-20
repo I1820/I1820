@@ -10,10 +10,12 @@ import (
 // Collection is mongodb collection name for data
 const Collection = "data"
 
+// Data store handles database communication for data elements
 type Data struct {
 	DB *mongo.Database
 }
 
+// New creates new data store
 func New(db *mongo.Database) *Data {
 	return &Data{
 		DB: db,
@@ -25,5 +27,6 @@ func (d *Data) Insert(ctx context.Context, i model.Data) error {
 	if _, err := d.DB.Collection(Collection).InsertOne(ctx, i); err != nil {
 		return err
 	}
+
 	return nil
 }

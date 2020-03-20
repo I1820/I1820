@@ -31,6 +31,7 @@ func Handler(p protocol.Protocol, ch chan<- model.Data) paho.MessageHandler {
 				"component": "link",
 				"topic":     message.Topic(),
 			}).Errorf("marshal error %s", err)
+
 			return
 		}
 

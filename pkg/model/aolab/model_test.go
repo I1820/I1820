@@ -31,6 +31,7 @@ const (
 
 func TestDecode(t *testing.T) {
 	m := Model{}
+
 	r := m.Decode([]byte(rawLog))
 	if r == nil {
 		t.Fatalf("Invalid decode result")

@@ -47,6 +47,7 @@ func (a *Application) project() {
 					"component": "link",
 				}).Errorf("rabbitmq produce: %s", err)
 			}
+
 			logrus.WithFields(logrus.Fields{
 				"component": "link",
 			}).Infof("publish raw data: %s", d.Project)
@@ -54,6 +55,7 @@ func (a *Application) project() {
 
 		a.decodeStream <- d
 	}
+
 	a.projectWG.Done()
 }
 
@@ -71,10 +73,10 @@ func (a *Application) decode() {
 			if d.Model != "generic" {
 				m, ok := a.models[d.Model]
 				if !ok {
+					// data will be parsed in project docker and pushed into mqtt parsed channel
 					logrus.WithFields(logrus.Fields{
 						"component": "link",
 					}).Errorf("model %s not found (setting the model will improves performance)", d.Model)
-					// data will be parsed in project docker and pushed into mqtt parsed channel
 				} else {
 					d.Data = m.Decode(d.Raw)
 
@@ -92,6 +94,7 @@ func (a *Application) decode() {
 		}
 		a.insertStream <- d
 	}
+
 	a.decodeWG.Done()
 }
 
@@ -114,5 +117,6 @@ func (a *Application) insert() {
 			}).Infof("insert into mongodb: %#v", d)
 		}
 	}
+
 	a.insertWG.Done()
 }

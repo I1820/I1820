@@ -81,6 +81,7 @@ func (a *Application) Models() []string {
 	names := make([]string, len(a.models))
 
 	i := 0
+
 	for n := range a.models {
 		names[i] = n
 		i++
@@ -94,12 +95,16 @@ func (a *Application) Run() error {
 	// pipeline stages
 	for i := 0; i < runtime.NumCPU(); i++ {
 		go a.project()
-		a.projectWG.Add(1)
-		go a.decode()
-		a.decodeWG.Add(1)
-		go a.insert()
-		a.insertWG.Add(1)
 
+		a.projectWG.Add(1)
+
+		go a.decode()
+
+		a.decodeWG.Add(1)
+
+		go a.insert()
+
+		a.insertWG.Add(1)
 	}
 
 	a.IsRun = true
@@ -107,6 +112,7 @@ func (a *Application) Run() error {
 	return nil
 }
 
+// Handle handles given data into core pipeline
 func (a *Application) Handle(d types.Data) {
 	a.projectStream <- d
 }

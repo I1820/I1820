@@ -34,6 +34,7 @@ func main(cfg config.Config) {
 	if err != nil {
 		logrus.Fatalf("Database failed with %s", err.Error())
 	}
+
 	st := store.New(db)
 
 	// create a tm service
@@ -46,6 +47,7 @@ func main(cfg config.Config) {
 	// creates the core application and registers the defaults
 	core := core.New(tm, st, rpr, ppr)
 	core.RegisterModel(aolab.Model{})
+
 	if err := core.Run(); err != nil {
 		logrus.Fatalf("Core Service failed with %s", err.Error())
 	}

@@ -21,6 +21,7 @@ func Execute() {
 		Use:   "I1820",
 		Short: "I1820, IoT Platform that can be used with LoRa, Zigbee and ...",
 	}
+
 	root.Println("13 Feb 2020, Best Day Ever")
 
 	link.Register(root, cfg)
