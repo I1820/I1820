@@ -107,7 +107,7 @@ func (ts Thing) Update(ctx context.Context, id string, m *string, s *bool) (mode
 
 // Remove removes the given thing from the things collection
 func (ts Thing) Remove(ctx context.Context, id string) error {
-	if _, err := ts.DB.Collection("things").DeleteOne(ctx, bson.M{
+	if _, err := ts.DB.Collection(ThingCollection).DeleteOne(ctx, bson.M{
 		"name": id,
 	}); err != nil {
 		return err
