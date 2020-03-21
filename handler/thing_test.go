@@ -17,15 +17,16 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/I1820/I1820/request"
 	"github.com/labstack/echo/v4"
 
-	"github.com/I1820/tm/model"
+	"github.com/I1820/I1820/model"
 )
 
 const tName = "0000000000000073"
-const pID = "kj"
+const pID = "raha"
 
-func (suite *TMTestSuite) Test_ThingsHandler() {
+func (suite *TMTestSuite) TestThingsHandler() {
 	suite.testThingsHandlerCreate()
 	suite.testThingsHandlerShow()
 	suite.testThingsHandlerList(1)
@@ -39,7 +40,7 @@ func (suite *TMTestSuite) testThingsHandlerCreate() {
 	var t model.Thing
 
 	// build thing creation request
-	var treq thingReq
+	var treq request.Thing
 	treq.Name = tName
 	treq.Location.Latitude = 35.807657 // I1820 location in velenjak
 	treq.Location.Longitude = 51.398408
@@ -47,12 +48,11 @@ func (suite *TMTestSuite) testThingsHandlerCreate() {
 	suite.NoError(err)
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", fmt.Sprintf("/projects/%s/things", pID), bytes.NewReader(data))
-	suite.NoError(err)
+	req := httptest.NewRequest("POST", fmt.Sprintf("/projects/%s/things", pID), bytes.NewReader(data))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(200, w.Code)
+	suite.Equal(http.StatusOK, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &t))
 	suite.Equal(tName, t.Name)
@@ -63,12 +63,11 @@ func (suite *TMTestSuite) testThingsHandlerShow() {
 	var t model.Thing
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)
-	suite.NoError(err)
+	req := httptest.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(200, w.Code)
+	suite.Equal(http.StatusOK, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &t))
 
@@ -80,12 +79,11 @@ func (suite *TMTestSuite) testThingsHandlerList(count int) {
 	var ts []model.Thing
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/projects/%s/things", pID), nil)
-	suite.NoError(err)
+	req := httptest.NewRequest("GET", fmt.Sprintf("/projects/%s/things", pID), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(200, w.Code)
+	suite.Equal(http.StatusOK, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &ts))
 
@@ -95,21 +93,19 @@ func (suite *TMTestSuite) testThingsHandlerList(count int) {
 // Destroy (DELETE /api/things/{thing_id})
 func (suite *TMTestSuite) testThingsHandlerDestroy() {
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("/things/%s", tName), nil)
-	suite.NoError(err)
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("/things/%s", tName), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(200, w.Code)
+	suite.Equal(http.StatusOK, w.Code)
 }
 
 // Show 404 (GET /api/things/{thing_id}
 func (suite *TMTestSuite) testThingsHandlerShow404() {
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)
-	suite.NoError(err)
+	req := httptest.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(404, w.Code)
+	suite.Equal(http.StatusNotFound, w.Code)
 }

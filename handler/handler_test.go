@@ -3,10 +3,10 @@ package handler
 import (
 	"testing"
 
-	"github.com/I1820/tm/config"
-	"github.com/I1820/tm/db"
-	"github.com/I1820/tm/router"
-	"github.com/I1820/tm/store"
+	"github.com/I1820/I1820/config"
+	"github.com/I1820/I1820/db"
+	"github.com/I1820/I1820/router"
+	"github.com/I1820/I1820/store"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 )
@@ -20,18 +20,18 @@ type TMTestSuite struct {
 // SetupSuite initiates tm test suite
 func (suite *TMTestSuite) SetupSuite() {
 	cfg := config.New()
-	db, err := db.New(cfg.Database.URL, "i1820")
+	db, err := db.New(cfg.Database)
 	suite.NoError(err)
 
-	suite.engine = router.App(true, "i1820_tm")
+	suite.engine = router.App()
 
 	th := Things{
-		Store: store.Things{
+		Store: store.Thing{
 			DB: db,
 		},
 	}
+
 	th.Register(suite.engine.Group(""))
-	suite.engine.GET("/about", AboutHandler)
 }
 
 // Let's test tm APIs!

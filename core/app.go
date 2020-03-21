@@ -18,10 +18,10 @@ import (
 	"sync"
 
 	types "github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/pkg/client/tm"
 	"github.com/I1820/I1820/pkg/model"
 	"github.com/I1820/I1820/rabbitmq"
 	"github.com/I1820/I1820/store"
-	"github.com/I1820/tm/client"
 )
 
 // Application is a main component of uplink that consists of
@@ -31,7 +31,7 @@ type Application struct {
 	models map[string]model.Model
 
 	// tm connection
-	TMService client.TMService
+	TMService tm.Service
 
 	// data store
 	Store *store.Data
@@ -56,7 +56,7 @@ type Application struct {
 }
 
 // New creates new application.
-func New(tm client.TMService, st *store.Data, rpr, ppr *rabbitmq.Producer) *Application {
+func New(tm tm.Service, st *store.Data, rpr, ppr *rabbitmq.Producer) *Application {
 	return &Application{
 		models:    make(map[string]model.Model),
 		TMService: tm,

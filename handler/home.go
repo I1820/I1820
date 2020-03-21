@@ -6,8 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// AboutHandler is a default handler to serve up
-// memory of 18.20.
-func AboutHandler(c echo.Context) error {
-	return c.JSON(http.StatusOK, "18.20 is leaving us")
+// HealthzHandler shows server is up and running
+func HealthzHandler(c echo.Context) error {
+	return c.NoContent(http.StatusNoContent)
 }

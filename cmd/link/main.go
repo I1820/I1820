@@ -9,12 +9,12 @@ import (
 	"github.com/I1820/I1820/core"
 	"github.com/I1820/I1820/db"
 	"github.com/I1820/I1820/mqtt"
+	"github.com/I1820/I1820/pkg/client/tm"
 	"github.com/I1820/I1820/pkg/model/aolab"
 	"github.com/I1820/I1820/pkg/protocol/lan"
 	"github.com/I1820/I1820/pkg/protocol/lora"
 	"github.com/I1820/I1820/rabbitmq"
 	"github.com/I1820/I1820/store"
-	"github.com/I1820/tm/client"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -38,7 +38,7 @@ func main(cfg config.Config) {
 	st := store.New(db)
 
 	// create a tm service
-	tm := client.New(cfg.TM.URL)
+	tm := tm.New(cfg.TM.URL)
 
 	// setup RabbitMQ producer
 	rpr := rabbitmq.NewProducer(cfg.Rabbitmq, "raw")
