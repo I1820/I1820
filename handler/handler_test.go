@@ -11,15 +11,16 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-// TMTestSuite is a test suite for tm component APIs.
-type TMTestSuite struct {
+// Suite is a test suite for APIs.
+type Suite struct {
 	suite.Suite
 	engine *echo.Echo
 }
 
 // SetupSuite initiates tm test suite
-func (suite *TMTestSuite) SetupSuite() {
+func (suite *Suite) SetupSuite() {
 	cfg := config.New()
+
 	db, err := db.New(cfg.Database)
 	suite.NoError(err)
 
@@ -30,11 +31,17 @@ func (suite *TMTestSuite) SetupSuite() {
 			DB: db,
 		},
 	}
-
 	th.Register(suite.engine.Group(""))
+
+	qh := Queries{
+		Store: store.Data{
+			DB: db,
+		},
+	}
+	qh.Register(suite.engine.Group(""))
 }
 
-// Let's test tm APIs!
+// Let's test APIs!
 func TestService(t *testing.T) {
-	suite.Run(t, new(TMTestSuite))
+	suite.Run(t, new(Suite))
 }

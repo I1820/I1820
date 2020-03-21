@@ -8,13 +8,18 @@ steps:
     commands:
       - golangci-lint run --enable-all
 
-  - name: seed
+  - name: migrate
     image: golang
     commands:
       - go build -o I1820
       - ./I1820 migrate
     environment:
       I1820_DATABASE_URL: "mongodb://database:27017"
+
+  - name: seed
+    image: mongo
+    commands:
+      - mongo --host database i1820 .ci/mongo.js
 
   - name: test
     image: golang

@@ -3,7 +3,9 @@ module github.com/I1820/I1820
 go 1.14
 
 require (
+	github.com/I1820/dm v0.0.0-20190808055739-c3bed6617c28
 	github.com/I1820/lanserver v0.0.0-20190719053627-e126d3310b7a
+	github.com/I1820/types v1.0.2
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-ozzo/ozzo-validation/v4 v4.1.0

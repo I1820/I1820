@@ -26,7 +26,7 @@ import (
 const tName = "0000000000000073"
 const pID = "raha"
 
-func (suite *TMTestSuite) TestThingsHandler() {
+func (suite *Suite) TestThingsHandler() {
 	suite.testThingsHandlerCreate()
 	suite.testThingsHandlerShow()
 	suite.testThingsHandlerList(1)
@@ -36,7 +36,7 @@ func (suite *TMTestSuite) TestThingsHandler() {
 }
 
 // Create thing (POST /api/projects/{project_id}/things)
-func (suite *TMTestSuite) testThingsHandlerCreate() {
+func (suite *Suite) testThingsHandlerCreate() {
 	var t model.Thing
 
 	// build thing creation request
@@ -59,7 +59,7 @@ func (suite *TMTestSuite) testThingsHandlerCreate() {
 }
 
 // Show (GET /api/things/{thing_id}
-func (suite *TMTestSuite) testThingsHandlerShow() {
+func (suite *Suite) testThingsHandlerShow() {
 	var t model.Thing
 
 	w := httptest.NewRecorder()
@@ -75,7 +75,7 @@ func (suite *TMTestSuite) testThingsHandlerShow() {
 }
 
 // List (GET /api/projects/{project_id}/things)
-func (suite *TMTestSuite) testThingsHandlerList(count int) {
+func (suite *Suite) testThingsHandlerList(count int) {
 	var ts []model.Thing
 
 	w := httptest.NewRecorder()
@@ -91,7 +91,7 @@ func (suite *TMTestSuite) testThingsHandlerList(count int) {
 }
 
 // Destroy (DELETE /api/things/{thing_id})
-func (suite *TMTestSuite) testThingsHandlerDestroy() {
+func (suite *Suite) testThingsHandlerDestroy() {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("DELETE", fmt.Sprintf("/things/%s", tName), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -101,7 +101,7 @@ func (suite *TMTestSuite) testThingsHandlerDestroy() {
 }
 
 // Show 404 (GET /api/things/{thing_id}
-func (suite *TMTestSuite) testThingsHandlerShow404() {
+func (suite *Suite) testThingsHandlerShow404() {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)

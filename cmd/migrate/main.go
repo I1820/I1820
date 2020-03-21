@@ -47,6 +47,23 @@ func main(cfg config.Config) {
 
 		fmt.Println(idx)
 	}
+
+	{
+		idx, err := db.Collection(store.DataCollection).Indexes().CreateOne(
+			context.Background(),
+			mongo.IndexModel{
+				Keys: bson.M{
+					"timestamp": -enable,
+					"thing_id":  enable,
+					"project":   enable,
+				},
+			})
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(idx)
+	}
 }
 
 // Register migrate command
