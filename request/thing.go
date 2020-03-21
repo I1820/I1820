@@ -18,7 +18,7 @@ type Thing struct {
 func (t Thing) Validate() error {
 	return validation.ValidateStruct(&t,
 		validation.Field(&t.Name, validation.Required),
-		validation.Field(&t.Model, validation.Required, is.Alphanumeric),
+		validation.Field(&t.Model, is.Alphanumeric),
 		validation.Field(&t.Location.Latitude, is.Latitude),
 		validation.Field(&t.Location.Longitude, is.Longitude),
 	)

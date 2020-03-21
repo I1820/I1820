@@ -16,23 +16,22 @@ import (
 const thingID = "0000000000000073"
 const projectID = "el-project"
 
-func (suite *Suite) Test_QueriesHandler_List() {
+func (suite *Suite) TestQueriesHandlerList() {
 	var results map[string]int
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", fmt.Sprintf("/queries/projects/%s/list", projectID), nil)
-	suite.NoError(err)
+	req := httptest.NewRequest("GET", fmt.Sprintf("/queries/projects/%s/list", projectID), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(200, w.Code)
+	suite.Equal(http.StatusOK, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 
 	suite.Equal(results[thingID], 4)
 }
 
-func (suite *Suite) Test_QueriesHandler_Fetch() {
+func (suite *Suite) TestQueriesHandlerFetch() {
 	var results []types.Data
 
 	var freq request.Fetch
@@ -44,16 +43,15 @@ func (suite *Suite) Test_QueriesHandler_Fetch() {
 	suite.NoError(err)
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest(
+	req := httptest.NewRequest(
 		"POST",
 		"/queries/fetch",
 		bytes.NewReader(data),
 	)
-	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(200, w.Code)
+	suite.Equal(http.StatusOK, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 
@@ -67,23 +65,22 @@ func (suite *Suite) Test_QueriesHandler_Fetch() {
 	suite.Equal("19", record.Data.(map[string]interface{})["count"])
 }
 
-func (suite *Suite) Test_QueriesHandler_FetchSingle() {
+func (suite *Suite) TestQueriesHandlerFetchSingle() {
 	var results []types.Data
 
 	since := time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC).Unix()
 	until := time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC).Unix()
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest(
+	req := httptest.NewRequest(
 		"GET",
 		fmt.Sprintf("/queries/things/%s/fetch?since=%d&until=%d", thingID, since, until),
 		nil,
 	)
-	suite.NoError(err)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(200, w.Code)
+	suite.Equal(http.StatusOK, w.Code)
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 
