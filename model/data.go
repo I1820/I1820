@@ -1,16 +1,3 @@
-/*
- *
- * In The Name of God
- *
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 13-08-2018
- * |
- * | File Name:     data.go
- * +===============================================
- */
-
 package model
 
 import "time"

@@ -9,3 +9,8 @@ encoding them using user's selected encoder.
 
 Link uses MQTT for communicating with the bottom layer and this communication can be customized
 using Protocol's interface which is defined in `protocols/protocol.go`.
+
+## Thing Manager
+Thing manager manages I1820 Things and their properties.
+Things belong to the projects, but this component doesn't validate this relationship so other services
+must verify project identification and existence before calls this project APIs.

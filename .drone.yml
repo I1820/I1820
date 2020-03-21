@@ -7,19 +7,23 @@ steps:
     image: golangci/golangci-lint
     commands:
       - golangci-lint run --enable-all
+  - name: seed
+    image: mongo
+    commands:
+      - mongo --host database i1820 mongodb/things_collection_index.js
   - name: test
     image: golang
-    environment:
-      I1820_LINK_CORE_BROKER_ADDR: "tcp://broker:1883"
-      I1820_LINK_DATABASE_URL: "mongodb://database:27017"
     commands:
       - go build
       - go test -v ./...
-
+    environment:
+      I1820_CORE_BROKER_ADDR: "tcp://broker:1883"
+      I1820_DATABASE_URL: "mongodb://database:27017"
 services:
   - name: database
     image: mongo:latest
   - name: broker
-    image: erlio/docker-vernemq:latest
+    image: vernemq/vernemq:latest
     environment:
+      DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
       DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "on"
