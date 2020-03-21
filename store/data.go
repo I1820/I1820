@@ -67,8 +67,8 @@ func (d Data) PerProjectCount(ctx context.Context, projectID string) (map[string
 		}
 
 		results[result.ID] = result.Total
-
 	}
+
 	if err := cur.Close(ctx); err != nil {
 		return nil, err
 	}
@@ -107,6 +107,7 @@ func (d Data) Fetch(ctx context.Context, since, until, offset, limit int64, ids 
 	}
 
 	results := make([]model.Data, 0)
+
 	for cur.Next(ctx) {
 		var result model.Data
 
@@ -115,8 +116,8 @@ func (d Data) Fetch(ctx context.Context, since, until, offset, limit int64, ids 
 		}
 
 		results = append(results, result)
-
 	}
+
 	if err := cur.Close(ctx); err != nil {
 		return nil, err
 	}
