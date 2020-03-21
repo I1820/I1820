@@ -87,13 +87,16 @@ func NewMetricWithConfig(config PrometheusConfig) echo.MiddlewareFunc {
 			if err := next(c); err != nil {
 				c.Error(err)
 			}
+
 			uri := req.URL.Path
 			status := strconv.Itoa(res.Status)
 			elapsed := time.Since(start).Seconds()
 			bytesOut := float64(res.Size)
+
 			em.echoReqQPS.WithLabelValues(status, req.Method, req.Host, uri).Inc()
 			em.echoReqDuration.WithLabelValues(req.Method, req.Host, uri).Observe(elapsed)
 			em.echoOutBytes.Observe(bytesOut)
+
 			return nil
 		}
 	}

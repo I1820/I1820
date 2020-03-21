@@ -24,6 +24,14 @@ import (
 // Namespace of I1820
 const Namespace = "I1820"
 
+// Component ports are defined here
+const (
+	// LinkPort is a port of link component
+	LinkPort = 0
+	// TMPort is a port of thing manager component
+	TMPort = 1378
+)
+
 type (
 	// Config holds all link component configurations
 	Config struct {

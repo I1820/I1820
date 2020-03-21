@@ -2,6 +2,7 @@ package tm
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -18,10 +19,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	// ExitTimeout is a time that application waits for API service to exit
+	ExitTimeout = 5 * time.Second
+)
+
 func main(cfg config.Config) {
 	e := router.App()
 
-	// routes
 	db, err := db.New(cfg.Database)
 	if err != nil {
 		logrus.Fatal(err)
@@ -33,14 +38,13 @@ func main(cfg config.Config) {
 		},
 	}
 
-	e.GET("/about", handler.AboutHandler)
 	api := e.Group("/api")
 	{
 		th.Register(api)
 	}
 
 	go func() {
-		if err := e.Start(":1995"); err != http.ErrServerClosed {
+		if err := e.Start(fmt.Sprintf(":%d", config.TMPort)); err != http.ErrServerClosed {
 			logrus.Fatalf("API Service failed with %s", err)
 		}
 	}()
@@ -49,8 +53,9 @@ func main(cfg config.Config) {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), ExitTimeout)
 	defer cancel()
+
 	if err := e.Shutdown(ctx); err != nil {
 		log.Printf("API Service failed on exit: %s", err)
 	}

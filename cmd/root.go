@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"github.com/I1820/I1820/cmd/link"
+	"github.com/I1820/I1820/cmd/migrate"
+	"github.com/I1820/I1820/cmd/tm"
 	"github.com/I1820/I1820/config"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -25,6 +27,8 @@ func Execute() {
 	root.Println("13 Feb 2020, Best Day Ever")
 
 	link.Register(root, cfg)
+	tm.Register(root, cfg)
+	migrate.Register(root, cfg)
 
 	if err := root.Execute(); err != nil {
 		logrus.Errorf("failed to execute root command: %s", err.Error())

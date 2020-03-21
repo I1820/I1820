@@ -26,6 +26,12 @@ type Service struct {
 	c   *cache.Cache
 }
 
+// Expiration period for cache
+const Expiration = 5 * time.Minute
+
+// Cleanup period for cache
+const Cleanup = 10 * time.Minute
+
 // New creates new instance of PM but connection establishment
 // does not happen here.
 func New(url string) Service {
@@ -38,7 +44,7 @@ func New(url string) Service {
 
 	return Service{
 		cli: cli,
-		c:   cache.New(5*time.Minute, 10*time.Minute),
+		c:   cache.New(Expiration, Cleanup),
 	}
 }
 
@@ -58,7 +64,6 @@ func (tm Service) List() ([]model.Thing, error) {
 	}
 
 	return ts, nil
-
 }
 
 // Show shows thing information by name
@@ -69,6 +74,7 @@ func (tm Service) Show(name string) (model.Thing, error) {
 	}
 
 	var t model.Thing
+
 	resp, err := tm.cli.R().
 		SetResult(&t).
 		SetPathParams(map[string]string{
@@ -86,6 +92,7 @@ func (tm Service) Show(name string) (model.Thing, error) {
 	if !t.Status {
 		return t, fmt.Errorf("thing (%s) is not active", name)
 	}
+
 	tm.c.Set(t.Name, t, cache.DefaultExpiration)
 
 	return t, nil

@@ -89,6 +89,7 @@ func (v Things) Show(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
 	if t.Name == "" {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 	}
@@ -123,6 +124,7 @@ func (v Things) Update(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
 	if t.Name == "" {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 	}
@@ -162,6 +164,7 @@ func (v Things) Activation(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
 	if t.Name == "" {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("thing %s not found", id))
 	}

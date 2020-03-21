@@ -7,10 +7,15 @@ steps:
     image: golangci/golangci-lint
     commands:
       - golangci-lint run --enable-all
+
   - name: seed
-    image: mongo
+    image: golang
     commands:
-      - mongo --host database i1820 mongodb/things_collection_index.js
+      - go build -o I1820
+      - ./I1820 migrate
+    environment:
+      I1820_DATABASE_URL: "mongodb://database:27017"
+
   - name: test
     image: golang
     commands:
@@ -19,6 +24,7 @@ steps:
     environment:
       I1820_CORE_BROKER_ADDR: "tcp://broker:1883"
       I1820_DATABASE_URL: "mongodb://database:27017"
+
 services:
   - name: database
     image: mongo:latest

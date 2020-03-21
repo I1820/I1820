@@ -37,6 +37,7 @@ func (ts Thing) GetByProjectID(ctx context.Context, pid string) ([]model.Thing, 
 
 		things = append(things, thing)
 	}
+
 	if err := cur.Close(ctx); err != nil {
 		return things, err
 	}
@@ -57,6 +58,7 @@ func (ts Thing) GetByName(ctx context.Context, id string) (model.Thing, error) {
 		if err == mongo.ErrNoDocuments {
 			return model.Thing{}, nil
 		}
+
 		return t, err
 	}
 
@@ -68,6 +70,7 @@ func (ts Thing) Create(ctx context.Context, t model.Thing) error {
 	if _, err := ts.DB.Collection(ThingCollection).InsertOne(ctx, t); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -78,6 +81,7 @@ func (ts Thing) Update(ctx context.Context, id string, m *string, s *bool) (mode
 	if m != nil {
 		set["model"] = *m
 	}
+
 	if s != nil {
 		set["status"] = *s
 	}
@@ -94,6 +98,7 @@ func (ts Thing) Update(ctx context.Context, id string, m *string, s *bool) (mode
 		if err == mongo.ErrNoDocuments {
 			return model.Thing{}, nil
 		}
+
 		return t, err
 	}
 
@@ -107,5 +112,6 @@ func (ts Thing) Remove(ctx context.Context, id string) error {
 	}); err != nil {
 		return err
 	}
+
 	return nil
 }
