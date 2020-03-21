@@ -79,7 +79,7 @@ func New() Config {
 		logrus.Warnf("no config file found, using defaults and environment variables")
 	}
 
-	v.SetEnvPrefix("i1820_link")
+	v.SetEnvPrefix("i1820")
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	v.AutomaticEnv()
 
