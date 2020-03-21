@@ -3,9 +3,12 @@ package db
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/I1820/I1820/config"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -14,8 +17,12 @@ const connectionTimeout = 10 * time.Second
 
 // New creates a new mongodb connection and tests it
 func New(cfg config.Database) (*mongo.Database, error) {
+	// register custom codec registry to handle empty interfaces
+	rb := bson.NewRegistryBuilder()
+	rb.RegisterTypeMapEntry(bsontype.EmbeddedDocument, reflect.TypeOf(bson.M{}))
+
 	// create mongodb connection
-	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.URL))
+	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.URL).SetRegistry(rb.Build()))
 	if err != nil {
 		return nil, fmt.Errorf("db new client error: %w", err)
 	}
