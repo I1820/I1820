@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/I1820/I1820/model"
-	"github.com/I1820/lanserver/models"
+	lan "github.com/I1820/lanserver/model"
 )
 
 // Protocol implements uplink protocol for lora
@@ -42,7 +42,7 @@ func (p Protocol) Name() string {
 
 // Marshal marshals given lan byte message (in json format) into platform data structure
 func (p Protocol) Marshal(message []byte) (model.Data, error) {
-	var m models.RxMessage
+	var m lan.RxMessage
 
 	if err := json.Unmarshal(message, &m); err != nil {
 		return model.Data{}, err
