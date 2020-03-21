@@ -34,3 +34,17 @@ which is located in the database where you executed the `setProfileLevel` comman
 db.system.profile.find().pretty()
 ```
 
+## Project Manager
+
+PM is a project manager component of the I1820 platform.
+It builds things, projects, things to project relationship, and project's dockers.
+Each project consists of two dockers one of them provides a sandbox for user scripts that are in python and based on [ElRunner](https://github.com/I1820/ElRunner) and another
+runs redis as in-memory storage for user scripts.
+It builds these dockers in localhost and uses Linux sockets for communicating with docker host.
+
+PMs can run on many hosts to provide load balancing. To distribute requests among them, you can use [vulcand](https://vulcand.readthedocs.io/en/latest/quickstart.html#quick-start). this feature still in development phase so it would be better not to use it now :joy:
+
+This component provides API based on HTTP ReST so other components can utilize these APIs for creating and destroying things and projects.
+
+PM requires only MongoDB to persist things and projects data.
+
