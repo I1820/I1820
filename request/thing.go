@@ -9,8 +9,8 @@ const (
 	minLatitude = -90.0
 	maxLatitude = 90.0
 
-	minLongitude = 0
-	maxLongitude = 180
+	minLongitude = 0.0
+	maxLongitude = 180.0
 )
 
 // Location contains latitude and longitude for representing a location

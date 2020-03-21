@@ -34,6 +34,17 @@ func TestThing_Validate(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "valid location",
+			fields: Thing{
+				Name: "raha",
+				Location: Location{
+					Latitude:  35.807657,
+					Longitude: 51.398408,
+				},
+			},
+			wantErr: false,
+		},
 	}
 
 	// nolint: scopelint
