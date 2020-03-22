@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"time"
 
+	"github.com/I1820/I1820/model"
 	"github.com/I1820/I1820/request"
-	"github.com/I1820/types"
 	"github.com/labstack/echo/v4"
 )
 
@@ -32,7 +32,7 @@ func (suite *Suite) TestQueriesHandlerList() {
 }
 
 func (suite *Suite) TestQueriesHandlerFetch() {
-	var results []types.Data
+	var results []model.Data
 
 	var freq request.Fetch
 	freq.Since = time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC).Unix()
@@ -66,7 +66,7 @@ func (suite *Suite) TestQueriesHandlerFetch() {
 }
 
 func (suite *Suite) TestQueriesHandlerFetchSingle() {
-	var results []types.Data
+	var results []model.Data
 
 	since := time.Date(2017, time.September, 11, 0, 0, 0, 0, time.UTC).Unix()
 	until := time.Date(2019, time.September, 11, 0, 0, 0, 0, time.UTC).Unix()

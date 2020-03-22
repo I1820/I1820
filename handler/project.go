@@ -13,15 +13,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// ProjectsResource manages existing projects
-type Project struct {
+// Projects manages existing projects
+type Projects struct {
 	Store   store.Project
-	Manager runner.Manager
+	Manager *runner.Manager
 
 	Config config.Runner
 }
 
-func (v Project) Register(g *echo.Group) {
+func (v Projects) Register(g *echo.Group) {
 	g.POST("/projects", v.Create)
 	g.DELETE("/projects/:project_id", v.Destroy)
 	g.GET("/projects/:project_id", v.Show)
@@ -32,7 +32,7 @@ func (v Project) Register(g *echo.Group) {
 
 // List gets all projects. This function is mapped to the path
 // GET /projects
-func (v Project) List(c echo.Context) error {
+func (v Projects) List(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	projects, err := v.Store.List(ctx)
@@ -45,7 +45,7 @@ func (v Project) List(c echo.Context) error {
 
 // Create adds a project to the DB and creates its docker. This function is mapped to the
 // path POST /projects
-func (v Project) Create(c echo.Context) error {
+func (v Projects) Create(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	var rq request.Project
@@ -113,7 +113,7 @@ func (v Project) Create(c echo.Context) error {
 
 // Recreate creates project docker and stores their information.
 // This function is mapped to the path GET /projects/{project_id}/recreate
-func (v Project) Recreate(c echo.Context) error {
+func (v Projects) Recreate(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	projectID := c.Param("project_id")
@@ -157,7 +157,7 @@ func (v Project) Recreate(c echo.Context) error {
 
 // Show gets the data for one project. This function is mapped to
 // the path GET /projects/{project_id}
-func (v Project) Show(c echo.Context) error {
+func (v Projects) Show(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	projectID := c.Param("project_id")
@@ -182,7 +182,7 @@ func (v Project) Show(c echo.Context) error {
 // Update updates the name of the project. The project owner is passed as an environment variable
 // to project docker so it cannot be changed.
 // This function is mapped to the path PUT /projects/{project_id}
-func (v Project) Update(c echo.Context) error {
+func (v Projects) Update(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	projectID := c.Param("project_id")
@@ -204,7 +204,7 @@ func (v Project) Update(c echo.Context) error {
 
 // Destroy deletes a project from the DB and its docker. This function is mapped
 // to the path DELETE /projects/{project_id}
-func (v Project) Destroy(c echo.Context) error {
+func (v Projects) Destroy(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	projectID := c.Param("project_id")
@@ -228,7 +228,7 @@ func (v Project) Destroy(c echo.Context) error {
 
 // Logs returns project execution logs and errors. This function is mapped
 // to the path GET /projects/{project_id}/logs
-func (v Project) Logs(c echo.Context) error {
+func (v Projects) Logs(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	projectID := c.Param("project_id")

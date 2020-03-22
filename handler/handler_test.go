@@ -6,6 +6,7 @@ import (
 	"github.com/I1820/I1820/config"
 	"github.com/I1820/I1820/db"
 	"github.com/I1820/I1820/router"
+	"github.com/I1820/I1820/runner"
 	"github.com/I1820/I1820/store"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
@@ -15,6 +16,8 @@ import (
 type Suite struct {
 	suite.Suite
 	engine *echo.Echo
+
+	pID string
 }
 
 // SetupSuite initiates tm test suite
@@ -39,6 +42,27 @@ func (suite *Suite) SetupSuite() {
 		},
 	}
 	qh.Register(suite.engine.Group(""))
+
+	manager, err := runner.New()
+	suite.NoError(err)
+
+	ph := Projects{
+		Store: store.Project{
+			DB: db,
+		},
+		Manager: manager,
+		Config:  cfg.Docker.Runner,
+	}
+	ph.Register(suite.engine.Group(""))
+
+	rh := Runner{
+		Store: store.Project{
+			DB: db,
+		},
+		Manager:    manager,
+		DockerHost: cfg.Docker.Host,
+	}
+	rh.Register(suite.engine.Group(""))
 }
 
 // Let's test APIs!
