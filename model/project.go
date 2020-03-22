@@ -11,7 +11,8 @@
 package model
 
 import (
-	"context"
+	"math/rand"
+	"time"
 
 	"github.com/I1820/I1820/runner"
 )
@@ -21,12 +22,13 @@ import (
 // under one name and eases their management,
 // like an Agricultural project that manages your farm and its smart things.
 type Project struct {
-	ID     string        `json:"id" bson:"_id,omitempty"` // Project unique identifier
-	Name   string        `json:"name" bson:"name"`        // project human readable name
-	Runner runner.Runner `json:"runner" bson:"runner"`    // information about project docker
+	ID     string        `json:"id" bson:"id"`         // Project unique identifier
+	Name   string        `json:"name" bson:"name"`     // project human readable name
+	Runner runner.Runner `json:"runner" bson:"runner"` // information about project docker
 
-	Description string   `json:"description" bson:"description"` // project description
-	Perimeter   struct { // operational perimeter
+	Description string `json:"description" bson:"description"` // project description
+
+	Perimeter struct { // operational perimeter
 		Type        string        `json:"type" bson:"type"`               // GeoJSON type eg. "Polygon"
 		Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"` // coordinates eg. [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0  ] ] ]
 	} `json:"perimeter" bson:"perimeter"`
@@ -34,28 +36,20 @@ type Project struct {
 	Inspects interface{} `json:"inspects,omitempty" bson:"-"` // more information about project docker
 }
 
-// NewProject creates new project with given identification
-func NewProject(ctx context.Context, id string, name string, envs []runner.Env) (*Project, error) {
-	r, err := runner.New(ctx, id, envs)
-	if err != nil {
-		return nil, err
+// NewProjectID generates a random string as a project identification
+func NewProjectID() string {
+	rand.Seed(time.Now().UnixNano())
+
+	// Length is a random key length
+	const Length = 6
+
+	const source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+
+	// Key generates a random key from the source
+	b := make([]byte, Length)
+	for i := range b {
+		b[i] = source[rand.Intn(len(source))]
 	}
 
-	return &Project{
-		Name:   name,
-		Runner: r,
-	}, nil
-}
-
-// ReProject recreates project dockers and replaces runner field of given project with new
-// information
-func ReProject(ctx context.Context, envs []runner.Env, p *Project) error {
-	r, err := runner.New(ctx, p.ID, envs)
-	if err != nil {
-		return err
-	}
-
-	p.Runner = r
-
-	return nil
+	return string(b)
 }
