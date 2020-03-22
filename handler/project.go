@@ -45,6 +45,7 @@ func (v Projects) List(c echo.Context) error {
 
 // Create adds a project to the DB and creates its docker. This function is mapped to the
 // path POST /projects
+// nolint: funlen
 func (v Projects) Create(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -104,7 +105,10 @@ func (v Projects) Create(c echo.Context) error {
 			p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{point.Longitude, point.Latitude})
 		}
 
-		p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{rq.Perimeter[0].Longitude, rq.Perimeter[0].Latitude})
+		p.Perimeter.Coordinates[0] = append(
+			p.Perimeter.Coordinates[0],
+			[]float64{rq.Perimeter[0].Longitude, rq.Perimeter[0].Latitude},
+		)
 	}
 
 	if err := v.Store.Create(ctx, p); err != nil {

@@ -29,8 +29,9 @@ type Project struct {
 	Description string `json:"description" bson:"description"` // project description
 
 	Perimeter struct { // operational perimeter
-		Type        string        `json:"type" bson:"type"`               // GeoJSON type eg. "Polygon"
-		Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"` // coordinates eg. [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0  ] ] ]
+		Type string `json:"type" bson:"type"` // GeoJSON type eg. "Polygon"
+		// coordinates eg. [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0  ] ] ]
+		Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"`
 	} `json:"perimeter" bson:"perimeter"`
 
 	Inspects interface{} `json:"inspects,omitempty" bson:"-"` // more information about project docker

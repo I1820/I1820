@@ -12,12 +12,18 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/phayes/freeport"
+	"github.com/sirupsen/logrus"
 )
 
 const (
 	runnerImage string = "i1820/elrunner"
 	redisImage  string = "redis:alpine"
 	network     string = "i1820_projects"
+)
+
+const (
+	RunnerNanoCPUs = 1000 * 1000 * 1000
+	RunnerMemory   = 2 * 1000 * 1000 * 100
 )
 
 // Manager manages runners and their containers
@@ -102,6 +108,7 @@ func (m *Manager) createRedis(ctx context.Context, name string) (string, error) 
 		if err := m.Client.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{
 			Force: true,
 		}); err != nil {
+			logrus.Errorf("container deletion %s", err)
 		}
 
 		return "", err
@@ -141,8 +148,8 @@ func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (st
 		},
 		&container.HostConfig{
 			Resources: container.Resources{
-				Memory:   2 * 1000 * 1000 * 1000,
-				NanoCPUs: 1000 * 1000 * 1000,
+				Memory:   RunnerMemory,
+				NanoCPUs: RunnerNanoCPUs,
 			},
 			NetworkMode: container.NetworkMode(network),
 			PortBindings: nat.PortMap{
@@ -162,6 +169,7 @@ func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (st
 		if err := m.Client.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{
 			Force: true,
 		}); err != nil {
+			logrus.Errorf("container deletion %s", err)
 		}
 
 		return "", "", err
@@ -203,11 +211,13 @@ func (m *Manager) Remove(ctx context.Context, r Runner) error {
 	if err := m.Client.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
 		Force: true,
 	}); err != nil {
+		logrus.Errorf("container deletion %s", err)
 	}
 
 	if err := m.Client.ContainerRemove(ctx, r.ID, types.ContainerRemoveOptions{
 		Force: true,
 	}); err != nil {
+		logrus.Errorf("container deletion %s", err)
 	}
 
 	return nil
