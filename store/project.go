@@ -54,11 +54,11 @@ func (ps Project) Create(ctx context.Context, p model.Project) error {
 	return nil
 }
 
-func (ps Project) Get(ctx context.Context, name string) (model.Project, error) {
+func (ps Project) Get(ctx context.Context, id string) (model.Project, error) {
 	var p model.Project
 
 	dr := ps.DB.Collection(ProjectCollection).FindOne(ctx, bson.M{
-		"name": name,
+		"_id": id,
 	})
 
 	if err := dr.Decode(&p); err != nil {
