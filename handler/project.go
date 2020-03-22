@@ -87,6 +87,7 @@ func (v Projects) Create(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
 	p.Runner = r
 
 	// sets other properties of the project
@@ -97,10 +98,12 @@ func (v Projects) Create(c echo.Context) error {
 	p.Perimeter.Type = "Polygon"
 	p.Perimeter.Coordinates = make([][][]float64, 1)
 	p.Perimeter.Coordinates[0] = make([][]float64, 0)
+
 	if len(rq.Perimeter) != 0 {
 		for _, point := range rq.Perimeter {
 			p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{point.Longitude, point.Latitude})
 		}
+
 		p.Perimeter.Coordinates[0] = append(p.Perimeter.Coordinates[0], []float64{rq.Perimeter[0].Longitude, rq.Perimeter[0].Latitude})
 	}
 

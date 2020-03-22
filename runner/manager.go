@@ -25,6 +25,7 @@ type Manager struct {
 	Client *client.Client
 }
 
+// New creates a new manager
 func New() (*Manager, error) {
 	// NewEnvClient initializes a new API client based on environment variables.
 	// Use DOCKER_HOST to set the url to the docker server.
@@ -112,7 +113,8 @@ func (m *Manager) createRedis(ctx context.Context, name string) (string, error) 
 // createRunner creates a runner container by using el_{name} as its name.
 func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (string, string, error) {
 	lport, _ := nat.NewPort("tcp", "8080") // local port
-	eport, err := freeport.GetFreePort()   // exposed port
+
+	eport, err := freeport.GetFreePort() // exposed port
 	if err != nil {
 		return "", "", err
 	}
@@ -145,7 +147,7 @@ func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (st
 			NetworkMode: container.NetworkMode(network),
 			PortBindings: nat.PortMap{
 				lport: []nat.PortBinding{
-					nat.PortBinding{
+					{
 						HostIP:   "0.0.0.0",
 						HostPort: strconv.Itoa(eport),
 					},
@@ -183,12 +185,14 @@ func (m *Manager) Show(ctx context.Context, r Runner) ([2]types.ContainerJSON, e
 	if err != nil {
 		return inspects, err
 	}
+
 	inspects[0] = ui
 
 	ri, err := m.Client.ContainerInspect(ctx, r.RedisID)
 	if err != nil {
 		return inspects, err
 	}
+
 	inspects[1] = ri
 
 	return inspects, nil
@@ -218,6 +222,7 @@ func (m *Manager) Pull(ctx context.Context) ([2]string, error) {
 	if err != nil {
 		return results, err
 	}
+
 	be, err := ioutil.ReadAll(re)
 	if err != nil {
 		return results, err
@@ -227,6 +232,7 @@ func (m *Manager) Pull(ctx context.Context) ([2]string, error) {
 	if err != nil {
 		return results, err
 	}
+
 	br, err := ioutil.ReadAll(rr)
 	if err != nil {
 		return results, err
