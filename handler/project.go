@@ -83,13 +83,15 @@ func (v Projects) Create(c echo.Context) error {
 
 	id := model.NewProjectID()
 
-	// creates project entity with its docker (have fun :D)
-	r, err := v.Manager.New(ctx, id, envs)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
+	if rq.HasDocker {
+		// creates project entity with its docker (have fun :D)
+		r, err := v.Manager.New(ctx, id, envs)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
 
-	p.Runner = r
+		p.Runner = r
+	}
 
 	// sets other properties of the project
 	p.ID = id

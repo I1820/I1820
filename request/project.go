@@ -9,6 +9,7 @@ import (
 type Project struct {
 	Name        string            `json:"name"`        // project name
 	Owner       string            `json:"owner"`       // project owner email address
+	HasDocker   bool              `json:"has_docker"`  // does project have docker
 	Envs        map[string]string `json:"envs"`        // project environment variables
 	Description string            `json:"description"` // project description
 	Perimeter   []Location        `json:"perimeter"`   // project operational perimeter
