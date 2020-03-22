@@ -2,6 +2,7 @@ package dm
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -42,7 +43,7 @@ func main(cfg config.Config) {
 	}
 
 	go func() {
-		if err := e.Start(":1373"); err != http.ErrServerClosed {
+		if err := e.Start(fmt.Sprintf(":%d", config.DMPort)); err != http.ErrServerClosed {
 			logrus.Fatalf("API Service failed with %s", err)
 		}
 	}()
