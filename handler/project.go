@@ -23,6 +23,7 @@ type Projects struct {
 
 func (v Projects) Register(g *echo.Group) {
 	g.POST("/projects", v.Create)
+	g.GET("/projects", v.List)
 	g.DELETE("/projects/:project_id", v.Destroy)
 	g.GET("/projects/:project_id", v.Show)
 	g.PUT("/projects/:project_id", v.Update)
