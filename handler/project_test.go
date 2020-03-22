@@ -30,7 +30,7 @@ func (suite *Suite) testProjectsHandlerCreate() {
 
 	// build project creation request
 	var preq request.Project
-	preq.Name = tName
+	preq.Name = pName
 	preq.Owner = pOwner
 	data, err := json.Marshal(preq)
 	suite.NoError(err)
