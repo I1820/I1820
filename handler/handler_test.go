@@ -44,7 +44,9 @@ func (suite *Suite) SetupSuite() {
 	qh.Register(suite.engine.Group(""))
 
 	manager, err := runner.New()
-	suite.NoError(err)
+	if err != nil {
+		suite.T().Logf("docker engine failed %s", err)
+	}
 
 	ph := Projects{
 		Store: store.Project{
