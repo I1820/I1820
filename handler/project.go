@@ -95,6 +95,7 @@ func (v Projects) Create(c echo.Context) error {
 
 	// sets other properties of the project
 	p.ID = id
+	p.Name = rq.Name
 	p.Description = rq.Description
 
 	// converts request location to GeoJSON format
