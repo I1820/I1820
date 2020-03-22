@@ -30,6 +30,10 @@ const (
 	LinkPort = 0
 	// TMPort is a port of thing manager component
 	TMPort = 1378
+	// DMPort is port of data manager component
+	DMPort = 1373
+	// PMPort is port of project manager component
+	PMPort = 1998
 )
 
 type (
@@ -39,6 +43,7 @@ type (
 		Database Database `mapstructure:"database"`
 		Rabbitmq Rabbitmq `mapstructure:"rabbitmq"`
 		MQTT     MQTT     `mapstrcuture:"mqtt"`
+		Docker   Docker   `mapstructure:"docker"`
 	}
 
 	// TM holds I1820 Things Manager configuration
@@ -65,6 +70,18 @@ type (
 		Pass string `mapstructure:"pass"`
 
 		RetryThreshold int `mapstructure:"retry-threshold"`
+	}
+
+	// Docker holds Docker Host configuration for running the runners
+	Docker struct {
+		Host   string `mapstructure:"host"`
+		Runner Runner `mapstructure:"runner"`
+	}
+
+	// Runner contains the information that are required in runners for get and store the data
+	Runner struct {
+		Database Database `mapstructure:"database"`
+		Rabbitmq Rabbitmq `mapstructure:"rabbitmq"`
 	}
 )
 
