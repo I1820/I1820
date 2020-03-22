@@ -1,14 +1,4 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 02-07-2018
- * |
- * | File Name:     actions/project.go
- * +===============================================
- */
-
-package actions
+package handler
 
 import (
 	"fmt"
@@ -128,7 +118,7 @@ func (v Project) Recreate(c echo.Context) error {
 
 	projectID := c.Param("project_id")
 
-	p, err := v.Store.Get(ctx, projectID)
+	_, err := v.Store.Get(ctx, projectID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -155,7 +145,7 @@ func (v Project) Recreate(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	p, err = v.Store.Update(ctx, projectID, map[string]interface{}{
+	p, err := v.Store.Update(ctx, projectID, map[string]interface{}{
 		"runner": r,
 	})
 	if err != nil {
