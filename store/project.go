@@ -1,5 +1,6 @@
 package store
 
+import "C"
 import (
 	"context"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ProjectCollection is mongodb collection name for project
@@ -79,4 +81,54 @@ func (ps Project) Delete(ctx context.Context, name string) error {
 	}
 
 	return nil
+}
+
+func (ps Project) Update(ctx context.Context, name string, fields map[string]interface{}) (model.Project, error) {
+	var p model.Project
+
+	dr := ps.DB.Collection(ProjectCollection).FindOneAndUpdate(ctx, bson.M{
+		"name": name,
+	}, bson.M{
+		"$set": fields,
+	}, options.FindOneAndUpdate().SetReturnDocument(options.After))
+
+	if err := dr.Decode(&p); err != nil {
+		return p, err
+	}
+
+	return p, nil
+}
+
+func (ps Project) Logs(ctx context.Context, name string, limit int) ([]model.ProjectLog, error) {
+	var pls = make([]model.ProjectLog, 0)
+
+	cur, err := ps.DB.Collection(fmt.Sprintf("%s.logs.%s", ProjectCollection, name)).Aggregate(ctx, bson.A{
+		bson.M{
+			"$sort": bson.M{
+				"Time": -1,
+			},
+		},
+		bson.M{
+			"$limit": limit,
+		},
+	}, options.Aggregate().SetAllowDiskUse(true))
+	if err != nil {
+		return nil, err
+	}
+
+	for cur.Next(ctx) {
+		var pl model.ProjectLog
+
+		if err := cur.Decode(&pl); err != nil {
+			return nil, err
+		}
+
+		pls = append(pls, pl)
+	}
+
+	if err := cur.Close(ctx); err != nil {
+		return nil, err
+	}
+
+	return pls, nil
 }
