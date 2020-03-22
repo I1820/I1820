@@ -23,6 +23,8 @@ steps:
 
   - name: test
     image: golang
+    volumes:
+      /var/run/docker.sock:/var/run/docker.sock
     commands:
       - go build
       - go test -v ./...
