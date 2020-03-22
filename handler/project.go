@@ -143,7 +143,7 @@ func (v Projects) Recreate(c echo.Context) error {
 	envs := []runner.Env{
 		{Name: "DB_URL", Value: v.Config.Database.URL},
 		{Name: "BROKER_URL", Value: addr},
-		{Name: "OWNER", Value: "platform.avidnetco@gmail.com"},
+		{Name: "OWNER", Value: "parham.alvani@gmail.com"},
 	}
 
 	// let's create new dockers for the project
