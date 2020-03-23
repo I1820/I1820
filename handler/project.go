@@ -85,15 +85,13 @@ func (v Projects) Create(c echo.Context) error {
 
 	id := model.NewProjectID()
 
-	if rq.HasDocker {
-		// creates project entity with its docker (have fun :D)
-		r, err := v.Manager.New(ctx, id, envs)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-		}
-
-		p.Runner = r
+	// creates project entity with its docker (have fun :D)
+	r, err := v.Manager.New(ctx, id, envs)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
+	p.Runner = r
 
 	// sets other properties of the project
 	p.ID = id
@@ -190,13 +188,13 @@ func (v Projects) Update(c echo.Context) error {
 
 	projectID := c.Param("project_id")
 
-	var name string
-	if err := c.Bind(&name); err != nil {
+	var rq request.ProjectName
+	if err := c.Bind(&rq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	p, err := v.Store.Update(ctx, projectID, map[string]interface{}{
-		"name": name,
+		"name": rq.Name,
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

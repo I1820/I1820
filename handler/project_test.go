@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 
 	"github.com/I1820/I1820/model"
 	"github.com/I1820/I1820/request"
@@ -51,8 +50,13 @@ func (suite *Suite) testProjectsHandlerCreate() {
 func (suite *Suite) testProjectsHandlerUpdate() {
 	var p model.Project
 
+	var preq request.ProjectName
+	preq.Name = "elahe"
+	data, err := json.Marshal(preq)
+	suite.NoError(err)
+
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest("PUT", fmt.Sprintf("/projects/%s", suite.pID), strings.NewReader("elahe"))
+	req := httptest.NewRequest("PUT", fmt.Sprintf("/projects/%s", suite.pID), bytes.NewReader(data))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 

@@ -107,5 +107,5 @@ func (suite *Suite) testThingsHandlerShow404() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code, w.Body.String())
+	suite.Equal(http.StatusNotFound, w.Code, w.Body.String())
 }
