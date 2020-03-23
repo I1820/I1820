@@ -27,10 +27,13 @@ steps:
       - go build
       - go test -v ./...
     environment:
+      DOCKER_HOST: "tcp://docker:2375"
       I1820_CORE_BROKER_ADDR: "tcp://broker:1883"
       I1820_DATABASE_URL: "mongodb://database:27017"
 
 services:
+  - name: docker
+    image: dind
   - name: database
     image: mongo:latest
   - name: broker
