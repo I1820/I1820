@@ -68,15 +68,15 @@ func (ps Project) Get(ctx context.Context, id string) (model.Project, error) {
 	return p, nil
 }
 
-func (ps Project) Delete(ctx context.Context, name string) error {
+func (ps Project) Delete(ctx context.Context, id string) error {
 	// remove project entity from database
 	if _, err := ps.DB.Collection(ProjectCollection).DeleteOne(ctx, bson.M{
-		"name": name,
+		"id": id,
 	}); err != nil {
 		return err
 	}
 
-	if err := ps.DB.Collection(fmt.Sprintf("%s.logs.%s", ProjectCollection, name)).Drop(ctx); err != nil {
+	if err := ps.DB.Collection(fmt.Sprintf("%s.logs.%s", ProjectCollection, id)).Drop(ctx); err != nil {
 		logrus.Errorf("Log collection deletion failed %s", err)
 	}
 
@@ -87,7 +87,7 @@ func (ps Project) Update(ctx context.Context, id string, fields map[string]inter
 	var p model.Project
 
 	dr := ps.DB.Collection(ProjectCollection).FindOneAndUpdate(ctx, bson.M{
-		"_id": id,
+		"id": id,
 	}, bson.M{
 		"$set": fields,
 	}, options.FindOneAndUpdate().SetReturnDocument(options.After))
