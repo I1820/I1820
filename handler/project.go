@@ -202,15 +202,13 @@ func (v Projects) Update(c echo.Context) error {
 
 	projectID := c.Param("project_id")
 
-	var rq struct {
-		Name string
-	}
-	if err := c.Bind(&rq); err != nil {
+	var name string
+	if err := c.Bind(&name); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	p, err := v.Store.Update(ctx, projectID, map[string]interface{}{
-		"name": rq.Name,
+		"name": name,
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
