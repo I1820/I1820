@@ -27,19 +27,11 @@ steps:
     commands:
       - go build
       - go test -v ./...
-    volumes:
-      - name: docker-socket
-        path: /var/run
     environment:
       I1820_CORE_BROKER_ADDR: "tcp://broker:1883"
       I1820_DATABASE_URL: "mongodb://database:27017"
 
 services:
-  - name: docker
-    image: dind
-    volumes:
-      - name: docker-socket
-        path: /var/run
   - name: database
     image: mongo:latest
   - name: broker
@@ -47,7 +39,3 @@ services:
     environment:
       DOCKER_VERNEMQ_ACCEPT_EULA: "yes"
       DOCKER_VERNEMQ_ALLOW_ANONYMOUS: "on"
-
-volumes:
-  - name: docker-socket
-    temp: {}
