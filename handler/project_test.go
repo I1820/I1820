@@ -97,7 +97,7 @@ func (suite *Suite) testProjectsHandlerShow() {
 // Destroy (DELETE /api/projects/{project_id})
 func (suite *Suite) testProjectsHandlerDelete() {
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest("DELETE", fmt.Sprintf("/projects/%s", pName), nil)
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("/projects/%s", suite.pID), nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
