@@ -4,16 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
 
 func (suite *Suite) TestRunnerHandler() {
 	suite.testProjectsHandlerCreate()
-
-	// wait for ElRunner make ready
-	time.Sleep(15 * time.Second)
 
 	suite.testRunnerAboutAPI()
 

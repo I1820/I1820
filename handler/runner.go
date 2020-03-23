@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strings"
+	"regexp"
 
 	"github.com/I1820/I1820/runner"
 	"github.com/I1820/I1820/store"
@@ -21,7 +21,7 @@ type Runner struct {
 
 func (r Runner) Register(g *echo.Group) {
 	g.GET("/runners/pull", r.Pull)
-	g.Any("/runners/{project_id}/{path:.+}", r.PassThrough)
+	g.Any("/runners/:project_id/*", r.PassThrough)
 }
 
 // PassThrough sends request to specific Runner
@@ -29,7 +29,8 @@ func (r Runner) PassThrough(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	projectID := c.Param("project_id")
-	path := c.Param("path")
+
+	reg := regexp.MustCompile(`^\S*/runners/\w+/`)
 
 	p, err := r.Store.Get(ctx, projectID)
 	if err != nil {
@@ -43,7 +44,9 @@ func (r Runner) PassThrough(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.Request().URL.Path = strings.TrimSuffix(path, "/")
+	c.Request().URL.Path = reg.ReplaceAllString(c.Request().URL.Path, "/")
+
+	fmt.Println(c.Request().URL.Path)
 
 	return echo.WrapHandler(
 		httputil.NewSingleHostReverseProxy(url),

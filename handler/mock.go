@@ -16,7 +16,7 @@ type MockedManager struct {
 
 func (m *MockedManager) New(_ context.Context, name string, _ []runner.Env) (runner.Runner, error) {
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusOK)
 	}))
 
 	if m.servers == nil {
@@ -27,7 +27,7 @@ func (m *MockedManager) New(_ context.Context, name string, _ []runner.Env) (run
 
 	return runner.Runner{
 		ID:      fmt.Sprintf("dstn_%s", name),
-		Port:    strings.Split(s.URL, ":")[1],
+		Port:    strings.Split(s.URL, ":")[2],
 		RedisID: fmt.Sprintf("rd_%s", name),
 	}, nil
 }
