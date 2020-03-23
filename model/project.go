@@ -33,8 +33,6 @@ type Project struct {
 		// coordinates eg. [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0  ] ] ]
 		Coordinates [][][]float64 `json:"coordinates" bson:"coordinates"`
 	} `json:"perimeter" bson:"perimeter"`
-
-	Inspects interface{} `json:"inspects,omitempty" bson:"-"` // more information about project docker
 }
 
 // NewProjectID generates a random string as a project identification

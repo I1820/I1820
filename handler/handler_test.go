@@ -6,7 +6,6 @@ import (
 	"github.com/I1820/I1820/config"
 	"github.com/I1820/I1820/db"
 	"github.com/I1820/I1820/router"
-	"github.com/I1820/I1820/runner"
 	"github.com/I1820/I1820/store"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
@@ -43,10 +42,7 @@ func (suite *Suite) SetupSuite() {
 	}
 	qh.Register(suite.engine.Group(""))
 
-	manager, err := runner.New()
-	if err != nil {
-		suite.T().Logf("docker engine failed %s", err)
-	}
+	manager := &MockedManager{}
 
 	ph := Projects{
 		Store: store.Project{

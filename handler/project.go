@@ -16,7 +16,7 @@ import (
 // Projects manages existing projects
 type Projects struct {
 	Store   store.Project
-	Manager *runner.Manager
+	Manager runner.Manager
 
 	Config config.Runner
 }
@@ -179,15 +179,6 @@ func (v Projects) Show(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	ins, err := v.Manager.Show(ctx, p.Runner)
-	if err != nil {
-		// There is no available docker for this project. We do not return an error in this condition,
-		// but the user must find out based on empty inspect that he must recreate the docker for this project,
-		// or try to find out better details from the Portainer.
-	} else {
-		p.Inspects = ins
-	}
-
 	return c.JSON(http.StatusOK, p)
 }
 
@@ -228,11 +219,7 @@ func (v Projects) Destroy(c echo.Context) error {
 
 	// remove project runner
 	if err := v.Manager.Remove(ctx, p.Runner); err != nil {
-		if err == runner.ErrNoDockerClient {
-			// There is no need to inform user about docker host unavailability
-		} else {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
-		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	if err := v.Store.Delete(ctx, projectID); err != nil {

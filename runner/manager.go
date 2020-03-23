@@ -2,7 +2,6 @@ package runner
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"strconv"
@@ -22,20 +21,26 @@ const (
 	network     string = "i1820_projects"
 )
 
-var ErrNoDockerClient = errors.New("there is no docker client available")
+// Manager manages runners and their containers
+type Manager interface {
+	New(context.Context, string, []Env) (Runner, error)
+	Restart(context.Context, Runner) error
+	Remove(context.Context, Runner) error
+	Pull(context.Context) ([2]string, error)
+}
 
 const (
-	RunnerNanoCPUs = 1000 * 1000 * 1000
-	RunnerMemory   = 2 * 1000 * 1000 * 100
+	NanoCPUs = 1000 * 1000 * 1000
+	Memory   = 2 * 1000 * 1000 * 100
 )
 
-// Manager manages runners and their containers
-type Manager struct {
+// DockerManager is a docker based manager
+type DockerManager struct {
 	Client *client.Client
 }
 
 // New creates a new manager
-func New() (*Manager, error) {
+func New() (Manager, error) {
 	// NewEnvClient initializes a new API client based on environment variables.
 	// Use DOCKER_HOST to set the url to the docker server.
 	// Use DOCKER_API_VERSION to set the version of the API to reach, leave empty for latest.
@@ -54,7 +59,7 @@ func New() (*Manager, error) {
 		return nil, err
 	}
 
-	return &Manager{
+	return &DockerManager{
 		Client: cli,
 	}, nil
 }
@@ -62,11 +67,7 @@ func New() (*Manager, error) {
 // New creates runner docker with given user name
 // mgu represents mongo url that is used in runners
 // for collecting errors and access to thing data
-func (m *Manager) New(ctx context.Context, name string, envs []Env) (Runner, error) {
-	if m.Client == nil {
-		return Runner{}, ErrNoDockerClient
-	}
-
+func (m *DockerManager) New(ctx context.Context, name string, envs []Env) (Runner, error) {
 	rid, err := m.createRedis(ctx, name)
 
 	if err != nil {
@@ -94,7 +95,7 @@ func (m *Manager) New(ctx context.Context, name string, envs []Env) (Runner, err
 }
 
 // createRedis creates a redis container by using rd_{name} as its name.
-func (m *Manager) createRedis(ctx context.Context, name string) (string, error) {
+func (m *DockerManager) createRedis(ctx context.Context, name string) (string, error) {
 	port, _ := nat.NewPort("tcp", "6379")
 
 	resp, err := m.Client.ContainerCreate(ctx,
@@ -125,7 +126,7 @@ func (m *Manager) createRedis(ctx context.Context, name string) (string, error) 
 }
 
 // createRunner creates a runner container by using el_{name} as its name.
-func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (string, string, error) {
+func (m *DockerManager) createRunner(ctx context.Context, name string, envs []Env) (string, string, error) {
 	lport, _ := nat.NewPort("tcp", "8080") // local port
 
 	eport, err := freeport.GetFreePort() // exposed port
@@ -155,8 +156,8 @@ func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (st
 		},
 		&container.HostConfig{
 			Resources: container.Resources{
-				Memory:   RunnerMemory,
-				NanoCPUs: RunnerNanoCPUs,
+				Memory:   Memory,
+				NanoCPUs: NanoCPUs,
 			},
 			NetworkMode: container.NetworkMode(network),
 			PortBindings: nat.PortMap{
@@ -186,47 +187,14 @@ func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (st
 }
 
 // Restart restarts runner docker (not redis)
-func (m *Manager) Restart(ctx context.Context, r Runner) error {
-	if m.Client == nil {
-		return ErrNoDockerClient
-	}
-
+func (m *DockerManager) Restart(ctx context.Context, r Runner) error {
 	td := 1 * time.Second
 
 	return m.Client.ContainerRestart(ctx, r.ID, &td)
 }
 
-// Show returns detail information about runner and redis dockers in the array with a length of 2
-func (m *Manager) Show(ctx context.Context, r Runner) ([2]types.ContainerJSON, error) {
-	var inspects [2]types.ContainerJSON
-
-	if m.Client == nil {
-		return inspects, ErrNoDockerClient
-	}
-
-	ui, err := m.Client.ContainerInspect(ctx, r.ID)
-	if err != nil {
-		return inspects, err
-	}
-
-	inspects[0] = ui
-
-	ri, err := m.Client.ContainerInspect(ctx, r.RedisID)
-	if err != nil {
-		return inspects, err
-	}
-
-	inspects[1] = ri
-
-	return inspects, nil
-}
-
 // Remove removes runner and redis dockers
-func (m *Manager) Remove(ctx context.Context, r Runner) error {
-	if m.Client == nil {
-		return ErrNoDockerClient
-	}
-
+func (m *DockerManager) Remove(ctx context.Context, r Runner) error {
 	if err := m.Client.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
 		Force: true,
 	}); err != nil {
@@ -244,12 +212,8 @@ func (m *Manager) Remove(ctx context.Context, r Runner) error {
 
 // Pull pulls latest images of i1820/elrunner and redis:alpine.
 // Please consider that image names are defined globally.
-func (m *Manager) Pull(ctx context.Context) ([2]string, error) {
+func (m *DockerManager) Pull(ctx context.Context) ([2]string, error) {
 	var results [2]string
-
-	if m.Client == nil {
-		return results, ErrNoDockerClient
-	}
 
 	re, err := m.Client.ImagePull(ctx, runnerImage, types.ImagePullOptions{})
 	if err != nil {

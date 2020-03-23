@@ -14,7 +14,7 @@ import (
 
 type Runner struct {
 	Store   store.Project
-	Manager *runner.Manager
+	Manager runner.Manager
 
 	DockerHost string
 }
