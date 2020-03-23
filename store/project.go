@@ -58,7 +58,7 @@ func (ps Project) Get(ctx context.Context, id string) (model.Project, error) {
 	var p model.Project
 
 	dr := ps.DB.Collection(ProjectCollection).FindOne(ctx, bson.M{
-		"_id": id,
+		"id": id,
 	})
 
 	if err := dr.Decode(&p); err != nil {
