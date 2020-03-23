@@ -83,11 +83,11 @@ func (ps Project) Delete(ctx context.Context, name string) error {
 	return nil
 }
 
-func (ps Project) Update(ctx context.Context, name string, fields map[string]interface{}) (model.Project, error) {
+func (ps Project) Update(ctx context.Context, id string, fields map[string]interface{}) (model.Project, error) {
 	var p model.Project
 
 	dr := ps.DB.Collection(ProjectCollection).FindOneAndUpdate(ctx, bson.M{
-		"name": name,
+		"_id": id,
 	}, bson.M{
 		"$set": fields,
 	}, options.FindOneAndUpdate().SetReturnDocument(options.After))
