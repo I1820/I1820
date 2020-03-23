@@ -24,7 +24,7 @@ func (suite *Suite) TestQueriesHandlerList() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 
@@ -51,7 +51,7 @@ func (suite *Suite) TestQueriesHandlerFetch() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 
@@ -80,7 +80,7 @@ func (suite *Suite) TestQueriesHandlerFetchSingle() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &results))
 

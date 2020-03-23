@@ -52,7 +52,7 @@ func (suite *Suite) testThingsHandlerCreate() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &t))
 	suite.Equal(tName, t.Name)
@@ -67,7 +67,7 @@ func (suite *Suite) testThingsHandlerShow() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &t))
 
@@ -83,7 +83,7 @@ func (suite *Suite) testThingsHandlerList(count int) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &ts))
 
@@ -97,7 +97,7 @@ func (suite *Suite) testThingsHandlerDestroy() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 }
 
 // Show 404 (GET /api/things/{thing_id}
@@ -107,5 +107,5 @@ func (suite *Suite) testThingsHandlerShow404() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusNotFound, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 }

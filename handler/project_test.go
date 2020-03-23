@@ -40,7 +40,7 @@ func (suite *Suite) testProjectsHandlerCreate() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &p))
 	suite.Equal(pName, p.Name)
@@ -56,7 +56,7 @@ func (suite *Suite) testProjectsHandlerUpdate() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &p))
 	suite.Equal("elahe", p.Name)
@@ -71,7 +71,7 @@ func (suite *Suite) testProjectsHandlerList(count int) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &ps))
 
@@ -87,7 +87,7 @@ func (suite *Suite) testProjectsHandlerShow() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 
 	suite.NoError(json.Unmarshal(w.Body.Bytes(), &p))
 
@@ -101,5 +101,5 @@ func (suite *Suite) testProjectsHandlerDelete() {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	suite.engine.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
+	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 }
