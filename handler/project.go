@@ -21,6 +21,7 @@ type Projects struct {
 	Config config.Runner
 }
 
+// Register registers the routes of projects handler on given echo group
 func (v Projects) Register(g *echo.Group) {
 	g.POST("/projects", v.Create)
 	g.GET("/projects", v.List)

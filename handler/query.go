@@ -26,7 +26,7 @@ type Queries struct {
 	Store store.Data
 }
 
-// Register registers the routes of things handler on given echo group
+// Register registers the routes of queries handler on given echo group
 func (q Queries) Register(g *echo.Group) {
 	g.GET("/queries/projects/:project_id/list", q.List)
 	g.GET("/queries/things/:thing_id/fetch", q.FetchSingle)
