@@ -2,6 +2,7 @@ package runner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"strconv"
@@ -20,6 +21,8 @@ const (
 	redisImage  string = "redis:alpine"
 	network     string = "i1820_projects"
 )
+
+var ErrNoDockerClient = errors.New("there is no docker client available")
 
 const (
 	RunnerNanoCPUs = 1000 * 1000 * 1000
@@ -60,6 +63,10 @@ func New() (*Manager, error) {
 // mgu represents mongo url that is used in runners
 // for collecting errors and access to thing data
 func (m *Manager) New(ctx context.Context, name string, envs []Env) (Runner, error) {
+	if m.Client == nil {
+		return Runner{}, ErrNoDockerClient
+	}
+
 	rid, err := m.createRedis(ctx, name)
 
 	if err != nil {
@@ -180,6 +187,10 @@ func (m *Manager) createRunner(ctx context.Context, name string, envs []Env) (st
 
 // Restart restarts runner docker (not redis)
 func (m *Manager) Restart(ctx context.Context, r Runner) error {
+	if m.Client == nil {
+		return ErrNoDockerClient
+	}
+
 	td := 1 * time.Second
 
 	return m.Client.ContainerRestart(ctx, r.ID, &td)
@@ -188,6 +199,10 @@ func (m *Manager) Restart(ctx context.Context, r Runner) error {
 // Show returns detail information about runner and redis dockers in the array with a length of 2
 func (m *Manager) Show(ctx context.Context, r Runner) ([2]types.ContainerJSON, error) {
 	var inspects [2]types.ContainerJSON
+
+	if m.Client == nil {
+		return inspects, ErrNoDockerClient
+	}
 
 	ui, err := m.Client.ContainerInspect(ctx, r.ID)
 	if err != nil {
@@ -208,6 +223,10 @@ func (m *Manager) Show(ctx context.Context, r Runner) ([2]types.ContainerJSON, e
 
 // Remove removes runner and redis dockers
 func (m *Manager) Remove(ctx context.Context, r Runner) error {
+	if m.Client == nil {
+		return ErrNoDockerClient
+	}
+
 	if err := m.Client.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
 		Force: true,
 	}); err != nil {
@@ -227,6 +246,10 @@ func (m *Manager) Remove(ctx context.Context, r Runner) error {
 // Please consider that image names are defined globally.
 func (m *Manager) Pull(ctx context.Context) ([2]string, error) {
 	var results [2]string
+
+	if m.Client == nil {
+		return results, ErrNoDockerClient
+	}
 
 	re, err := m.Client.ImagePull(ctx, runnerImage, types.ImagePullOptions{})
 	if err != nil {

@@ -178,10 +178,6 @@ func (v Projects) Show(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	if p.Runner.ID == "" {
-		return c.JSON(http.StatusOK, p)
-	}
-
 	ins, err := v.Manager.Show(ctx, p.Runner)
 	if err != nil {
 		// There is no available docker for this project. We do not return an error in this condition,
@@ -231,7 +227,11 @@ func (v Projects) Destroy(c echo.Context) error {
 
 	// remove project runner
 	if err := v.Manager.Remove(ctx, p.Runner); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		if err == runner.ErrNoDockerClient {
+			// There is no need to inform user about docker host unavailability
+		} else {
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		}
 	}
 
 	if err := v.Store.Delete(ctx, projectID); err != nil {
