@@ -14,4 +14,6 @@ rabbitmq:
   port: 5672
   user: guest
   pass: guest
+docker:
+  host: 127.0.0.1
 `
