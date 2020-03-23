@@ -37,7 +37,6 @@ steps:
 services:
   - name: docker
     image: dind
-    privileged: true
     volumes:
       - name: docker-socket
         path: /var/run
