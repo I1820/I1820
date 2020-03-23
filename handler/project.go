@@ -178,6 +178,10 @@ func (v Projects) Show(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
+	if p.Runner.ID == "" {
+		return c.JSON(http.StatusOK, p)
+	}
+
 	ins, err := v.Manager.Show(ctx, p.Runner)
 	if err != nil {
 		// There is no available docker for this project. We do not return an error in this condition,
@@ -198,13 +202,15 @@ func (v Projects) Update(c echo.Context) error {
 
 	projectID := c.Param("project_id")
 
-	var name string
-	if err := c.Bind(&name); err != nil {
+	var rq struct {
+		Name string
+	}
+	if err := c.Bind(&rq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	p, err := v.Store.Update(ctx, projectID, map[string]interface{}{
-		"name": name,
+		"name": rq.Name,
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
