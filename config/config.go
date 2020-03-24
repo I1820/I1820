@@ -20,6 +20,7 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/providers/structs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -99,8 +100,8 @@ func New() Config {
 	k := koanf.New(".")
 
 	// load default configuration from file
-	if err := k.Load(file.Provider("config.example.yml"), yaml.Parser()); err != nil {
-		logrus.Fatalf("error loading config.example.yml: %s", err)
+	if err := k.Load(structs.Provider(Default(), "koanf"), nil); err != nil {
+		logrus.Fatalf("error loading default: %s", err)
 	}
 
 	// load configuration from file
