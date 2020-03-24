@@ -28,7 +28,7 @@ const (
 	Namespace = "I1820"
 
 	// Prefix indicates environment variables prefix
-	Prefix = "i1820_"
+	Prefix = "I1820_"
 )
 
 // Component ports are defined here
