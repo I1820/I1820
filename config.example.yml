@@ -1,0 +1,24 @@
+---
+tm:
+  url: http://127.0.0.1:1378
+database:
+  url: mongodb://127.0.0.1:27017
+  name: i1820
+mqtt:
+  addr: tcp://127.0.0.1:1883
+rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  user: guest
+  pass: guest
+docker:
+  host: 127.0.0.1
+  runner:
+    database:
+      url: mongodb://172.17.0.1:27017
+      name: i1820
+    rabbitmq:
+      host: 172.17.0.1
+      port: 5672
+      user: guest
+      pass: guest

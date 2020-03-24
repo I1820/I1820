@@ -13,6 +13,7 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.1.0
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/golang/protobuf v1.3.5 // indirect
+	github.com/knadh/koanf v0.8.2
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/labstack/echo/v4 v4.1.15
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
@@ -23,7 +24,6 @@ require (
 	github.com/prometheus/procfs v0.0.11 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.6
-	github.com/spf13/viper v1.6.2
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	github.com/stretchr/testify v1.4.0
 	go.mongodb.org/mongo-driver v1.3.1

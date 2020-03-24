@@ -14,15 +14,22 @@
 package config
 
 import (
-	"bytes"
 	"strings"
 
+	"github.com/knadh/koanf"
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/env"
+	"github.com/knadh/koanf/providers/file"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
-// Namespace of I1820
-const Namespace = "I1820"
+const (
+	// Namespace of I1820
+	Namespace = "I1820"
+
+	// Prefix indicates environment variables prefix
+	Prefix = "i1820_"
+)
 
 // Component ports are defined here
 const (
@@ -39,49 +46,49 @@ const (
 type (
 	// Config holds all link component configurations
 	Config struct {
-		TM       TM       `mapstructure:"tm"`
-		Database Database `mapstructure:"database"`
-		Rabbitmq Rabbitmq `mapstructure:"rabbitmq"`
+		TM       TM       `koanf:"tm"`
+		Database Database `koanf:"database"`
+		Rabbitmq Rabbitmq `koanf:"rabbitmq"`
 		MQTT     MQTT     `mapstrcuture:"mqtt"`
-		Docker   Docker   `mapstructure:"docker"`
+		Docker   Docker   `koanf:"docker"`
 	}
 
 	// TM holds I1820 Things Manager configuration
 	TM struct {
-		URL string `mapstructure:"url"`
+		URL string `koanf:"url"`
 	}
 
 	// Database holds database configuration
 	Database struct {
-		URL  string `mapstructure:"url"`
-		Name string `mapstructure:"name"`
+		URL  string `koanf:"url"`
+		Name string `koanf:"name"`
 	}
 
 	// MQTT holds MQTT configuration
 	MQTT struct {
-		Addr string `mapstructure:"addr"`
+		Addr string `koanf:"addr"`
 	}
 
 	// Rabbitmq holds Rabbitmq configuration
 	Rabbitmq struct {
-		Host string `mapstructure:"host"`
-		Port int    `mapstructure:"port"`
-		User string `mapstructure:"user"`
-		Pass string `mapstructure:"pass"`
+		Host string `koanf:"host"`
+		Port int    `koanf:"port"`
+		User string `koanf:"user"`
+		Pass string `koanf:"pass"`
 
-		RetryThreshold int `mapstructure:"retry-threshold"`
+		RetryThreshold int `koanf:"retry-threshold"`
 	}
 
 	// Docker holds Docker Host configuration for running the runners
 	Docker struct {
-		Host   string `mapstructure:"host"`
-		Runner Runner `mapstructure:"runner"`
+		Host   string `koanf:"host"`
+		Runner Runner `koanf:"runner"`
 	}
 
 	// Runner contains the information that are required in runners for get and store the data
 	Runner struct {
-		Database Database `mapstructure:"database"`
-		Rabbitmq Rabbitmq `mapstructure:"rabbitmq"`
+		Database Database `koanf:"database"`
+		Rabbitmq Rabbitmq `koanf:"rabbitmq"`
 	}
 )
 
@@ -89,27 +96,28 @@ type (
 func New() Config {
 	var instance Config
 
-	v := viper.New()
-	v.SetConfigType("yaml")
-	v.AddConfigPath(".")
-	v.SetConfigName("config.default")
+	k := koanf.New(".")
 
-	if err := v.ReadConfig(bytes.NewBufferString(Default)); err != nil {
-		logrus.Fatalf("fatal error loading **default** config file: %s \n", err)
+	// load default configuration from file
+	if err := k.Load(file.Provider("config.example.yml"), yaml.Parser()); err != nil {
+		logrus.Fatalf("error loading config.example.yml: %s", err)
 	}
 
-	v.SetConfigName("config")
-
-	if err := v.MergeInConfig(); err != nil {
-		logrus.Warnf("no config file found, using defaults and environment variables")
+	// load configuration from file
+	if err := k.Load(file.Provider("config.yml"), yaml.Parser()); err != nil {
+		logrus.Errorf("error loading config.yml: %s", err)
 	}
 
-	v.SetEnvPrefix("i1820")
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-	v.AutomaticEnv()
+	// load environment variables
+	if err := k.Load(env.Provider(Prefix, ".", func(s string) string {
+		return strings.Replace(strings.ToLower(
+			strings.TrimPrefix(s, Prefix)), "_", ".", -1)
+	}), nil); err != nil {
+		logrus.Errorf("error loading environment variables: %s", err)
+	}
 
-	if err := v.UnmarshalExact(&instance); err != nil {
-		logrus.Fatalf("unmarshal error: %s", err)
+	if err := k.Unmarshal("", &instance); err != nil {
+		logrus.Fatalf("error unmarshalling config: %s", err)
 	}
 
 	logrus.Infof("following configuration is loaded:\n%+v", instance)
