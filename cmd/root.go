@@ -3,8 +3,10 @@ package cmd
 import (
 	"os"
 
+	"github.com/I1820/I1820/cmd/dm"
 	"github.com/I1820/I1820/cmd/link"
 	"github.com/I1820/I1820/cmd/migrate"
+	"github.com/I1820/I1820/cmd/pm"
 	"github.com/I1820/I1820/cmd/tm"
 	"github.com/I1820/I1820/config"
 	"github.com/sirupsen/logrus"
@@ -28,6 +30,8 @@ func Execute() {
 
 	link.Register(root, cfg)
 	tm.Register(root, cfg)
+	dm.Register(root, cfg)
+	pm.Register(root, cfg)
 	migrate.Register(root, cfg)
 
 	if err := root.Execute(); err != nil {
