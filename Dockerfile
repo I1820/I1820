@@ -1,6 +1,8 @@
 # Start from the latest golang base image
 FROM golang:alpine AS builder
 
+RUN apk --no-cache add git ca-certificates git gcc g++ libc-dev
+
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
@@ -32,4 +34,3 @@ WORKDIR /root/
 COPY --from=builder /I1820 .
 
 ENTRYPOINT ["./I1820"]
-
