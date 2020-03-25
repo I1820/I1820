@@ -36,20 +36,16 @@ steps:
     when:
       branch:
         - master
-    commands:
-      - export BUILD_COMMIT_MSG=$DRONE_COMMIT_MESSAGE
-      - export BUILD_COMMIT=$DRONE_COMMIT
-      - export BUILD_DATE=$(date -R)
     settings:
       username: 1995parham
       password:
         from_secret: docker_password
       repo: i1820/i1820
       tags: latest
-      build_args_from_env:
-        - BUILD_COMMIT_MSG
-        - BUILD_COMMIT
-        - BUILD_DATE
+      build_args:
+        - BUILD_COMMIT_MSG=$DRONE_COMMIT_MESSAGE
+        - BUILD_COMMIT=$DRONE_COMMIT
+        - BUILD_DATE=$(date -R)
 
 services:
   - name: database
