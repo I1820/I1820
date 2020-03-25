@@ -43,9 +43,8 @@ steps:
       repo: i1820/i1820
       tags: latest
       build_args:
-        - BUILD_COMMIT_MSG=$DRONE_COMMIT_MESSAGE
-        - BUILD_COMMIT=$DRONE_COMMIT
-        - BUILD_DATE=$(date -R)
+        - BUILD_COMMIT_MSG=${DRONE_COMMIT_MESSAGE}
+        - BUILD_COMMIT=${DRONE_COMMIT}
 
 services:
   - name: database
