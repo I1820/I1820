@@ -31,6 +31,18 @@ steps:
       I1820_CORE_BROKER_ADDR: "tcp://broker:1883"
       I1820_DATABASE_URL: "mongodb://database:27017"
 
+  - name: docker
+    image: plugins/docker
+    when:
+      branch:
+        - master
+    settings:
+      username: 1995parham
+      password:
+        from_secret: docker_password
+      repo: i1820/i1820
+      tags: latest
+
 services:
   - name: database
     image: mongo:latest
