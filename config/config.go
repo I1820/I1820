@@ -41,7 +41,7 @@ const (
 	// DMPort is port of data manager component
 	DMPort = 1373
 	// PMPort is port of project manager component
-	PMPort = 1998
+	PMPort = 1999
 )
 
 type (
