@@ -9,11 +9,11 @@ import (
 	"github.com/I1820/I1820/core"
 	"github.com/I1820/I1820/db"
 	"github.com/I1820/I1820/mqtt"
+	"github.com/I1820/I1820/nats"
 	"github.com/I1820/I1820/pkg/client/tm"
 	"github.com/I1820/I1820/pkg/model/aolab"
 	"github.com/I1820/I1820/pkg/protocol/lan"
 	"github.com/I1820/I1820/pkg/protocol/lora"
-	"github.com/I1820/I1820/rabbitmq"
 	"github.com/I1820/I1820/store"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -40,12 +40,11 @@ func main(cfg config.Config) {
 	// create a tm service
 	tm := tm.New(cfg.TM.URL)
 
-	// setup RabbitMQ producer
-	rpr := rabbitmq.NewProducer(cfg.Rabbitmq, "raw")
-	ppr := rabbitmq.NewProducer(cfg.Rabbitmq, "parsed")
+	// setup NATS producer
+	ns := nats.NewClient(cfg.NATS)
 
 	// creates the core application and registers the defaults
-	core := core.New(tm, st, rpr, ppr)
+	core := core.New(tm, st, ns)
 	core.RegisterModel(aolab.Model{})
 
 	if err := core.Run(); err != nil {
