@@ -20,8 +20,8 @@ import (
 	types "github.com/I1820/I1820/model"
 	"github.com/I1820/I1820/pkg/client/tm"
 	"github.com/I1820/I1820/pkg/model"
-	"github.com/I1820/I1820/rabbitmq"
 	"github.com/I1820/I1820/store"
+	"github.com/nats-io/nats.go"
 )
 
 // Application is a main component of uplink that consists of
@@ -50,13 +50,12 @@ type Application struct {
 	decodeStream  chan types.Data
 	insertStream  chan types.Data
 
-	// RabbitMQ Producer
-	rawProducer    *rabbitmq.Producer
-	parsedProducer *rabbitmq.Producer
+	// NATS Client
+	ns *nats.EncodedConn
 }
 
 // New creates new application.
-func New(tm tm.Service, st *store.Data, rpr, ppr *rabbitmq.Producer) *Application {
+func New(tm tm.Service, st *store.Data, ns *nats.EncodedConn) *Application {
 	return &Application{
 		models:    make(map[string]model.Model),
 		TMService: tm,
@@ -66,8 +65,7 @@ func New(tm tm.Service, st *store.Data, rpr, ppr *rabbitmq.Producer) *Applicatio
 		decodeStream:  make(chan types.Data),
 		insertStream:  make(chan types.Data),
 
-		rawProducer:    rpr,
-		parsedProducer: ppr,
+		ns: ns,
 	}
 }
 

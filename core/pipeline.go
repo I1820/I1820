@@ -15,6 +15,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 
 	"github.com/sirupsen/logrus"
@@ -42,10 +43,10 @@ func (a *Application) project() {
 
 		if d.Project != "" && d.Model == "generic" {
 			// publish raw data
-			if err := a.rawProducer.Queue(d); err != nil {
+			if err := a.ns.Publish(fmt.Sprintf("/i1820/%s/raw", d.Project), d); err != nil {
 				logrus.WithFields(logrus.Fields{
 					"component": "link",
-				}).Errorf("rabbitmq produce: %s", err)
+				}).Errorf("nats produce: %s", err)
 			}
 
 			logrus.WithFields(logrus.Fields{
@@ -81,10 +82,10 @@ func (a *Application) decode() {
 					d.Data = m.Decode(d.Raw)
 
 					// publish parsed data
-					if err := a.parsedProducer.Queue(d); err != nil {
+					if err := a.ns.Publish(fmt.Sprintf("/i1820/%s/parsed", d.Project), d); err != nil {
 						logrus.WithFields(logrus.Fields{
 							"component": "link",
-						}).Errorf("rabbitmq produce: %s", err)
+						}).Errorf("nats produce: %s", err)
 					}
 					logrus.WithFields(logrus.Fields{
 						"component": "link",
