@@ -10,13 +10,11 @@ services:
     volumes:
       - ./.docker/data:/data/db
 
-  rabbitmq:
-    # management panel can be accessed with guest/guest
-    image: rabbitmq:management
+  nats:
+    image: nats
     restart: always
     ports:
-      - 15672:15672
-      - 5672:5672
+      - 4222:4222
 
   vernemq:
     image: vernemq/vernemq
