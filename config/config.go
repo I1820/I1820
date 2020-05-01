@@ -49,7 +49,7 @@ type (
 	Config struct {
 		TM       TM       `koanf:"tm"`
 		Database Database `koanf:"database"`
-		Rabbitmq Rabbitmq `koanf:"rabbitmq"`
+		NATS     NATS     `koanf:"nats"`
 		MQTT     MQTT     `mapstrcuture:"mqtt"`
 		Docker   Docker   `koanf:"docker"`
 	}
@@ -70,14 +70,9 @@ type (
 		Addr string `koanf:"addr"`
 	}
 
-	// Rabbitmq holds Rabbitmq configuration
-	Rabbitmq struct {
-		Host string `koanf:"host"`
-		Port int    `koanf:"port"`
-		User string `koanf:"user"`
-		Pass string `koanf:"pass"`
-
-		RetryThreshold int `koanf:"retry-threshold"`
+	// NATS hodls NATS configuration
+	NATS struct {
+		URL string `koanf:"url"`
 	}
 
 	// Docker holds Docker Host configuration for running the runners
@@ -89,7 +84,7 @@ type (
 	// Runner contains the information that are required in runners for get and store the data
 	Runner struct {
 		Database Database `koanf:"database"`
-		Rabbitmq Rabbitmq `koanf:"rabbitmq"`
+		NATS     NATS     `koanf:"nats"`
 	}
 )
 

@@ -11,12 +11,8 @@ func Default() Config {
 			URL:  "mongodb://127.0.0.1:27017",
 			Name: "i1820",
 		},
-		Rabbitmq: Rabbitmq{
-			Host:           "127.0.0.1",
-			Port:           5672,
-			User:           "guest",
-			Pass:           "guest",
-			RetryThreshold: 10,
+		NATS: NATS{
+			URL: "nats://127.0.0.1:4222",
 		},
 		MQTT: MQTT{
 			Addr: "tcp://127.0.0.1:1883",
@@ -28,12 +24,8 @@ func Default() Config {
 					URL:  "mongodb://172.17.0.1",
 					Name: "i1820",
 				},
-				Rabbitmq: Rabbitmq{
-					Host:           "172.17.0.1",
-					Port:           5672,
-					User:           "guest",
-					Pass:           "guest",
-					RetryThreshold: 10,
+				NATS: NATS{
+					URL: "nats://127.0.0.1:4222",
 				},
 			},
 		},
