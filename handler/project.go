@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -61,18 +60,10 @@ func (v Projects) Create(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	addr := fmt.Sprintf(
-		"amqp://%s:%s@%s:%d/",
-		v.Config.Rabbitmq.User,
-		v.Config.Rabbitmq.Pass,
-		v.Config.Rabbitmq.Host,
-		v.Config.Rabbitmq.Port,
-	)
-
 	// predefined environment variables
 	envs := []runner.Env{
 		{Name: "DB_URL", Value: v.Config.Database.URL},
-		{Name: "BROKER_URL", Value: addr},
+		{Name: "BROKER_URL", Value: v.Config.NATS.URL},
 		{Name: "OWNER", Value: rq.Owner},
 	}
 
@@ -133,19 +124,11 @@ func (v Projects) Recreate(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	addr := fmt.Sprintf(
-		"amqp://%s:%s@%s:%d/",
-		v.Config.Rabbitmq.User,
-		v.Config.Rabbitmq.Pass,
-		v.Config.Rabbitmq.Host,
-		v.Config.Rabbitmq.Port,
-	)
-
 	// predefined environment variables
 	// This newly created project is under supervision of platform admin
 	envs := []runner.Env{
 		{Name: "DB_URL", Value: v.Config.Database.URL},
-		{Name: "BROKER_URL", Value: addr},
+		{Name: "BROKER_URL", Value: v.Config.NATS.URL},
 		{Name: "OWNER", Value: "parham.alvani@gmail.com"},
 	}
 
