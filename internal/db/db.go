@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/I1820/I1820/internal/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,7 +16,7 @@ import (
 const connectionTimeout = 10 * time.Second
 
 // New creates a new mongodb connection and tests it.
-func New(cfg config.Database) (*mongo.Database, error) {
+func New(cfg Config) (*mongo.Database, error) {
 	// register custom codec registry to handle empty interfaces
 	rb := bson.NewRegistryBuilder()
 	rb.RegisterTypeMapEntry(bsontype.EmbeddedDocument, reflect.TypeOf(bson.M{}))

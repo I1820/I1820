@@ -18,6 +18,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/I1820/I1820/internal/db"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
@@ -50,22 +51,16 @@ const (
 type (
 	// Config holds all link component configurations.
 	Config struct {
-		TM       TM       `koanf:"tm"`
-		Database Database `koanf:"database"`
-		NATS     NATS     `koanf:"nats"`
-		MQTT     MQTT     `mapstrcuture:"mqtt"`
-		Docker   Docker   `koanf:"docker"`
+		TM       TM        `koanf:"tm"`
+		Database db.Config `koanf:"database"`
+		NATS     NATS      `koanf:"nats"`
+		MQTT     MQTT      `koanf:"mqtt"`
+		Docker   Docker    `koanf:"docker"`
 	}
 
 	// TM holds I1820 Things Manager configuration.
 	TM struct {
 		URL string `koanf:"url"`
-	}
-
-	// Database holds database configuration.
-	Database struct {
-		URL  string `koanf:"url"`
-		Name string `koanf:"name"`
 	}
 
 	// MQTT holds MQTT configuration.
@@ -86,8 +81,8 @@ type (
 
 	// Runner contains the information that are required in runners for get and store the data.
 	Runner struct {
-		Database Database `koanf:"database"`
-		NATS     NATS     `koanf:"nats"`
+		Database db.Config `koanf:"database"`
+		NATS     NATS      `koanf:"nats"`
 	}
 )
 
