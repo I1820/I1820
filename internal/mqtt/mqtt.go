@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Service is MQTT service for handling device communication
+// Service is MQTT service for handling device communication.
 type Service struct {
 	cli  paho.Client
 	opts *paho.ClientOptions
@@ -24,14 +24,14 @@ type Service struct {
 	IsRun bool
 }
 
-// MaximumClientID represents maximum client identification of MQTT
+// MaximumClientID represents maximum client identification of MQTT.
 const MaximumClientID = 1024
 
-// DisconnectTimeout is a waiting time for MQTT client disconnect in ms
+// DisconnectTimeout is a waiting time for MQTT client disconnect in ms.
 const DisconnectTimeout = 10
 
 // New creates a new MQTT service instance.
-// MQTT service receives messages from protocols and publish them on its channel
+// MQTT service receives messages from protocols and publish them on its channel.
 func New(cfg config.MQTT) *Service {
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 
