@@ -2,7 +2,7 @@ package migrate
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"github.com/I1820/I1820/config"
 	"github.com/I1820/I1820/db"
@@ -32,26 +32,28 @@ func main(cfg config.Config) {
 			panic(err)
 		}
 
-		fmt.Println(idx)
+		log.Println(idx)
 	}
 
 	{
 		idx, err := db.Collection(store.ThingCollection).Indexes().CreateOne(
 			context.Background(),
 			mongo.IndexModel{
-				Keys: bson.M{"project": enable},
+				Options: nil,
+				Keys:    bson.M{"project": enable},
 			})
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Println(idx)
+		log.Println(idx)
 	}
 
 	{
 		idx, err := db.Collection(store.DataCollection).Indexes().CreateOne(
 			context.Background(),
 			mongo.IndexModel{
+				Options: nil,
 				Keys: bson.M{
 					"timestamp": -enable,
 					"thing_id":  enable,
@@ -62,13 +64,14 @@ func main(cfg config.Config) {
 			panic(err)
 		}
 
-		fmt.Println(idx)
+		log.Println(idx)
 	}
 }
 
-// Register migrate command
+// Register migrate command.
 func Register(root *cobra.Command, cfg config.Config) {
 	root.AddCommand(
+		// nolint: exhaustivestruct
 		&cobra.Command{
 			Use:   "migrate",
 			Short: "Setup database indices",

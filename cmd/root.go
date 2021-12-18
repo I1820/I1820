@@ -21,7 +21,8 @@ const ExitFailure = 1
 func Execute() {
 	cfg := config.New()
 
-	var root = &cobra.Command{
+	// nolint: exhaustivestruct
+	root := &cobra.Command{
 		Use:   "I1820",
 		Short: "I1820, IoT Platform that can be used with LoRa, Zigbee and ...",
 	}
