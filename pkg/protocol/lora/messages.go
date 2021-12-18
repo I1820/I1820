@@ -27,6 +27,7 @@ type RxMessage struct {
 
 // RxInfo contains gateway information that payloads
 // received from it.
+// nolint: tagliatelle
 type RxInfo struct {
 	Mac     string
 	Name    string
