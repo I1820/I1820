@@ -15,20 +15,20 @@ package isrc
 
 // Model reperesents ISRC model. this model for marshaling
 // and unmarshaling of data is created originally by
-// Iranian Space Research Center
+// Iranian Space Research Center.
 type Model struct{}
 
-// Name returns model name
+// Name returns model name.
 func (m Model) Name() string {
 	return "isrc"
 }
 
-// Decode given data with aolab structure
+// Decode given data with isrc structure.
 func (m Model) Decode(d []byte) interface{} {
 	return nil
 }
 
-// Encode given object with aolab structure
+// Encode given object with isrc structure.
 func (m Model) Encode(o interface{}) []byte {
 	return nil
 }

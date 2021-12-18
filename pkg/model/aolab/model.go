@@ -19,15 +19,15 @@ import (
 
 // Model reperesents AoLab model. this model for marshaling
 // and unmarshaling of data is created originally by
-// Amirkabir University IoT Lab
+// Amirkabir University IoT Lab.
 type Model struct{}
 
-// Name returns model name
+// Name returns model name.
 func (m Model) Name() string {
 	return "aolab"
 }
 
-// Decode given data with aolab structure
+// Decode given data with aolab structure.
 func (m Model) Decode(d []byte) interface{} {
 	var l Log
 
@@ -38,7 +38,7 @@ func (m Model) Decode(d []byte) interface{} {
 	return l.States
 }
 
-// Encode given object with aolab structure
+// Encode given object with aolab structure.
 func (m Model) Encode(o interface{}) []byte {
 	n, ok := o.(Notification)
 	if !ok {

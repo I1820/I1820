@@ -15,7 +15,7 @@ package aolab
 
 import "time"
 
-// Log represents data that is coming from AoLab nodes
+// Log represents data that is coming from AoLab nodes.
 type Log struct {
 	Timestamp time.Time
 	Type      string
@@ -23,7 +23,7 @@ type Log struct {
 	States    map[string]interface{}
 }
 
-// Notification represents data that is going to AoLab nodes
+// Notification represents data that is going to AoLab nodes.
 type Notification struct {
 	Type     string
 	Device   string
