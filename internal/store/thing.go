@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

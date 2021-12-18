@@ -3,7 +3,7 @@ package nats
 import (
 	"log"
 
-	"github.com/I1820/I1820/config"
+	"github.com/I1820/I1820/internal/config"
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 )

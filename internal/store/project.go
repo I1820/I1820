@@ -1,11 +1,10 @@
 package store
 
-import "C"
 import (
 	"context"
 	"fmt"
 
-	"github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/internal/model"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

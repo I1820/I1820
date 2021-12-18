@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/I1820/I1820/config"
-	"github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/internal/config"
+	"github.com/I1820/I1820/internal/model"
 	"github.com/I1820/I1820/pkg/protocol"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"

@@ -17,12 +17,11 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/internal/model"
 )
 
 // Protocol implements uplink protocol for lora
-type Protocol struct {
-}
+type Protocol struct{}
 
 // RxTopic returns lora rx message topic
 // https://www.loraserver.io/lora-app-server/integrate/sending-receiving/mqtt/

@@ -17,7 +17,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/I1820/I1820/model"
+	"github.com/I1820/I1820/internal/model"
 	lan "github.com/I1820/lanserver/model"
 )
 

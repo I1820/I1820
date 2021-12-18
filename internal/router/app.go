@@ -1,13 +1,13 @@
 package router
 
 import (
-	"github.com/I1820/I1820/config"
+	"github.com/I1820/I1820/internal/config"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// App creates new instance of Echo and configures it
+// App creates new instance of Echo and configures it.
 func App() *echo.Echo {
 	app := echo.New()
 	app.Use(middleware.Logger())
