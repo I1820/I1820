@@ -1,6 +1,6 @@
 package model
 
-// Thing contains thing identification and its parent project
+// Thing contains thing identification and its parent project.
 type Thing struct {
 	Name    string `json:"name" bson:"name"`       // DevEUI
 	Status  bool   `json:"status" bson:"status"`   // active/inactive

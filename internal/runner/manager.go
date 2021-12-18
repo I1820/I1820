@@ -21,7 +21,7 @@ const (
 	network     string = "i1820_projects"
 )
 
-// Manager manages runners and their containers
+// Manager manages runners and their containers.
 type Manager interface {
 	New(context.Context, string, []Env) (Runner, error)
 	Restart(context.Context, Runner) error
@@ -34,12 +34,12 @@ const (
 	Memory   = 2 * 1000 * 1000 * 100
 )
 
-// DockerManager is a docker based manager
+// DockerManager is a docker based manager.
 type DockerManager struct {
 	Client *client.Client
 }
 
-// New creates a new manager
+// New creates a new manager.
 func New() (Manager, error) {
 	// NewEnvClient initializes a new API client based on environment variables.
 	// Use DOCKER_HOST to set the url to the docker server.

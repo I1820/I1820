@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/I1820/I1820/model"
-	"github.com/I1820/I1820/request"
-	"github.com/I1820/I1820/store"
+	"github.com/I1820/I1820/internal/model"
+	"github.com/I1820/I1820/internal/request"
+	"github.com/I1820/I1820/internal/store"
 	"github.com/labstack/echo/v4"
 )
 

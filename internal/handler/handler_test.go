@@ -1,12 +1,13 @@
-package handler
+package handler_test
 
 import (
 	"testing"
 
-	"github.com/I1820/I1820/config"
-	"github.com/I1820/I1820/db"
-	"github.com/I1820/I1820/router"
-	"github.com/I1820/I1820/store"
+	"github.com/I1820/I1820/internal/config"
+	"github.com/I1820/I1820/internal/db"
+	"github.com/I1820/I1820/internal/handler"
+	"github.com/I1820/I1820/internal/router"
+	"github.com/I1820/I1820/internal/store"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 )
@@ -28,23 +29,23 @@ func (suite *Suite) SetupSuite() {
 
 	suite.engine = router.App()
 
-	th := Things{
+	th := handler.Things{
 		Store: store.Thing{
 			DB: db,
 		},
 	}
 	th.Register(suite.engine.Group(""))
 
-	qh := Queries{
+	qh := handler.Queries{
 		Store: store.Data{
 			DB: db,
 		},
 	}
 	qh.Register(suite.engine.Group(""))
 
-	manager := &MockedManager{}
+	manager := &handler.MockedManager{}
 
-	ph := Projects{
+	ph := handler.Projects{
 		Store: store.Project{
 			DB: db,
 		},
@@ -53,7 +54,7 @@ func (suite *Suite) SetupSuite() {
 	}
 	ph.Register(suite.engine.Group(""))
 
-	rh := Runner{
+	rh := handler.Runner{
 		Store: store.Project{
 			DB: db,
 		},

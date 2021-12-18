@@ -14,7 +14,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/I1820/I1820/runner"
+	"github.com/I1820/I1820/internal/runner"
 )
 
 // Project represents structure of I1820 platform projects
@@ -35,7 +35,7 @@ type Project struct {
 	} `json:"perimeter" bson:"perimeter"`
 }
 
-// NewProjectID generates a random string as a project identification
+// NewProjectID generates a random string as a project identification.
 func NewProjectID() string {
 	rand.Seed(time.Now().UnixNano())
 

@@ -8,7 +8,7 @@
  * +===============================================
  */
 
-package handler
+package handler_test
 
 import (
 	"bytes"
@@ -17,10 +17,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/I1820/I1820/request"
+	"github.com/I1820/I1820/internal/model"
+	"github.com/I1820/I1820/internal/request"
 	"github.com/labstack/echo/v4"
-
-	"github.com/I1820/I1820/model"
 )
 
 const tName = "0000000000000073"

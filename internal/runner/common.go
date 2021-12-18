@@ -10,7 +10,7 @@
 
 package runner
 
-// Env provides environment variables in runners
+// Env provides environment variables in runners.
 type Env struct {
 	Name  string
 	Value string

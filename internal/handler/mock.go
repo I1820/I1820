@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/I1820/I1820/runner"
+	"github.com/I1820/I1820/internal/runner"
 )
 
 type MockedManager struct {

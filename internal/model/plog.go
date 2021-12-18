@@ -12,7 +12,7 @@ package model
 
 import "time"
 
-// ProjectLog represents project logs
+// ProjectLog represents project logs that are collected from their dockers.
 type ProjectLog struct {
 	Time    time.Time `bson:"Time"`
 	Message string    `bson:"Message"`

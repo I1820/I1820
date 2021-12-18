@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"regexp"
 
-	"github.com/I1820/I1820/runner"
-	"github.com/I1820/I1820/store"
+	"github.com/I1820/I1820/internal/runner"
+	"github.com/I1820/I1820/internal/store"
 	"github.com/labstack/echo/v4"
 )
 
