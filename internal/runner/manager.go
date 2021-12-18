@@ -107,7 +107,7 @@ func (m *DockerManager) createRedis(ctx context.Context, name string) (string, e
 		},
 		&container.HostConfig{
 			NetworkMode: container.NetworkMode(network),
-		}, nil, fmt.Sprintf("rd_%s", name))
+		}, nil, nil, fmt.Sprintf("rd_%s", name))
 	if err != nil {
 		return "", err
 	}
@@ -168,7 +168,7 @@ func (m *DockerManager) createRunner(ctx context.Context, name string, envs []En
 					},
 				},
 			},
-		}, nil, fmt.Sprintf("dstn_%s", name))
+		}, nil, nil, fmt.Sprintf("dstn_%s", name))
 	if err != nil {
 		return "", "", err
 	}
