@@ -32,7 +32,7 @@ It has some useful built-in queries that can returns data from the database (Mon
 
 Enable MongoDB built-in profiler:
 
-```
+```js
 use i1820
 db.setProfileLevel(2)
 ```
@@ -40,8 +40,8 @@ db.setProfileLevel(2)
 The profiling results will be in a special capped collection called `system.profile`
 which is located in the database where you executed the `setProfileLevel` command.
 
-```
-db.system.profile.find().pretty()
+```js
+db.system.profile.find().pretty();
 ```
 
 ## Project Manager
