@@ -20,8 +20,10 @@ import (
 )
 
 func main(cfg config.Config) {
-	// create MQTT service
+	// create MQTT service for communicating with outer layers.
 	msvc := mqtt.New(cfg.MQTT)
+
+	// register protocols for gathering data.
 	msvc.Register(lora.Protocol{})
 	msvc.Register(lan.Protocol{})
 
@@ -37,7 +39,7 @@ func main(cfg config.Config) {
 
 	st := store.New(db)
 
-	// create a tm service
+	// create a tm client for communicating with tm service.
 	tm := tm.New(cfg.TM.URL)
 
 	// setup NATS producer

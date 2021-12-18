@@ -1,9 +1,10 @@
 package mqtt
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
-	"math/rand"
-	"time"
+	"log"
 
 	"github.com/I1820/I1820/internal/config"
 	"github.com/I1820/I1820/internal/model"
@@ -24,28 +25,32 @@ type Service struct {
 	IsRun bool
 }
 
-// MaximumClientID represents maximum client identification of MQTT.
-const MaximumClientID = 1024
+const (
+	// ClientID random length specifies the length of client-id random part.
+	ClientIDRandomLength = 10
 
-// DisconnectTimeout is a waiting time for MQTT client disconnect in ms.
-const DisconnectTimeout = 10
+	// DisconnectTimeout is a waiting time for MQTT client disconnect in ms.
+	DisconnectTimeout = 10
+)
 
 // New creates a new MQTT service instance.
 // MQTT service receives messages from protocols and publish them on its channel.
 func New(cfg config.MQTT) *Service {
-	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
+	id := make([]byte, ClientIDRandomLength)
+	if _, err := rand.Read(id); err != nil {
+		log.Fatal(err)
+	}
 
 	opts := paho.NewClientOptions()
 	opts.AddBroker(cfg.Addr)
-	opts.SetClientID(fmt.Sprintf("I1820-link-%d", rnd.Intn(MaximumClientID)))
+	opts.SetClientID(fmt.Sprintf("I1820-link-%s", hex.EncodeToString(id)))
 	opts.SetOrderMatters(false)
 
 	return &Service{
-		opts: opts,
-
+		opts:      opts,
 		protocols: make([]protocol.Protocol, 0),
-
-		channel: make(chan model.Data),
+		channel:   make(chan model.Data),
+		cli:       nil,
 
 		IsRun: false,
 	}
@@ -104,7 +109,7 @@ func (s *Service) Run() error {
 
 	// connect to the MQTT Server
 	if t := s.cli.Connect(); t.Wait() && t.Error() != nil {
-		return t.Error()
+		return fmt.Errorf("mqtt connection failed %w", t.Error())
 	}
 
 	s.IsRun = true
@@ -116,6 +121,6 @@ func (s *Service) Run() error {
 func (s *Service) Exit() {
 	s.IsRun = false
 
-	// disconnect aftere 10ms
+	// disconnect aftere specific disconnect timeout
 	s.cli.Disconnect(DisconnectTimeout)
 }

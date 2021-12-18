@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/I1820/I1820/internal/model"
@@ -28,7 +29,7 @@ func New(db *mongo.Database) *Data {
 // Insert given instance of data into database.
 func (d *Data) Insert(ctx context.Context, i model.Data) error {
 	if _, err := d.DB.Collection(DataCollection).InsertOne(ctx, i); err != nil {
-		return err
+		return fmt.Errorf("data insertion failed %w", err)
 	}
 
 	return nil
@@ -51,7 +52,7 @@ func (d Data) PerProjectCount(ctx context.Context, projectID string) (map[string
 		},
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("per project aggregation failed %w", err)
 	}
 
 	results := make(map[string]int)
@@ -63,20 +64,21 @@ func (d Data) PerProjectCount(ctx context.Context, projectID string) (map[string
 		}
 
 		if err := cur.Decode(&result); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("record decode failed %w", err)
 		}
 
 		results[result.ID] = result.Total
 	}
 
 	if err := cur.Close(ctx); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("curser close failed %w", err)
 	}
 
-	return results, err
+	return results, nil
 }
 
 // Fetch fetches given things data in given time range and sorts it.
+// it uses disk for sort and etc.
 func (d Data) Fetch(ctx context.Context, since, until, offset, limit int64, ids []string) ([]model.Data, error) {
 	cur, err := d.DB.Collection(DataCollection).Aggregate(ctx, bson.A{
 		bson.M{
@@ -103,7 +105,7 @@ func (d Data) Fetch(ctx context.Context, since, until, offset, limit int64, ids 
 		},
 	}, options.Aggregate().SetAllowDiskUse(true))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetch date in given period failed %w", err)
 	}
 
 	results := make([]model.Data, 0)
@@ -112,14 +114,14 @@ func (d Data) Fetch(ctx context.Context, since, until, offset, limit int64, ids 
 		var result model.Data
 
 		if err := cur.Decode(&result); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("record decode failed %w", err)
 		}
 
 		results = append(results, result)
 	}
 
 	if err := cur.Close(ctx); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("curser close failed %w", err)
 	}
 
 	return results, nil

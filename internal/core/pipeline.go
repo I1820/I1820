@@ -42,7 +42,7 @@ func (a *Application) project() {
 		}
 
 		if d.Project != "" && d.Model == "generic" {
-			// publish raw data
+			// publish raw data to decode it in runner
 			if err := a.ns.Publish(fmt.Sprintf("/i1820/%s/raw", d.Project), d); err != nil {
 				logrus.WithFields(logrus.Fields{
 					"component": "link",
@@ -69,7 +69,7 @@ func (a *Application) decode() {
 	}).Info("decode pipeline stage has started")
 
 	for d := range a.decodeStream {
-		// run decode when data is coming from thing with project and it needs decode
+		// run decode when data is coming from thing with project and it needs decode.
 		if d.Project != "" && d.Data == nil {
 			if d.Model != "generic" {
 				m, ok := a.models[d.Model]

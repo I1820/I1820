@@ -54,7 +54,7 @@ type Application struct {
 	ns *nats.EncodedConn
 }
 
-// New creates new application.
+// New creates new link core application.
 func New(tm tm.Service, st *store.Data, ns *nats.EncodedConn) *Application {
 	return &Application{
 		models:    make(map[string]model.Model),
@@ -64,6 +64,12 @@ func New(tm tm.Service, st *store.Data, ns *nats.EncodedConn) *Application {
 		projectStream: make(chan types.Data),
 		decodeStream:  make(chan types.Data),
 		insertStream:  make(chan types.Data),
+
+		IsRun: false,
+
+		projectWG: sync.WaitGroup{},
+		insertWG:  sync.WaitGroup{},
+		decodeWG:  sync.WaitGroup{},
 
 		ns: ns,
 	}
