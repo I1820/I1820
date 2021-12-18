@@ -3,12 +3,12 @@ package cmd
 import (
 	"os"
 
-	"github.com/I1820/I1820/cmd/dm"
-	"github.com/I1820/I1820/cmd/link"
-	"github.com/I1820/I1820/cmd/migrate"
-	"github.com/I1820/I1820/cmd/pm"
-	"github.com/I1820/I1820/cmd/tm"
-	"github.com/I1820/I1820/config"
+	"github.com/I1820/I1820/internal/cmd/dm"
+	"github.com/I1820/I1820/internal/cmd/link"
+	"github.com/I1820/I1820/internal/cmd/migrate"
+	"github.com/I1820/I1820/internal/cmd/pm"
+	"github.com/I1820/I1820/internal/cmd/tm"
+	"github.com/I1820/I1820/internal/config"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

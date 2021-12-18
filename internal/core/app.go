@@ -17,10 +17,10 @@ import (
 	"runtime"
 	"sync"
 
-	types "github.com/I1820/I1820/model"
+	types "github.com/I1820/I1820/internal/model"
+	"github.com/I1820/I1820/internal/store"
 	"github.com/I1820/I1820/pkg/client/tm"
 	"github.com/I1820/I1820/pkg/model"
-	"github.com/I1820/I1820/store"
 	"github.com/nats-io/nats.go"
 )
 

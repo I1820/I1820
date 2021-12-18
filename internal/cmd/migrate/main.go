@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/I1820/I1820/config"
-	"github.com/I1820/I1820/db"
-	"github.com/I1820/I1820/store"
+	"github.com/I1820/I1820/internal/config"
+	"github.com/I1820/I1820/internal/db"
+	"github.com/I1820/I1820/internal/store"
 	"github.com/spf13/cobra"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

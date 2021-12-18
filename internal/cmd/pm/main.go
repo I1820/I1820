@@ -1,4 +1,4 @@
-package tm
+package pm
 
 import (
 	"context"
@@ -10,11 +10,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/I1820/I1820/config"
-	"github.com/I1820/I1820/db"
-	"github.com/I1820/I1820/handler"
-	"github.com/I1820/I1820/router"
-	"github.com/I1820/I1820/store"
+	"github.com/I1820/I1820/internal/config"
+	"github.com/I1820/I1820/internal/db"
+	"github.com/I1820/I1820/internal/handler"
+	"github.com/I1820/I1820/internal/router"
+	"github.com/I1820/I1820/internal/runner"
+	"github.com/I1820/I1820/internal/store"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -32,19 +33,26 @@ func main(cfg config.Config) {
 		logrus.Fatal(err)
 	}
 
-	th := handler.Things{
-		Store: store.Thing{
+	m, err := runner.New()
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	rh := handler.Runner{
+		Store: store.Project{
 			DB: db,
 		},
+		Manager:    m,
+		DockerHost: cfg.Docker.Host,
 	}
 
 	api := e.Group("/api")
 	{
-		th.Register(api)
+		rh.Register(api)
 	}
 
 	go func() {
-		if err := e.Start(fmt.Sprintf(":%d", config.TMPort)); err != http.ErrServerClosed {
+		if err := e.Start(fmt.Sprintf(":%d", config.PMPort)); err != http.ErrServerClosed {
 			logrus.Fatalf("API Service failed with %s", err)
 		}
 	}()
@@ -65,8 +73,8 @@ func main(cfg config.Config) {
 func Register(root *cobra.Command, cfg config.Config) {
 	root.AddCommand(
 		&cobra.Command{
-			Use:   "tm",
-			Short: "Who manages your things",
+			Use:   "pm",
+			Short: "Who manages your project and their dockers",
 			Run: func(cmd *cobra.Command, args []string) {
 				main(cfg)
 			},

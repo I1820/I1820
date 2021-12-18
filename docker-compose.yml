@@ -1,6 +1,4 @@
 ---
-version: "3"
-
 services:
   mongodb:
     image: mongo
@@ -9,7 +7,7 @@ services:
       - 27017:27017
     volumes:
       - ./.docker/data:/data/db
-      - ./.mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
+      - ./.mongo/init.js:/docker-entrypoint-initdb.d/init.js
 
   nats:
     image: nats

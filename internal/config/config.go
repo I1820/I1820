@@ -25,27 +25,27 @@ import (
 )
 
 const (
-	// Namespace of I1820
+	// Namespace of I1820.
 	Namespace = "I1820"
 
-	// Prefix indicates environment variables prefix
+	// Prefix indicates environment variables prefix.
 	Prefix = "I1820_"
 )
 
-// Component ports are defined here
+// Component ports are defined here.
 const (
-	// LinkPort is a port of link component
+	// LinkPort is a port of link component.
 	LinkPort = 0
-	// TMPort is a port of thing manager component
+	// TMPort is a port of thing manager component.
 	TMPort = 1378
-	// DMPort is port of data manager component
+	// DMPort is port of data manager component.
 	DMPort = 1373
-	// PMPort is port of project manager component
+	// PMPort is port of project manager component.
 	PMPort = 1999
 )
 
 type (
-	// Config holds all link component configurations
+	// Config holds all link component configurations.
 	Config struct {
 		TM       TM       `koanf:"tm"`
 		Database Database `koanf:"database"`
@@ -54,47 +54,47 @@ type (
 		Docker   Docker   `koanf:"docker"`
 	}
 
-	// TM holds I1820 Things Manager configuration
+	// TM holds I1820 Things Manager configuration.
 	TM struct {
 		URL string `koanf:"url"`
 	}
 
-	// Database holds database configuration
+	// Database holds database configuration.
 	Database struct {
 		URL  string `koanf:"url"`
 		Name string `koanf:"name"`
 	}
 
-	// MQTT holds MQTT configuration
+	// MQTT holds MQTT configuration.
 	MQTT struct {
 		Addr string `koanf:"addr"`
 	}
 
-	// NATS hodls NATS configuration
+	// NATS hodls NATS configuration.
 	NATS struct {
 		URL string `koanf:"url"`
 	}
 
-	// Docker holds Docker Host configuration for running the runners
+	// Docker holds Docker Host configuration for running the runners.
 	Docker struct {
 		Host   string `koanf:"host"`
 		Runner Runner `koanf:"runner"`
 	}
 
-	// Runner contains the information that are required in runners for get and store the data
+	// Runner contains the information that are required in runners for get and store the data.
 	Runner struct {
 		Database Database `koanf:"database"`
 		NATS     NATS     `koanf:"nats"`
 	}
 )
 
-// New reads configuration with viper and create configuration instance
+// New reads configuration with koanf and create configuration instance.
 func New() Config {
 	var instance Config
 
 	k := koanf.New(".")
 
-	// load default configuration from file
+	// load default configuration from its struct
 	if err := k.Load(structs.Provider(Default(), "koanf"), nil); err != nil {
 		logrus.Fatalf("error loading default: %s", err)
 	}
@@ -106,8 +106,8 @@ func New() Config {
 
 	// load environment variables
 	if err := k.Load(env.Provider(Prefix, ".", func(s string) string {
-		return strings.Replace(strings.ToLower(
-			strings.TrimPrefix(s, Prefix)), "_", ".", -1)
+		return strings.ReplaceAll(strings.ToLower(
+			strings.TrimPrefix(s, Prefix)), "__", ".")
 	}), nil); err != nil {
 		logrus.Errorf("error loading environment variables: %s", err)
 	}

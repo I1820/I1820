@@ -9,11 +9,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/I1820/I1820/config"
-	"github.com/I1820/I1820/db"
-	"github.com/I1820/I1820/handler"
-	"github.com/I1820/I1820/router"
-	"github.com/I1820/I1820/store"
+	"github.com/I1820/I1820/internal/config"
+	"github.com/I1820/I1820/internal/db"
+	"github.com/I1820/I1820/internal/handler"
+	"github.com/I1820/I1820/internal/router"
+	"github.com/I1820/I1820/internal/store"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
