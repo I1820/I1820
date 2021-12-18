@@ -10,7 +10,7 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-// Error represents project manager errors
+// Error represents project manager errors.
 type Error struct {
 	Message string `json:"message"`
 	Code    int    `json:"code"`
@@ -20,16 +20,16 @@ func (e Error) Error() string {
 	return fmt.Sprintf("(%d): %s", e.Code, e.Message)
 }
 
-// Service is way for connecting with tm service
+// Service is way for connecting with tm service.
 type Service struct {
 	cli *resty.Client
 	c   *cache.Cache
 }
 
-// Expiration period for cache
+// Expiration period for cache.
 const Expiration = 5 * time.Minute
 
-// Cleanup period for cache
+// Cleanup period for cache.
 const Cleanup = 10 * time.Minute
 
 // New creates new instance of PM but connection establishment
@@ -48,7 +48,7 @@ func New(url string) Service {
 	}
 }
 
-// List lists existing things
+// List lists existing things.
 func (tm Service) List() ([]model.Thing, error) {
 	var ts []model.Thing
 
@@ -66,7 +66,7 @@ func (tm Service) List() ([]model.Thing, error) {
 	return ts, nil
 }
 
-// Show shows thing information by name
+// Show shows thing information by name.
 func (tm Service) Show(name string) (model.Thing, error) {
 	// check cache first
 	if t, found := tm.c.Get(name); found {
@@ -98,7 +98,7 @@ func (tm Service) Show(name string) (model.Thing, error) {
 	return t, nil
 }
 
-// Delete deletes thing by name
+// Delete deletes thing by name.
 func (tm Service) Delete(name string) (model.Thing, error) {
 	var t model.Thing
 

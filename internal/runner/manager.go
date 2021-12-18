@@ -66,16 +66,14 @@ func New() (Manager, error) {
 
 // New creates runner docker with given user name
 // mgu represents mongo url that is used in runners
-// for collecting errors and access to thing data
+// for collecting errors and access to thing data.
 func (m *DockerManager) New(ctx context.Context, name string, envs []Env) (Runner, error) {
 	rid, err := m.createRedis(ctx, name)
-
 	if err != nil {
 		return Runner{}, err
 	}
 
 	gid, port, err := m.createRunner(ctx, name, envs)
-
 	if err != nil {
 		// Removes redis container
 		if err := m.Client.ContainerRemove(ctx, rid, types.ContainerRemoveOptions{
@@ -186,14 +184,14 @@ func (m *DockerManager) createRunner(ctx context.Context, name string, envs []En
 	return resp.ID, strconv.Itoa(eport), nil
 }
 
-// Restart restarts runner docker (not redis)
+// Restart restarts runner docker (not redis).
 func (m *DockerManager) Restart(ctx context.Context, r Runner) error {
 	td := 1 * time.Second
 
 	return m.Client.ContainerRestart(ctx, r.ID, &td)
 }
 
-// Remove removes runner and redis dockers
+// Remove removes runner and redis dockers.
 func (m *DockerManager) Remove(ctx context.Context, r Runner) error {
 	if err := m.Client.ContainerRemove(ctx, r.RedisID, types.ContainerRemoveOptions{
 		Force: true,

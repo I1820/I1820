@@ -12,14 +12,14 @@ import (
 )
 
 type (
-	// PrometheusConfig represents basic prometheus exporter
+	// PrometheusConfig represents basic prometheus exporter.
 	PrometheusConfig struct {
 		// Skipper echo skipper
 		Skipper   middleware.Skipper
 		Namespace string
 	}
 
-	// EchoMetrics represents prometheus metrics for echo
+	// EchoMetrics represents prometheus metrics for echo.
 	EchoMetrics struct {
 		echoReqQPS      *prometheus.CounterVec
 		echoReqDuration *prometheus.SummaryVec
@@ -58,7 +58,7 @@ func NewEchoMetrics(namespace string) EchoMetrics {
 	return em
 }
 
-// NewPrometheusMiddleware returns new prometheus exporter with default config
+// NewPrometheusMiddleware returns new prometheus exporter with default config.
 func NewPrometheusMiddleware(namespace string) echo.MiddlewareFunc {
 	return NewMetricWithConfig(PrometheusConfig{
 		Skipper:   middleware.DefaultSkipper,
@@ -66,7 +66,7 @@ func NewPrometheusMiddleware(namespace string) echo.MiddlewareFunc {
 	})
 }
 
-// NewMetricWithConfig creates a new prometheus with config
+// NewMetricWithConfig creates a new prometheus with config.
 func NewMetricWithConfig(config PrometheusConfig) echo.MiddlewareFunc {
 	em := NewEchoMetrics(config.Namespace)
 

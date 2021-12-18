@@ -10,7 +10,7 @@ const (
 	maxLongitude = 180.0
 )
 
-// Location contains latitude and longitude for representing a location
+// Location contains latitude and longitude for representing a location.
 type Location struct {
 	Latitude  float64 `json:"lat"`
 	Longitude float64 `json:"long"`

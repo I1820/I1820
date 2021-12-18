@@ -12,8 +12,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const pName = "raha"
-const pOwner = "elahe.dstn@gmail.com"
+const (
+	pName  = "raha"
+	pOwner = "elahe.dstn@gmail.com"
+)
 
 func (suite *Suite) TestProjectsHandler() {
 	suite.testProjectsHandlerCreate()
@@ -66,7 +68,7 @@ func (suite *Suite) testProjectsHandlerUpdate() {
 	suite.Equal("elahe", p.Name)
 }
 
-// List GET (/api/projects)
+// List GET (/api/projects).
 func (suite *Suite) testProjectsHandlerList(count int) {
 	var ps []model.Project
 
@@ -82,7 +84,7 @@ func (suite *Suite) testProjectsHandlerList(count int) {
 	suite.Equal(count, len(ps))
 }
 
-// Show GET (/api/projects/{project_id})
+// Show GET (/api/projects/{project_id}).
 func (suite *Suite) testProjectsHandlerShow() {
 	var p model.Project
 
@@ -98,7 +100,7 @@ func (suite *Suite) testProjectsHandlerShow() {
 	suite.Equal(pName, p.Name)
 }
 
-// Destroy (DELETE /api/projects/{project_id})
+// Destroy (DELETE /api/projects/{project_id}).
 func (suite *Suite) testProjectsHandlerDelete() {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("DELETE", fmt.Sprintf("/projects/%s", suite.pID), nil)

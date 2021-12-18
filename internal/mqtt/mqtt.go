@@ -52,12 +52,12 @@ func New(cfg config.MQTT) *Service {
 }
 
 // Channel returns a channel for consuming the received data
-// Consuming this channel makes MQTT service work
+// Consuming this channel makes MQTT service work.
 func (s *Service) Channel() <-chan model.Data {
 	return s.channel
 }
 
-// Register registers given protocol on MQTT service
+// Register registers given protocol on MQTT service.
 func (s *Service) Register(p protocol.Protocol) {
 	if s.IsRun {
 		return // there is no way to add protocol in runtime
@@ -66,7 +66,7 @@ func (s *Service) Register(p protocol.Protocol) {
 	s.protocols = append(s.protocols, p)
 }
 
-// Protocols returns list of registered protocol's names
+// Protocols returns list of registered protocol's names.
 func (s *Service) Protocols() []string {
 	names := make([]string, len(s.protocols))
 
@@ -78,7 +78,7 @@ func (s *Service) Protocols() []string {
 }
 
 // Run runs application.
-// This function connects MQTT client and then register its topic
+// This function connects MQTT client and then register its topic.
 func (s *Service) Run() error {
 	// Create an MQTT client
 	/*
@@ -112,7 +112,7 @@ func (s *Service) Run() error {
 	return nil
 }
 
-// Exit closes MQTT connection then closes all channels and return from all pipeline stages
+// Exit closes MQTT connection then closes all channels and return from all pipeline stages.
 func (s *Service) Exit() {
 	s.IsRun = false
 

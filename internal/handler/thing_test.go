@@ -22,8 +22,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const tName = "0000000000000073"
-const pID = "raha"
+const (
+	tName = "0000000000000073"
+	pID   = "raha"
+)
 
 func (suite *Suite) TestThingsHandler() {
 	suite.testThingsHandlerCreate()
@@ -34,7 +36,7 @@ func (suite *Suite) TestThingsHandler() {
 	suite.testThingsHandlerList(0)
 }
 
-// Create thing (POST /api/projects/{project_id}/things)
+// Create thing (POST /api/projects/{project_id}/things).
 func (suite *Suite) testThingsHandlerCreate() {
 	var t model.Thing
 
@@ -57,7 +59,7 @@ func (suite *Suite) testThingsHandlerCreate() {
 	suite.Equal(tName, t.Name)
 }
 
-// Show (GET /api/things/{thing_id}
+// Show (GET /api/things/{thing_id}.
 func (suite *Suite) testThingsHandlerShow() {
 	var t model.Thing
 
@@ -73,7 +75,7 @@ func (suite *Suite) testThingsHandlerShow() {
 	suite.Equal(tName, t.Name)
 }
 
-// List (GET /api/projects/{project_id}/things)
+// List (GET /api/projects/{project_id}/things).
 func (suite *Suite) testThingsHandlerList(count int) {
 	var ts []model.Thing
 
@@ -89,7 +91,7 @@ func (suite *Suite) testThingsHandlerList(count int) {
 	suite.Equal(count, len(ts))
 }
 
-// Destroy (DELETE /api/things/{thing_id})
+// Destroy (DELETE /api/things/{thing_id}).
 func (suite *Suite) testThingsHandlerDestroy() {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("DELETE", fmt.Sprintf("/things/%s", tName), nil)
@@ -99,7 +101,7 @@ func (suite *Suite) testThingsHandlerDestroy() {
 	suite.Equal(http.StatusOK, w.Code, w.Body.String())
 }
 
-// Show 404 (GET /api/things/{thing_id}
+// Show 404 (GET /api/things/{thing_id}.
 func (suite *Suite) testThingsHandlerShow404() {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", fmt.Sprintf("/things/%s", tName), nil)

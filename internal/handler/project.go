@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Projects manages existing projects
+// Projects manages existing projects.
 type Projects struct {
 	Store   store.Project
 	Manager runner.Manager
@@ -20,7 +20,7 @@ type Projects struct {
 	Config config.Runner
 }
 
-// Register registers the routes of projects handler on given echo group
+// Register registers the routes of projects handler on given echo group.
 func (v Projects) Register(g *echo.Group) {
 	g.POST("/projects", v.Create)
 	g.GET("/projects", v.List)
@@ -32,7 +32,7 @@ func (v Projects) Register(g *echo.Group) {
 }
 
 // List gets all projects. This function is mapped to the path
-// GET /projects
+// GET /projects.
 func (v Projects) List(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -113,7 +113,7 @@ func (v Projects) Create(c echo.Context) error {
 }
 
 // Recreate creates project docker and stores their information.
-// This function is mapped to the path GET /projects/{project_id}/recreate
+// This function is mapped to the path GET /projects/{project_id}/recreate.
 func (v Projects) Recreate(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -149,7 +149,7 @@ func (v Projects) Recreate(c echo.Context) error {
 }
 
 // Show gets the data for one project. This function is mapped to
-// the path GET /projects/{project_id}
+// the path GET /projects/{project_id}.
 func (v Projects) Show(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -165,7 +165,7 @@ func (v Projects) Show(c echo.Context) error {
 
 // Update updates the name of the project. The project owner is passed as an environment variable
 // to project docker so it cannot be changed.
-// This function is mapped to the path PUT /projects/{project_id}
+// This function is mapped to the path PUT /projects/{project_id}.
 func (v Projects) Update(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -187,7 +187,7 @@ func (v Projects) Update(c echo.Context) error {
 }
 
 // Destroy deletes a project from the DB and its docker. This function is mapped
-// to the path DELETE /projects/{project_id}
+// to the path DELETE /projects/{project_id}.
 func (v Projects) Destroy(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -211,7 +211,7 @@ func (v Projects) Destroy(c echo.Context) error {
 }
 
 // Logs returns project execution logs and errors. This function is mapped
-// to the path GET /projects/{project_id}/logs
+// to the path GET /projects/{project_id}/logs.
 func (v Projects) Logs(c echo.Context) error {
 	ctx := c.Request().Context()
 

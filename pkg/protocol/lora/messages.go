@@ -2,7 +2,7 @@ package lora
 
 import "time"
 
-// ErrorMessage contains lora errors
+// ErrorMessage contains lora errors.
 type ErrorMessage struct {
 	ApplicationID   string
 	ApplicationName string
@@ -12,7 +12,7 @@ type ErrorMessage struct {
 	FCnt            int
 }
 
-// RxMessage contains payloads received from your nodes
+// RxMessage contains payloads received from your nodes.
 type RxMessage struct {
 	ApplicationID   string
 	ApplicationName string
@@ -35,14 +35,14 @@ type RxInfo struct {
 	LoRaSNR float64 `json:"LoRaSNR"`
 }
 
-// TxInfo contains transmission information
+// TxInfo contains transmission information.
 type TxInfo struct {
 	Frequency int
 	Adr       bool
 	CodeRate  string
 }
 
-// TxMessage contains payloads transmitted to your nodes
+// TxMessage contains payloads transmitted to your nodes.
 type TxMessage struct {
 	Reference string // reference which will be used on ack or error (this can be a random string)
 	FPort     int    // FPort to use (must be > 0)

@@ -20,7 +20,7 @@ type Suite struct {
 	pID string
 }
 
-// SetupSuite initiates tm test suite
+// SetupSuite initiates tm test suite.
 func (suite *Suite) SetupSuite() {
 	cfg := config.New()
 

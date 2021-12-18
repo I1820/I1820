@@ -10,22 +10,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// DataCollection is mongodb collection name for data
+// DataCollection is mongodb collection name for data.
 const DataCollection = "data"
 
-// Data store handles database communication for data elements
+// Data store handles database communication for data elements.
 type Data struct {
 	DB *mongo.Database
 }
 
-// New creates new data store
+// New creates new data store.
 func New(db *mongo.Database) *Data {
 	return &Data{
 		DB: db,
 	}
 }
 
-// Insert given instance of data into database
+// Insert given instance of data into database.
 func (d *Data) Insert(ctx context.Context, i model.Data) error {
 	if _, err := d.DB.Collection(DataCollection).InsertOne(ctx, i); err != nil {
 		return err
@@ -35,7 +35,7 @@ func (d *Data) Insert(ctx context.Context, i model.Data) error {
 }
 
 // PerProjectCount counts number of records for given project per things
-// it returns a map between thing identification and number of records for that thing
+// it returns a map between thing identification and number of records for that thing.
 func (d Data) PerProjectCount(ctx context.Context, projectID string) (map[string]int, error) {
 	cur, err := d.DB.Collection(DataCollection).Aggregate(ctx, bson.A{
 		bson.M{

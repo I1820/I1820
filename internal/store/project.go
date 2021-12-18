@@ -11,15 +11,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// ProjectCollection is mongodb collection name for project
+// ProjectCollection is mongodb collection name for project.
 const ProjectCollection = "project"
 
-// Project stores and retrieves projects collection
+// Project stores and retrieves projects collection.
 type Project struct {
 	DB *mongo.Database
 }
 
-// List returns all registered projects
+// List returns all registered projects.
 func (ps Project) List(ctx context.Context) ([]model.Project, error) {
 	projects := make([]model.Project, 0)
 
@@ -99,7 +99,7 @@ func (ps Project) Update(ctx context.Context, id string, fields map[string]inter
 }
 
 func (ps Project) Logs(ctx context.Context, name string, limit int) ([]model.ProjectLog, error) {
-	var pls = make([]model.ProjectLog, 0)
+	pls := make([]model.ProjectLog, 0)
 
 	cur, err := ps.DB.Collection(fmt.Sprintf("%s.logs.%s", ProjectCollection, name)).Aggregate(ctx, bson.A{
 		bson.M{

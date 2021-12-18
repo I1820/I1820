@@ -16,7 +16,7 @@ func (suite *Suite) TestRunnerHandler() {
 	suite.testProjectsHandlerDelete()
 }
 
-// Runner About API (GET /api/runners/{project_id}/about)
+// Runner About API (GET /api/runners/{project_id}/about).
 func (suite *Suite) testRunnerAboutAPI() {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", fmt.Sprintf("/runners/%s/about", suite.pID), nil)

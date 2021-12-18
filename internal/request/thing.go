@@ -5,7 +5,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-// Thing is a request payload for creating thing
+// Thing is a request payload for creating thing.
 type Thing struct {
 	Name     string `json:"name"`
 	Model    string `json:"model"`

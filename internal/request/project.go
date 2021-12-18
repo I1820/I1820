@@ -5,7 +5,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-// Project request payload
+// Project request payload.
 type Project struct {
 	Name        string            `json:"name"`        // project name
 	Owner       string            `json:"owner"`       // project owner email address

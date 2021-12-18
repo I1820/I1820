@@ -64,7 +64,7 @@ func main(cfg config.Config) {
 	core.Exit()
 }
 
-// Register link command
+// Register link command.
 func Register(root *cobra.Command, cfg config.Config) {
 	root.AddCommand(
 		&cobra.Command{

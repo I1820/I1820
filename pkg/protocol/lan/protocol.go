@@ -21,26 +21,25 @@ import (
 	lan "github.com/I1820/lanserver/model"
 )
 
-// Protocol implements uplink protocol for lora
-type Protocol struct {
-}
+// Protocol implements uplink protocol for lora.
+type Protocol struct{}
 
-// RxTopic returns lan rx message topic
+// RxTopic returns lan rx message topic.
 func (p Protocol) RxTopic() string {
 	return "device/+/rx"
 }
 
-// TxTopic returns lan tx message topic
+// TxTopic returns lan tx message topic.
 func (p Protocol) TxTopic() string {
 	return "device/+/tx"
 }
 
-// Name returns protocol unique name
+// Name returns protocol unique name.
 func (p Protocol) Name() string {
 	return "lan"
 }
 
-// Marshal marshals given lan byte message (in json format) into platform data structure
+// Marshal marshals given lan byte message (in json format) into platform data structure.
 func (p Protocol) Marshal(message []byte) (model.Data, error) {
 	var m lan.RxMessage
 

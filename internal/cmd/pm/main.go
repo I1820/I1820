@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	// ExitTimeout is a time that application waits for API service to exit
+	// ExitTimeout is a time that application waits for API service to exit.
 	ExitTimeout = 5 * time.Second
 )
 
@@ -69,7 +69,7 @@ func main(cfg config.Config) {
 	}
 }
 
-// Register tm command
+// Register tm command.
 func Register(root *cobra.Command, cfg config.Config) {
 	root.AddCommand(
 		&cobra.Command{

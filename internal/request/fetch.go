@@ -2,7 +2,7 @@ package request
 
 import validation "github.com/go-ozzo/ozzo-validation/v4"
 
-// Fetch is a data fetching request
+// Fetch is a data fetching request.
 type Fetch struct {
 	ThingIDs []string `json:"thing_ids" validate:"required"`
 	Since    int64    `json:"since"`

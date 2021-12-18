@@ -20,7 +20,7 @@ import (
 	"github.com/I1820/I1820/internal/model"
 )
 
-// Protocol implements uplink protocol for lora
+// Protocol implements uplink protocol for lora.
 type Protocol struct{}
 
 // RxTopic returns lora rx message topic
@@ -35,7 +35,7 @@ func (p Protocol) TxTopic() string {
 	return "application/+/device/+/tx"
 }
 
-// Name returns protocol unique name
+// Name returns protocol unique name.
 func (p Protocol) Name() string {
 	return "lora"
 }

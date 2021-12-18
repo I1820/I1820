@@ -20,7 +20,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Handler generates specific handler for each protocol
+// Handler generates specific handler for each protocol.
 func Handler(p protocol.Protocol, ch chan<- model.Data) paho.MessageHandler {
 	marshaler := p.Marshal
 

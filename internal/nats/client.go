@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// ErrorHandler calls on nats errors
+// ErrorHandler calls on nats errors.
 func ErrorHandler(conn *nats.Conn, subscription *nats.Subscription, err error) {
 	logrus.WithField("component", "nats").Error(err.Error())
 }

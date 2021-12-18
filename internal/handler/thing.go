@@ -10,13 +10,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Things handles existing things
+// Things handles existing things.
 type Things struct {
 	Store store.Thing
 }
 
 // List gets all things. This function is mapped to the path
-// GET /projects/{project_id}/things
+// GET /projects/{project_id}/things.
 func (v Things) List(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -32,7 +32,7 @@ func (v Things) List(c echo.Context) error {
 }
 
 // Create adds a thing to the DB and its project. This function is mapped to the
-// path POST /projects/{project_id}/things
+// path POST /projects/{project_id}/things.
 func (v Things) Create(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -78,7 +78,7 @@ func (v Things) Create(c echo.Context) error {
 }
 
 // Show gets the data for one thing. This function is mapped to
-// the path GET /things/{thing_id}
+// the path GET /things/{thing_id}.
 func (v Things) Show(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -99,7 +99,7 @@ func (v Things) Show(c echo.Context) error {
 
 // Update updates a thing information includes name, model and location. Please note that you must
 // provide them all in update request even if you do not want to change it.
-// This function is mapped to the path PUT /things/{thing_id}
+// This function is mapped to the path PUT /things/{thing_id}.
 func (v Things) Update(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -133,7 +133,7 @@ func (v Things) Update(c echo.Context) error {
 }
 
 // Destroy deletes a thing from the DB and its project. This function is mapped
-// to the path DELETE /things/{thing_id}
+// to the path DELETE /things/{thing_id}.
 func (v Things) Destroy(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -148,7 +148,7 @@ func (v Things) Destroy(c echo.Context) error {
 }
 
 // Activation activates/deactivates thing. This function is mapped
-// to the path GET /things/{thing_id}/{t:(?:activate|deactivate)}
+// to the path GET /things/{thing_id}/{t:(?:activate|deactivate)}.
 func (v Things) Activation(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -172,7 +172,7 @@ func (v Things) Activation(c echo.Context) error {
 	return c.JSON(http.StatusOK, t)
 }
 
-// Register registers the routes of things handler on given echo group
+// Register registers the routes of things handler on given echo group.
 func (v Things) Register(g *echo.Group) {
 	pg := g.Group("/projects/:project_id")
 	{

@@ -25,7 +25,7 @@ import (
 )
 
 // Application is a main component of uplink that consists of
-// uplink protocol and mqtt client
+// uplink protocol and mqtt client.
 type Application struct {
 	// model and protocol
 	models map[string]model.Model
@@ -69,12 +69,12 @@ func New(tm tm.Service, st *store.Data, ns *nats.EncodedConn) *Application {
 	}
 }
 
-// RegisterModel registers model m on application a
+// RegisterModel registers model m on application a.
 func (a *Application) RegisterModel(m model.Model) {
 	a.models[m.Name()] = m
 }
 
-// Models returns list of registered model's names
+// Models returns list of registered model's names.
 func (a *Application) Models() []string {
 	names := make([]string, len(a.models))
 
@@ -88,7 +88,7 @@ func (a *Application) Models() []string {
 	return names
 }
 
-// Run runs application. this function connects mqtt client and then register its topic
+// Run runs application. this function connects mqtt client and then register its topic.
 func (a *Application) Run() error {
 	// pipeline stages
 	for i := 0; i < runtime.NumCPU(); i++ {
@@ -110,12 +110,12 @@ func (a *Application) Run() error {
 	return nil
 }
 
-// Handle handles given data into core pipeline
+// Handle handles given data into core pipeline.
 func (a *Application) Handle(d types.Data) {
 	a.projectStream <- d
 }
 
-// Exit closes amqp connection then closes all channels and return from all pipeline stages
+// Exit closes amqp connection then closes all channels and return from all pipeline stages.
 func (a *Application) Exit() {
 	a.IsRun = false
 

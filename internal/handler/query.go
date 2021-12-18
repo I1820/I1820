@@ -21,12 +21,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Queries handles useful queries on database
+// Queries handles useful queries on database.
 type Queries struct {
 	Store store.Data
 }
 
-// Register registers the routes of queries handler on given echo group
+// Register registers the routes of queries handler on given echo group.
 func (q Queries) Register(g *echo.Group) {
 	g.GET("/queries/projects/:project_id/list", q.List)
 	g.GET("/queries/things/:thing_id/fetch", q.FetchSingle)
@@ -35,7 +35,7 @@ func (q Queries) Register(g *echo.Group) {
 
 // List lists things and count of their data in database.
 // This function is mapped to the path
-// GET /projects/{project_id}/things/{thing_id}/queries/list
+// GET /projects/{project_id}/things/{thing_id}/queries/list.
 func (q Queries) List(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -53,7 +53,7 @@ func (q Queries) List(c echo.Context) error {
 // FetchSingle fetches the given thing data in given time range from database.
 // please consider that this function returns data in ascending time order.
 // This function is mapped to the path
-// GET /queries/things/thing_id/fetch
+// GET /queries/things/thing_id/fetch.
 func (q Queries) FetchSingle(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()
@@ -81,7 +81,7 @@ func (q Queries) FetchSingle(c echo.Context) error {
 // Fetch fetches given things data in given time range from database.
 // please consider that this function returns data in ascending time order.
 // This function is mapped to the path
-// POST /queries/fetch
+// POST /queries/fetch.
 func (q Queries) Fetch(c echo.Context) error {
 	// gets the request context
 	ctx := c.Request().Context()

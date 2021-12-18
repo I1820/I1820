@@ -24,7 +24,7 @@ func (r Runner) Register(g *echo.Group) {
 	g.Any("/runners/:project_id/*", r.PassThrough)
 }
 
-// PassThrough sends request to specific Runner
+// PassThrough sends request to specific Runner.
 func (r Runner) PassThrough(c echo.Context) error {
 	ctx := c.Request().Context()
 
