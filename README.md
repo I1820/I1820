@@ -1,9 +1,13 @@
 # I1820
-[![Drone (cloud)](https://img.shields.io/drone/build/I1820/I1820.svg?style=flat-square)](https://cloud.drone.io/I1820/I1820)
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/I1820/I1820/ci?label=ci&logo=github&style=flat-square)
+[![Codecov](https://img.shields.io/codecov/c/gh/I1820/I1820?logo=codecov&style=flat-square)](https://codecov.io/gh/I1820/I1820)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/I1820/I1820)](https://pkg.go.dev/github.com/I1820/I1820)
 
 ## Introduction
 
 ## Link
+
 Link component of I1820 platfrom. This service collects
 raw data from bottom layer (protocols), stores them into mongo database
 and decodes them using user's selected decoder.
@@ -14,15 +18,18 @@ Link uses MQTT for communicating with the bottom layer and this communication ca
 using Protocol's interface which is defined in `protocols/protocol.go`.
 
 ## Thing Manager
+
 Thing manager manages I1820 Things and their properties.
 Things belong to the projects, but this component doesn't validate this relationship so other services
 must verify project identification and existence before calls this project APIs.
 
 ## Data Manager
+
 DM is a Data Manager component of the I1820 platform.
 It has some useful built-in queries that can returns data from the database (MongoDB) to the API backend.
 
 ### Profiler
+
 Enable MongoDB built-in profiler:
 
 ```
@@ -50,4 +57,3 @@ PMs can run on many hosts to provide load balancing. To distribute requests amon
 This component provides API based on HTTP ReST so other components can utilize these APIs for creating and destroying things and projects.
 
 PM requires only MongoDB to persist things and projects data.
-
