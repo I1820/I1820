@@ -14,6 +14,8 @@
 package config
 
 import (
+	"encoding/json"
+	"log"
 	"strings"
 
 	"github.com/knadh/koanf"
@@ -22,6 +24,7 @@ import (
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
 	"github.com/sirupsen/logrus"
+	"github.com/tidwall/pretty"
 )
 
 const (
@@ -116,7 +119,14 @@ func New() Config {
 		logrus.Fatalf("error unmarshalling config: %s", err)
 	}
 
-	logrus.Infof("following configuration is loaded:\n%+v", instance)
+	indent, _ := json.MarshalIndent(instance, "", "\t")
+	indent = pretty.Color(indent, nil)
+	tmpl := `
+	================ Loaded Configuration ================
+	%s
+	======================================================
+	`
+	log.Printf(tmpl, string(indent))
 
 	return instance
 }
