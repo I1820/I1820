@@ -54,6 +54,7 @@ require (
 	github.com/prometheus/common v0.9.1 // indirect
 	github.com/prometheus/procfs v0.0.11 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
